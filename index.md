@@ -1,7 +1,3 @@
-/* 语法
-   [Link](url) and ![Image](src)
-*/
-
 个人博客
 
 [Redis系列]
