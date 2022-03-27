@@ -14,5 +14,3 @@ include:
   - PULL_REQUEST_TEMPLATE.md
 title: mrz9527's notebook
 theme: jekyll-theme-cayman
-
-pygments: true
