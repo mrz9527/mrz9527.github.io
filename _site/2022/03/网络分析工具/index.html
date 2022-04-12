@@ -1,0 +1,355 @@
+<h1 id="工具分类">工具分类</h1>
+
+<ul>
+  <li>网络配置相关：ifconfig、ip</li>
+  <li>路由相关：route、netstat、ip</li>
+  <li>查看端口工具：netstat、lsof、ss、nc、telnet</li>
+  <li>下载工具：curl、wget、axel</li>
+  <li>防火墙：iptables、ipset</li>
+  <li>流量相关：iftop、nethogs</li>
+  <li>连通性及响应速度：ping、traceroute、mtr、tracepath</li>
+  <li>域名相关：nslookup、dig、whois</li>
+  <li>web服务器：python、nginx</li>
+  <li>抓包相关：tcpdump</li>
+  <li>网桥相关：ip、brctl、ifconfig、ovs</li>
+</ul>
+
+<h1 id="部分工具介绍">部分工具介绍</h1>
+
+<h2 id="ping">ping</h2>
+
+<p>采用的协议是ICMP</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>常见命令参数
+-q 不显示任何传送封包的信息，只显示最后的结果
+-n 只输出数值
+-R 记录路由过程
+-c count 总次数
+-i 时间间隔
+-t 存活数值：设置存活数值TTL的大小
+-s 设置发送包的大小。默认情况下，ping命令是以64字节大小的数据包来测试网络连通性
+</code></pre></div></div>
+
+<h3 id="测试对方ip是否存在">测试对方ip是否存在</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>ping <span class="nt">-c</span> 2 10.10.10.221
+PING 10.10.10.221 <span class="o">(</span>10.10.10.221<span class="o">)</span>: 56 data bytes
+64 bytes from 10.10.10.221: <span class="nv">icmp_seq</span><span class="o">=</span>0 <span class="nv">ttl</span><span class="o">=</span>64 <span class="nb">time</span><span class="o">=</span>0.433 ms
+64 bytes from 10.10.10.221: <span class="nv">icmp_seq</span><span class="o">=</span>1 <span class="nv">ttl</span><span class="o">=</span>64 <span class="nb">time</span><span class="o">=</span>0.441 ms
+<span class="nt">---</span> 10.10.10.221 ping statistics <span class="nt">---</span>
+2 packets transmitted, 2 packets received, 0% packet loss
+round-trip min/avg/max/stddev <span class="o">=</span> 0.433/0.437/0.441/0.000 ms
+</code></pre></div></div>
+
+<p>如果对方禁止ICMP协议，也会ping不通</p>
+
+<h3 id="测试网速">测试网速</h3>
+
+<p>就是查看网络延迟</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>64 bytes from 10.10.10.221: <span class="nv">icmp_seq</span><span class="o">=</span>0 <span class="nv">ttl</span><span class="o">=</span>64 <span class="nb">time</span><span class="o">=</span>0.433 ms
+<span class="c"># time=0.433 ms，表示网络延迟为0.433 ms</span>
+</code></pre></div></div>
+
+<h3 id="解析域名">解析域名</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 域名转ip</span>
+<span class="nv">$ </span>ping <span class="nt">-c</span> 2 www.baidu.com
+PING www.a.shifen.com <span class="o">(</span>220.181.38.150<span class="o">)</span>: 56 data bytes
+64 bytes from 220.181.38.150: <span class="nv">icmp_seq</span><span class="o">=</span>0 <span class="nv">ttl</span><span class="o">=</span>44 <span class="nb">time</span><span class="o">=</span>5.874 ms
+64 bytes from 220.181.38.150: <span class="nv">icmp_seq</span><span class="o">=</span>1 <span class="nv">ttl</span><span class="o">=</span>44 <span class="nb">time</span><span class="o">=</span>9.107 ms
+</code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># ping对方主机，发送4个包，每个包间隔1秒</span>
+<span class="nv">$ </span>ping <span class="nt">-c</span> 4 <span class="nt">-i</span> 1 10.10.10.221
+PING 10.10.10.221 <span class="o">(</span>10.10.10.221<span class="o">)</span>: 56 data bytes
+64 bytes from 10.10.10.221: <span class="nv">icmp_seq</span><span class="o">=</span>0 <span class="nv">ttl</span><span class="o">=</span>64 <span class="nb">time</span><span class="o">=</span>0.447 ms
+64 bytes from 10.10.10.221: <span class="nv">icmp_seq</span><span class="o">=</span>1 <span class="nv">ttl</span><span class="o">=</span>64 <span class="nb">time</span><span class="o">=</span>0.802 ms
+64 bytes from 10.10.10.221: <span class="nv">icmp_seq</span><span class="o">=</span>2 <span class="nv">ttl</span><span class="o">=</span>64 <span class="nb">time</span><span class="o">=</span>0.681 ms
+64 bytes from 10.10.10.221: <span class="nv">icmp_seq</span><span class="o">=</span>3 <span class="nv">ttl</span><span class="o">=</span>64 <span class="nb">time</span><span class="o">=</span>0.597 ms
+<span class="nt">---</span> 10.10.10.221 ping statistics <span class="nt">---</span>
+4 packets transmitted, 4 packets received, 0% packet loss
+round-trip min/avg/max/stddev <span class="o">=</span> 0.447/0.632/0.802/0.129 ms
+</code></pre></div></div>
+
+<h3 id="测试mtu">测试MTU</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># -s 选项来发现网络环境中有关MTU（网络上传最大的数据包）的问题</span>
+<span class="nv">$ </span>ping <span class="nt">-c</span> 4 <span class="nt">-i</span> 1 <span class="nt">-s</span> 40 10.10.10.221
+PING 10.10.10.221 <span class="o">(</span>10.10.10.221<span class="o">)</span>: 40 data bytes
+48 bytes from 10.10.10.221: <span class="nv">icmp_seq</span><span class="o">=</span>0 <span class="nv">ttl</span><span class="o">=</span>64 <span class="nb">time</span><span class="o">=</span>0.354 ms
+48 bytes from 10.10.10.221: <span class="nv">icmp_seq</span><span class="o">=</span>1 <span class="nv">ttl</span><span class="o">=</span>64 <span class="nb">time</span><span class="o">=</span>0.587 ms
+48 bytes from 10.10.10.221: <span class="nv">icmp_seq</span><span class="o">=</span>2 <span class="nv">ttl</span><span class="o">=</span>64 <span class="nb">time</span><span class="o">=</span>0.399 ms
+48 bytes from 10.10.10.221: <span class="nv">icmp_seq</span><span class="o">=</span>3 <span class="nv">ttl</span><span class="o">=</span>64 <span class="nb">time</span><span class="o">=</span>0.422 ms
+<span class="nt">---</span> 10.10.10.221 ping statistics <span class="nt">---</span>
+4 packets transmitted, 4 packets received, 0% packet loss
+round-trip min/avg/max/stddev <span class="o">=</span> 0.354/0.440/0.587/0.088 ms
+</code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># -s 发送8192个字节数据，发送失败，包过大</span>
+<span class="nv">$ </span>ping <span class="nt">-c</span> 4 <span class="nt">-i</span> 1 <span class="nt">-s</span> 8192 10.10.10.221
+PING 10.10.10.221 <span class="o">(</span>10.10.10.221<span class="o">)</span>: 8192 data bytes
+ping: sending packet: Message too long
+</code></pre></div></div>
+
+<h2 id="telnet">telnet</h2>
+
+<h3 id="测试对方开放的端口">测试对方开放的端口</h3>
+
+<p>netstat也可以查看端口，但<strong>局限于本机</strong>。netstat -tnlp，可以查看本地处于监听的端口号。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>telnet ip port
+</code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 22端口存在</span>
+<span class="nv">$ </span>telnet 10.10.10.221 22
+Trying 10.10.10.221...
+Connected to 10.10.10.221.
+Escape character is <span class="s1">'^]'</span><span class="nb">.</span>
+SSH-2.0-OpenSSH_7.2p2 Ubuntu-4ubuntu2.10
+</code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 5005端口不存在</span>
+<span class="nv">$ </span>telnet 10.10.10.221 5005
+Trying 10.10.10.221...
+telnet: Unable to connect to remote host: Connection refused
+</code></pre></div></div>
+
+<h2 id="lsof">lsof</h2>
+
+<p>list open files。Linux中一切皆文件，socket、pipe等也是文件，因此能够查看网络连接以及网络设备，其中和网络相关的是<strong>-i</strong>选项。</p>
+
+<h3 id="查看网络通信的进程号">查看网络通信的进程号</h3>
+
+<p>lsof有很多选项，每个选项有不同的作用。<strong>使用-i选项，用于查看网络通信的本地进程</strong>。lsof命令必须有sudo权限</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 用法</span>
+lsof <span class="nt">-i</span><span class="o">[</span>46] <span class="o">[</span>protocol][@hostname|hostaddr][:service|port]
+
+lsof <span class="nt">-i</span> //显示所有打开的端口
+lsof <span class="nt">-i</span>:80 //显示所有打开80端口的进程
+lsof <span class="nt">-i</span> <span class="nt">-U</span> //显示所有打开的端口和UNIX domain文件
+lsof <span class="nt">-i</span> UDP@[url]www.akadia.com:123 //显示那些进程打开了到www.akadia.com的UDP的123<span class="o">(</span>ntp<span class="o">)</span>端口的链接
+lsof <span class="nt">-i</span> tcp@ohaha.ks.edu.tw:ftp <span class="nt">-n</span> //lsof <span class="nt">-n</span> 不将IP转换为hostname，缺省是不加上-n参数
+</code></pre></div></div>
+
+<p>实例：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 查看本机与10.10.10.221:6380的tcp通信的本地进程，查到本机进程id为18434，程序为redis-cli</span>
+<span class="nb">sudo </span>lsof <span class="nt">-i</span> tcp@10.10.10.221:6380
+Password:
+COMMAND     PID     USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
+redis-cli 18434 xm210408    3u  IPv4 0x9864983a46f27629      0t0  TCP 10.10.10.1:62403-&gt;10.10.10.221:6380 <span class="o">(</span>ESTABLISHED<span class="o">)</span>
+</code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 通过ps，的确查到18434进程。</span>
+<span class="nv">$ </span>ps <span class="nt">-ef</span> | <span class="nb">grep </span>redis-cli
+  501 18533 18000   0  2:13下午 ttys001    0:00.00 <span class="nb">grep </span>redis-cli
+  501 18434 18281   0 12:50下午 ttys005    0:00.01 redis-cli <span class="nt">-p</span> 6380 <span class="nt">-h</span> 10.10.10.221
+</code></pre></div></div>
+
+<h2 id="netstat">netstat</h2>
+
+<p>netstat一般<strong>用于检验本机各端口的网络连接情况</strong>，显示与IP、TCP、UDP和ICMP协议相关的统计数据，netstat是在内核中访问网络及相关信息的程序。
+<strong>常用选项</strong>：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">-a</span> <span class="o">(</span>all<span class="o">)</span>显示所有选项，默认不显示LISTEN相关
+<span class="nt">-t</span> <span class="o">(</span>tcp<span class="o">)</span>仅显示tcp相关选项
+<span class="nt">-u</span> <span class="o">(</span>udp<span class="o">)</span>仅显示udp相关选项
+<span class="nt">-n</span> 拒绝显示别名，能显示数字的全部转化成数字
+<span class="nt">-l</span> 仅列出有在 Listen <span class="o">(</span>监听<span class="o">)</span> 的服務状态
+<span class="nt">-p</span> 显示建立相关链接的程序名
+<span class="nt">-r</span> 显示路由信息，路由表
+<span class="nt">-e</span> 显示扩展信息，例如uid等
+<span class="nt">-s</span> 按各个协议进行统计
+<span class="nt">-c</span> 每隔一个固定时间，执行该netstat命令
+</code></pre></div></div>
+
+<p><strong>状态status</strong>:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>LISTEN：侦听来自远方的TCP端口的连接请求
+SYN-SENT：再发送连接请求后等待匹配的连接请求（如果有大量这样的状态包，检查是否中招了）
+SYN-RECEIVED：再收到和发送一个连接请求后等待对方对连接请求的确认（如有大量此状态，估计被flood攻击了）
+ESTABLISHED：代表一个打开的连接
+FIN-WAIT-1：等待远程TCP连接中断请求，或先前的连接中断请求的确认
+FIN-WAIT-2：从远程TCP等待连接中断请求
+CLOSE-WAIT：等待从本地用户发来的连接中断请求
+CLOSING：等待远程TCP对连接中断的确认
+LAST-ACK：等待原来的发向远程TCP的连接中断请求的确认（不是什么好东西，此项出现，检查是否被攻击）
+TIME-WAIT：等待足够的时间以确保远程TCP接收到连接中断请求的确认
+CLOSED：没有任何连接状态
+</code></pre></div></div>
+
+<h3 id="查看处于监听的tcp连接及端口号">查看处于监听的tcp连接及端口号</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>netstat <span class="nt">-tnlp</span>
+Active Internet connections <span class="o">(</span>only servers<span class="o">)</span>
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
+tcp        0      0 127.0.0.1:33622         0.0.0.0:<span class="k">*</span>               LISTEN      68787/python3.5 
+tcp        0      0 0.0.0.0:22              0.0.0.0:<span class="k">*</span>               LISTEN      877/sshd        
+tcp        0      0 0.0.0.0:6379            0.0.0.0:<span class="k">*</span>               LISTEN      60037/redis-server 
+tcp        0      0 0.0.0.0:6380            0.0.0.0:<span class="k">*</span>               LISTEN      60049/redis-server 
+tcp        0      0 0.0.0.0:6381            0.0.0.0:<span class="k">*</span>               LISTEN      60055/redis-server 
+tcp6       0      0 :::22                   :::<span class="k">*</span>                    LISTEN      877/sshd        
+tcp6       0      0 :::6380                 :::<span class="k">*</span>                    LISTEN      60049/redis-server 
+tcp6       0      0 :::6381                 :::<span class="k">*</span>                    LISTEN      60055/redis-server 
+<span class="nv">$ </span>netstat <span class="nt">-lntp</span> | <span class="nb">awk</span> <span class="s1">'{print $4}'</span> | <span class="nb">cut</span> <span class="nt">-f2</span> <span class="nt">-d</span>: | <span class="nb">grep</span> <span class="nt">-o</span> <span class="s1">'[0-9]*'</span>
+33622
+22
+6379
+6380
+6381
+</code></pre></div></div>
+
+<p>端口号33622、22、6379、6380、6381处于监听状态。</p>
+
+<h3 id="查看路由">查看路由</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>netstat  <span class="nt">-rn</span>
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags   MSS Window  irtt Iface
+0.0.0.0         10.10.10.2      0.0.0.0         UG        0 0          0 ens33
+10.10.10.0      0.0.0.0         255.255.255.0   U         0 0          0 ens33
+</code></pre></div></div>
+
+<p>Flags：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>U <span class="o">(</span>route is up<span class="o">)</span>：该路由是有效的；
+H <span class="o">(</span>target is a host<span class="o">)</span>：目标是主机而非网域；
+G <span class="o">(</span>use gateway<span class="o">)</span>：需要透过外部的主机 <span class="o">(</span>gateway<span class="o">)</span> 来转递封包（一般指向默认网关）；
+R <span class="o">(</span>reinstate route <span class="k">for </span>dynamic routing<span class="o">)</span>：使用动态路由时，恢复路由资讯的旗标；
+D <span class="o">(</span>dynamically installed by daemon or redirect<span class="o">)</span>：已经由服务或转 port 功能设定为动态路由 <span class="p">;</span>
+M <span class="o">(</span>modified from routing daemon or redirect<span class="o">)</span>：路由已经被修改了；
+<span class="o">!</span> <span class="o">(</span>reject route<span class="o">)</span>：这个路由将不会被接受<span class="o">(</span>用来抵挡不安全的网域<span class="o">)</span><span class="nb">.</span>
+</code></pre></div></div>
+
+<h3 id="查看网关">查看网关</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>netstat  <span class="nt">-rn</span>  | <span class="nb">grep  </span>UG  | <span class="nb">tr</span>  <span class="nt">-s</span> <span class="s2">" "</span>  | <span class="nb">cut</span>  <span class="nt">-d</span>  <span class="s2">" "</span>  <span class="nt">-f2</span>
+10.10.10.2
+</code></pre></div></div>
+
+<h2 id="traceroute">traceroute</h2>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>traceroute <span class="nt">--help</span>
+Usage: traceroute <span class="o">[</span>OPTION...] HOST
+Print the route packets trace to network host.
+
+
+  <span class="nt">-m</span>, <span class="nt">--max-hop</span><span class="o">=</span>NUM          设置检测数据包的最大跳数，默认64
+  <span class="nt">-M</span>, <span class="nt">--type</span><span class="o">=</span>METHOD          use METHOD <span class="o">(</span><span class="sb">`</span>icmp<span class="s1">' or `udp'</span><span class="o">)</span> <span class="k">for </span>traceroute
+                             operations, defaulting to <span class="sb">`</span>udp<span class="s1">'
+  -p, --port=PORT            use destination PORT port (default: 33434)
+  -w, --wait=NUM             超时时间，设置等待远端主机回应的时间为NUM秒 (default: 3)
+</span></code></pre></div></div>
+
+<p>在windows上，使用tracert代替。
+查看本机与目标之间的所有路由路径，能看到每一跳的ip和耗时。</p>
+
+<h3 id="查看主机及目标之间的路由路径">查看主机及目标之间的路由路径</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>traceroute www.baidu.com
+traceroute to www.a.shifen.com <span class="o">(</span>220.181.38.150<span class="o">)</span>, 64 hops max
+  1   10.13.12.1  7.245ms  9.447ms  6.432ms 
+  2   10.13.1.1  3.703ms  7.225ms  4.653ms 
+  3   211.103.216.33  45.470ms  6.834ms  13.013ms 
+  4   10.255.55.17  20.143ms  6.391ms  8.641ms 
+  5   10.255.199.173  6.213ms  4.279ms  3.210ms 
+  6   124.205.98.141  5.556ms  4.385ms  3.103ms 
+  7   124.205.98.53  6.918ms  9.023ms  5.157ms 
+  8   218.241.244.149  7.692ms  <span class="k">*</span>  <span class="k">*</span> 
+  9   61.149.212.225  6.847ms  <span class="k">*</span>  <span class="k">*</span> 
+ 10   202.96.13.49  7.415ms  9.764ms  19.080ms 
+ 11   124.65.194.153  5.189ms  6.904ms  4.337ms 
+ 12   219.158.13.90  5.172ms  8.460ms  8.154ms 
+ 13   219.158.44.134  5.351ms  8.369ms  5.777ms 
+ 14   202.97.18.121  13.423ms  10.767ms  6.134ms 
+ 15   36.110.246.230  7.364ms  7.476ms  <span class="k">*</span> 
+ 16   36.110.246.205  16.692ms  17.621ms  10.109ms 
+ 17   <span class="k">*</span>  <span class="k">*</span>  <span class="k">*</span> 
+ 18   106.38.244.134  44.541ms  28.065ms  31.264ms 
+</code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>第一跳是本机局域网的网关:	10.13.12.1
+<span class="k">***</span>：可能是防火墙封掉了ICMP的返回信息
+</code></pre></div></div>
+
+<p>设置跳数 -m</p>
+
+<h2 id="nc">nc</h2>
+
+<p><strong>nc</strong>（或<strong>netcat</strong>）几乎涉及所有 TCP 或 UDP 的事情。它可以打开 TCP 连接、发送 UDP 数据包、侦听任意 TCP 和 UDP 端口。
+默认是TCP，-u参数调整为udp。</p>
+
+<h3 id="测试对方开放的端口-1">测试对方开放的端口</h3>
+
+<p>黑客攻击必备</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 以tcp的方式向主机10.10.10.221的20到30号端口发送连接请求</span>
+<span class="nv">$ </span>nc <span class="nt">-zv</span> 10.10.10.221 20-30
+nc: connectx to 10.10.10.221 port 20 <span class="o">(</span>tcp<span class="o">)</span> failed: Connection refused
+nc: connectx to 10.10.10.221 port 21 <span class="o">(</span>tcp<span class="o">)</span> failed: Connection refused
+found 0 associations
+found 1 connections:
+     1: <span class="nv">flags</span><span class="o">=</span>82&lt;CONNECTED,PREFERRED&gt;
+        outif vmnet2
+        src 10.10.10.1 port 64439
+        dst 10.10.10.221 port 22
+        rank info not available
+        TCP aux info available
+
+Connection to 10.10.10.221 port 22 <span class="o">[</span>tcp/ssh] succeeded!
+nc: connectx to 10.10.10.221 port 23 <span class="o">(</span>tcp<span class="o">)</span> failed: Connection refused
+nc: connectx to 10.10.10.221 port 24 <span class="o">(</span>tcp<span class="o">)</span> failed: Connection refused
+nc: connectx to 10.10.10.221 port 25 <span class="o">(</span>tcp<span class="o">)</span> failed: Connection refused
+nc: connectx to 10.10.10.221 port 26 <span class="o">(</span>tcp<span class="o">)</span> failed: Connection refused
+nc: connectx to 10.10.10.221 port 27 <span class="o">(</span>tcp<span class="o">)</span> failed: Connection refused
+nc: connectx to 10.10.10.221 port 28 <span class="o">(</span>tcp<span class="o">)</span> failed: Connection refused
+nc: connectx to 10.10.10.221 port 29 <span class="o">(</span>tcp<span class="o">)</span> failed: Connection refused
+nc: connectx to 10.10.10.221 port 30 <span class="o">(</span>tcp<span class="o">)</span> failed: Connection refused
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>-z	: 只连接,不发送数据
+-v	:详细信息
+</code></pre></div></div>
+
+<h3 id="当做聊天工具">当做聊天工具</h3>
+
+<p>输入输出都在终端上。
+搭建：client1和client2聊天</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 在client1的本机(10.10.10.221)上监听一个端口，比如1567</span>
+<span class="nv">$ </span>nc <span class="nt">-l</span> 1567
+</code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># client2向client1发起tcp连接请求，连接成功后即可通信</span>
+<span class="nv">$ </span>nc 10.10.10.221
+</code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># client1</span>
+<span class="nv">$ </span>nc <span class="nt">-l</span> 1567
+hello
+good
+你好，zhongguoren
+</code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># client2</span>
+<span class="nv">$ </span>nc 10.10.10.221 1567
+hello
+good
+你好，zhongguoren
+</code></pre></div></div>
+
+<h3 id="文件传输">文件传输</h3>
+
+<p>主机a向主机b传输文件。
+文件传输就是在聊天功能的基础上加入了重定向到文件的功能。
+搭建：client1和client2文件传输</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># &lt;发送文件</span>
+<span class="nv">$ </span>nc <span class="nt">-l</span> 1567 &lt; a.txt
+</code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># &gt;接收文件</span>
+<span class="nv">$ </span>nc 10.10.10.221 <span class="o">&gt;</span> a.txt
+</code></pre></div></div>

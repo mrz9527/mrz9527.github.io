@@ -1,0 +1,247 @@
+I"�2<h1 id="文件系统">文件系统</h1>
+
+<p>文件系统作用：</p>
+
+<ol>
+  <li><strong>数据存储：</strong>任何文件系统的主要功能都应该是存储和检索数据的结构化场所。</li>
+  <li><strong>命名空间：</strong>一种命名和组织方法，提供命名和结构化数据的规则。</li>
+  <li><strong>安全模型：</strong>一种用于定义访问权限的方案。</li>
+  <li><strong>API：</strong>系统函数调用，用于操作文件系统对象，例如目录和文件。</li>
+  <li><strong>实现：</strong>该软件可以实现上述功能。</li>
+</ol>
+
+<p>文件系统类型：</p>
+
+<p>mkfs          mkfs.bfs      mkfs.cramfs   mkfs.ext2     mkfs.ext3     mkfs.ext4     mkfs.ext4dev  mkfs.fat      mkfs.minix    mkfs.msdos    mkfs.ntfs     mkfs.vfat</p>
+
+<p>分区创建后需要格式化来设置文件系统类型</p>
+
+<h1 id="mbr主引导扇区">MBR主引导扇区</h1>
+
+<p><strong>主引导记录</strong>（Master Boot Record，缩写：MBR），又叫做<strong>主引导扇区</strong>，是<a href="https://zh.wikipedia.org/wiki/计算机">计算机</a>开机后访问<a href="https://zh.wikipedia.org/wiki/硬盘">硬盘</a>时所必须要读取的首个<a href="https://zh.wikipedia.org/wiki/磁盘扇区">扇区</a>，它在硬盘上的三维地址为（柱面，磁头，扇区）＝（0，0，1）。</p>
+
+<p>MBR分为三个部分：</p>
+
+<ul>
+  <li>主引导程序：446字节</li>
+  <li>磁盘分区表（DPT）：64字节，每一个分区用16个字节表示，最多只有4个主分区</li>
+  <li>结束标志：2个字节（55AA）。</li>
+</ul>
+
+<p>所以磁盘管理方式为MBR的操作系统，一个磁盘最多只能有4个主分区，或者3个主分区+1个扩展分区，扩展分区本身不能存数据，必须在扩展分区上划分出多个逻辑分区之后，才能把数据存储到逻辑分区上。</p>
+
+<p>hd : ide磁盘接口类型</p>
+
+<p>sd : scsi磁盘接口类型</p>
+
+<p>磁盘命名：</p>
+
+<p>hda~hdz</p>
+
+<p>sda~sdz</p>
+
+<p>第一个磁盘sda可以有多个分区</p>
+
+<p>sda1</p>
+
+<p>sda2</p>
+
+<p>….</p>
+
+<p>sdax</p>
+
+<p>一般一个或两个主分区就够了，用来放操作系统相关数据</p>
+
+<p>sda1、sda2</p>
+
+<p>然后就是逻辑分区，一般从5开始（因为1，2，3，4为主分区或者扩展分区）</p>
+
+<p>sda5</p>
+
+<h1 id="fdisk-分区">fdisk 分区</h1>
+
+<p>添加硬盘设备、创建分区、挂载</p>
+
+<h2 id="fdisk--l-查看磁盘和分区">fdisk -l 查看磁盘和分区</h2>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ubuntu:~# fdisk <span class="nt">-l</span>
+Disk /dev/sdb: 1 GiB, 1073741824 bytes, 2097152 sectors
+Units: sectors of 1 <span class="k">*</span> 512 <span class="o">=</span> 512 bytes
+Sector size <span class="o">(</span>logical/physical<span class="o">)</span>: 512 bytes / 512 bytes
+I/O size <span class="o">(</span>minimum/optimal<span class="o">)</span>: 512 bytes / 512 bytes
+
+
+Disk /dev/sda: 20 GiB, 21474836480 bytes, 41943040 sectors
+Units: sectors of 1 <span class="k">*</span> 512 <span class="o">=</span> 512 bytes
+Sector size <span class="o">(</span>logical/physical<span class="o">)</span>: 512 bytes / 512 bytes
+I/O size <span class="o">(</span>minimum/optimal<span class="o">)</span>: 512 bytes / 512 bytes
+Disklabel <span class="nb">type</span>: dos
+Disk identifier: 0xc3e76474
+
+Device     Boot    Start      End  Sectors  Size Id Type
+/dev/sda1  <span class="k">*</span>        2048 39942143 39940096   19G 83 Linux
+/dev/sda2       39944190 41940991  1996802  975M  5 Extended
+/dev/sda5       39944192 41940991  1996800  975M 82 Linux swap / Solaris
+</code></pre></div></div>
+
+<p>两块硬盘sda和sdb</p>
+
+<p>sda有3个分区:sda1、sda2、sda5</p>
+
+<h2 id="fdisk-devsdb-创建分区">fdisk /dev/sdb 创建分区</h2>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ubuntu:~# fdisk /dev/sdb
+
+Welcome to fdisk <span class="o">(</span>util-linux 2.27.1<span class="o">)</span><span class="nb">.</span>
+Changes will remain <span class="k">in </span>memory only, <span class="k">until </span>you decide to write them.
+Be careful before using the write command.
+
+Device does not contain a recognized partition table.
+Created a new DOS disklabel with disk identifier 0x4c2b7edc.
+
+Command <span class="o">(</span>m <span class="k">for </span><span class="nb">help</span><span class="o">)</span>: m
+
+Help:
+
+  DOS <span class="o">(</span>MBR<span class="o">)</span>
+   a   toggle a bootable flag
+   b   edit nested BSD disklabel
+   c   toggle the dos compatibility flag
+
+  Generic
+   d   delete a partition
+   F   list free unpartitioned space
+   l   list known partition types
+   n   add a new partition
+   p   print the partition table
+   t   change a partition <span class="nb">type
+   </span>v   verify the partition table
+   i   print information about a partition
+
+  Misc
+   m   print this menu
+   u   change display/entry units
+   x   extra functionality <span class="o">(</span>experts only<span class="o">)</span>
+
+  Script
+   I   load disk layout from sfdisk script file
+   O   dump disk layout to sfdisk script file
+
+  Save &amp; Exit
+   w   write table to disk and <span class="nb">exit
+   </span>q   quit without saving changes
+
+  Create a new label
+   g   create a new empty GPT partition table
+   G   create a new empty SGI <span class="o">(</span>IRIX<span class="o">)</span> partition table
+   o   create a new empty DOS partition table
+   s   create a new empty Sun partition table
+</code></pre></div></div>
+
+<ul>
+  <li>a   toggle a bootable flag：设置启动分区，如果一个pc装了双系统，可以用于不同系统的启动分区</li>
+  <li>d   delete a partition：删除一个分区</li>
+  <li>n   add a new partition:创建一个分区</li>
+  <li>p   print the partition table:打印分区表</li>
+  <li>q   quit without saving changes:退出不保存（比如只是想简单演示一下分区的操作，演示完了后退出）</li>
+  <li>w   write table to disk and exit：保存退出</li>
+</ul>
+
+<h2 id="格式化分区">格式化分区</h2>
+
+<p>不同Linux文件系统的格式化命令不同</p>
+
+<p>mkfs          mkfs.bfs      mkfs.cramfs   mkfs.ext2     mkfs.ext3     mkfs.ext4     mkfs.ext4dev  mkfs.fat      mkfs.minix    mkfs.msdos    mkfs.ntfs     mkfs.vfat</p>
+
+<p>mkfs类似mkdir，mkfs是给一个分区构建文件系统，因为创建的分区如果不格式化（给分区构造文件系统），那么操作系统不知道分区的文件系统类型。没法存储数据。</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ubuntu:~# mkfs.ext4 /dev/sdb1
+mke2fs 1.42.13 <span class="o">(</span>17-May-2015<span class="o">)</span>
+Creating filesystem with 204800 1k blocks and 51200 inodes
+Filesystem UUID: 0421a14b-ccab-4f7e-a2f0-2b5535af0db6
+Superblock backups stored on blocks: 
+        8193, 24577, 40961, 57345, 73729
+
+Allocating group tables: <span class="k">done                            
+</span>Writing inode tables: <span class="k">done                            
+</span>Creating journal <span class="o">(</span>4096 blocks<span class="o">)</span>: <span class="k">done
+</span>Writing superblocks and filesystem accounting information: <span class="k">done</span> 
+</code></pre></div></div>
+
+<h2 id="创建一个挂载点目录用于挂载">创建一个挂载点（目录）用于挂载</h2>
+
+<p>创建一个目录</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ubuntu:~# mkdir xxx
+root@ubuntu:~# ls
+xxx
+</code></pre></div></div>
+
+<p>将分区挂载到目录上</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ubuntu:~# mount /dev/sdb1 xxx
+</code></pre></div></div>
+
+<h2 id="开机自动挂载">开机自动挂载</h2>
+
+<p>为什么需要开机自动挂载？</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>开机自动挂载主要用于服务器上，比如服务器上有四个硬盘插口，放入四个硬盘，如果有硬盘坏了，需要拆下来维修，维修之后，再把硬盘放回去，这时候服务器就需要开机自动挂载，不可能再手动挂载，影响效率。
+</code></pre></div></div>
+
+<p>修改/etc/fstab文件。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># &lt;file system&gt; &lt;mount point&gt;   &lt;type&gt;  &lt;options&gt;       &lt;dump&gt;  &lt;pass&gt;
+# / was on /dev/sda1 during installation
+UUID=54e1f692-8968-4f12-bebd-58027d4f436a /               ext4    errors=remount-ro 0       1
+# swap was on /dev/sda5 during installation
+UUID=ddfc0e54-edd1-4474-9836-e6dd94b59ecc none            swap    sw              0       0
+/dev/fd0        /media/floppy0  auto    rw,user,noauto,exec,utf8 0       0
+</code></pre></div></div>
+
+<p>分区	挂载点(mount point)	文件系统类型(type)	选项(option)	备份(dump)  检测(pass)</p>
+
+<p>dump:0不备份，1备份</p>
+
+<p>pass:0不检查，1检查</p>
+
+<p>在/etc/fstab文件中新增配置信息即可。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/dev/sdb1 /root/xxx ext4	default	0	0
+</code></pre></div></div>
+
+<h2 id="uuid方式设置开机自动挂载">uuid方式设置开机自动挂载</h2>
+
+<p>为什么需要通过uuid方式设置开机自动挂载？</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>服务器上有四个硬盘插口，放入四个硬盘，硬盘坏了，拆下来维修之后，再把硬盘放回去，这时候服务器就需要开机自动挂载，但是四个硬盘摆放的位置能和之前的位置一样吗？会不会放的位置不一致？原来/dev/sda对应的是第一块硬盘，现在/dev/sda对应的可能是第二块硬盘，这样，数据就会乱套，所以不能用设备名，而是要用设备uuid来配置。
+</code></pre></div></div>
+
+<h2 id="查看分区的uuid">查看分区的uuid</h2>
+
+<p>blkid命令：print block devices attribute。打印块设备属性，包括uuid</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@ubuntu:~# blkid
+/dev/sda1: <span class="nv">UUID</span><span class="o">=</span><span class="s2">"54e1f692-8968-4f12-bebd-58027d4f436a"</span> <span class="nv">TYPE</span><span class="o">=</span><span class="s2">"ext4"</span> <span class="nv">PARTUUID</span><span class="o">=</span><span class="s2">"c3e76474-01"</span>
+/dev/sda5: <span class="nv">UUID</span><span class="o">=</span><span class="s2">"ddfc0e54-edd1-4474-9836-e6dd94b59ecc"</span> <span class="nv">TYPE</span><span class="o">=</span><span class="s2">"swap"</span> <span class="nv">PARTUUID</span><span class="o">=</span><span class="s2">"c3e76474-05"</span>
+/dev/sdb1: <span class="nv">UUID</span><span class="o">=</span><span class="s2">"0421a14b-ccab-4f7e-a2f0-2b5535af0db6"</span> <span class="nv">TYPE</span><span class="o">=</span><span class="s2">"ext4"</span> <span class="nv">PARTUUID</span><span class="o">=</span><span class="s2">"def93928-01"</span>
+/dev/sdb2: <span class="nv">UUID</span><span class="o">=</span><span class="s2">"a7897ecf-2436-4051-ac64-950a8868a42f"</span> <span class="nv">TYPE</span><span class="o">=</span><span class="s2">"ext4"</span> <span class="nv">PARTUUID</span><span class="o">=</span><span class="s2">"def93928-02"</span>
+/dev/sdb5: <span class="nv">UUID</span><span class="o">=</span><span class="s2">"747b538d-7e4d-4e31-9454-d3b1fb7610a5"</span> <span class="nv">TYPE</span><span class="o">=</span><span class="s2">"ext4"</span> <span class="nv">PARTUUID</span><span class="o">=</span><span class="s2">"def93928-05"</span>
+/dev/sdb6: <span class="nv">UUID</span><span class="o">=</span><span class="s2">"187d93cd-3231-4653-84d6-9fefdffb7d44"</span> <span class="nv">TYPE</span><span class="o">=</span><span class="s2">"ext4"</span> <span class="nv">PARTUUID</span><span class="o">=</span><span class="s2">"def93928-06"</span>
+</code></pre></div></div>
+
+<p>通过uuid配置开机自动挂载</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">UUID</span><span class="o">=</span>0421a14b-ccab-4f7e-a2f0-2b5535af0db6 /root/xxx ext4	default	0	0
+</code></pre></div></div>
+
+<h2 id="卸载">卸载</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>umount /dev/sdb1
+</code></pre></div></div>
+
+<h2 id="重新挂载fstab配置中的所有文件系统">重新挂载fstab配置中的所有文件系统</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mount -a
+</code></pre></div></div>
+:ET

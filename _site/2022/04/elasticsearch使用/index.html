@@ -1,0 +1,621 @@
+<p>elasticsearch搜索引擎</p>
+
+<h1 id="0-概念和语法">0. 概念和语法</h1>
+
+<p>在elasticsearch中。</p>
+
+<p>index：索引，类似于数据库的一张表</p>
+
+<p>mapping：索引的映射，类似于表的表头，包含了表的所有字段以及字段的类型</p>
+
+<p>properties:映射属性，里面烦恼歌如索引的映射的所有字段</p>
+
+<p>text：映射中字段的类型，text表示全文索引，会分词</p>
+
+<p>keyword：映射中的字段类型，keyword表示关键字，不会分词，作为一个整体来搜索</p>
+
+<p>type：在映射中，代表字段的类型，在文档中，代表文档的类型，在分词器中，代表分词器类型</p>
+
+<p><strong>elasticsearch提供的默认关键字</strong></p>
+
+<p><strong>uri关键字</strong></p>
+
+<p>_open, _close, _cat, _update, _mapping, _doc, _cluster, _analyze</p>
+
+<p>/shop/_open:打开索引</p>
+
+<p>/shop/_close:关闭索引</p>
+
+<p>/_cat/indices?v:查看所有索引</p>
+
+<p>/shop/_doc:索引名为shop下的文档类型，7.2版本默认只有一个文档类型_doc，不存在多个类型</p>
+
+<p>/shop/_update/1:更该文档内容后更新</p>
+
+<p>/_cluster/settings:集群设置</p>
+
+<p>/_analyze:分词工具，（analyzer是分词器，两者有区别，在实际配置分词器时，用的是analyzer）</p>
+
+<p><strong>响应或请求中数据的关键字</strong></p>
+
+<p>_id, _source, _version, _shards, _score, _source</p>
+
+<p>elasticsearch服务器的uri结构，elasticsearch系统uri以下划线开头，比如_open, _close, _cat, _update, _mapping, _doc等</p>
+
+<p>通用情况下，uri的1级路径是索引名(如shop)，2级路径是文档_doc，3级路径是文档id</p>
+
+<p>localhost:9200/shop/_doc/1</p>
+
+<p>shop:就是索引</p>
+
+<p>1：就是索引中文档id为1的文档</p>
+
+<p>集群设置，自动增加索引</p>
+
+<p>http://localhost:9200/_cluster/settings</p>
+
+<p>auto_create_index</p>
+
+<h1 id="1下载安装启动配置文件">1.下载安装、启动、配置文件</h1>
+
+<p>官网：elastic.co下载</p>
+
+<p>解压之后，假定es_home代表安装目录</p>
+
+<p>$(es_home)/bin/elasticsearch是可执行文件，直接启动</p>
+
+<p>启动后，默认端口是9200。</p>
+
+<p>$(es_home)/config/elasticsearch.yml是配置文件，可以修改默认端口</p>
+
+<p>浏览器中输入http://localhost:9200，即可成功请求elasticsearch服务器，我这里使用postman工具</p>
+
+<h1 id="2-索引增删改查">2. 索引：增删改查</h1>
+
+<p>elasticsearch的索引，相当于数据库的一张表</p>
+
+<h2 id="创建索引">创建索引</h2>
+
+<p>PUT	localhost:9200/<strong>shop</strong></p>
+
+<p>这里shop就是我创建的索引，索引在服务器根目录下</p>
+
+<p>PUT	localhost:9200/<strong>nba</strong></p>
+
+<p>这里nba也是我创建的索引，索引在服务器根目录下</p>
+
+<h2 id="查看指定索引"><strong>查看指定索引</strong></h2>
+
+<p>GET	localhost:9200/<strong>shop</strong></p>
+
+<p>GET	localhost:9200/<strong>shop,nba</strong></p>
+
+<h2 id="查看所有索引"><strong>查看所有索引</strong></h2>
+
+<p>GET localhost:9200/_all</p>
+
+<p>或者</p>
+
+<p>GET localhost:9200/_cat/indices?v</p>
+
+<h2 id="关闭索引">关闭索引</h2>
+
+<p>POST localhost:9200/shop/_close</p>
+
+<h2 id="打开索引">打开索引</h2>
+
+<p>POST localhost:9200/shop/_open</p>
+
+<h1 id="3映射mapping">3.映射mapping</h1>
+
+<p>索引的映射，相当于表的表结构（或者表头），也就是字段</p>
+
+<h2 id="创建索引的映射">创建索引的映射</h2>
+
+<p>以json的形式创建字段</p>
+
+<p>PUT 	localhost:9200/shop/_mapping -H ‘Content-Type:</p>
+
+<p>application/json’ -d’</p>
+
+<p>{</p>
+
+<p>​    “properties”:{</p>
+
+<p>​        “name”:{</p>
+
+<p>​            “type”:”text”</p>
+
+<p>​        },</p>
+
+<p>​        “price”:{</p>
+
+<p>​            “type”:”keyword”</p>
+
+<p>​        },</p>
+
+<p>​        “tag”:{</p>
+
+<p>​            “type”:”keyword”</p>
+
+<p>​        }</p>
+
+<p>​    }</p>
+
+<p>}</p>
+
+<p>’</p>
+
+<p><img src="/Users/xm210408/Library/Application Support/typora-user-images/image-20211111162918875.png" alt="image-20211111162918875" /></p>
+
+<h2 id="查看索引的映射">查看索引的映射</h2>
+
+<p>GET 	localhost:9200/shop/_mapping</p>
+
+<p>GET 	localhost:9200/shop,nba/_mapping</p>
+
+<p>GET 	localhost:9200/shop/_mappings</p>
+
+<p>GET 	localhost:9200/shop,nba/_mappings</p>
+
+<h2 id="查看所有索引的映射">查看所有索引的映射</h2>
+
+<p>GET localhost:9200/_mapping</p>
+
+<p>或者</p>
+
+<p>GET localhost:9200/_all/_mapping</p>
+
+<h2 id="增加映射的字段不能修改字段的类型">增加映射的字段（不能修改字段的类型）</h2>
+
+<p>PUT 	localhost:9200/shop/_mapping -H ‘Content-Type:</p>
+
+<p>application/json’ -d ‘</p>
+
+<p>{</p>
+
+<p>​    “properties”:{</p>
+
+<p>​        “name”:{</p>
+
+<p>​            “type”:”text”</p>
+
+<p>​        },</p>
+
+<p>​        “price”:{</p>
+
+<p>​            “type”:”keyword”</p>
+
+<p>​        },</p>
+
+<p>​        “tag”:{</p>
+
+<p>​            “type”:”keyword”</p>
+
+<p>​        },</p>
+
+<p>​		<strong>“date”:{</strong></p>
+
+<p>​		<strong>“type”:”text”</strong></p>
+
+<p>​		<strong>}</strong></p>
+
+<p>​    }</p>
+
+<p>}</p>
+
+<p>’</p>
+
+<p>在原来基础上增加date字段</p>
+
+<h2 id="创建索引的同时创建映射和其他配置项比如分词器">创建索引的同时创建映射和其他配置项，比如分词器</h2>
+
+<p>POST	localhost:9200/kikaindex -H ‘Content-Type:</p>
+
+<p>application/json’ -d ‘</p>
+
+<p>{</p>
+
+<p>​    “settings”:{</p>
+
+<p>​        “analysis”:{</p>
+
+<p>​            “analyzer”:{</p>
+
+<p>​                “ws_analyze”:{</p>
+
+<p>​                    “type”:”whitespace”</p>
+
+<p>​                },</p>
+
+<p>​                “s_analyze”:{</p>
+
+<p>​                    “type”:”standard”</p>
+
+<p>​                }</p>
+
+<p>​             }</p>
+
+<p>​         }</p>
+
+<p>​    },</p>
+
+<p>​    “mappings”: {</p>
+
+<p>​        “properties”:{</p>
+
+<p>​            “name”:{</p>
+
+<p>​                “type”:”keyword”</p>
+
+<p>​            },</p>
+
+<p>​            “tag”:{</p>
+
+<p>​                “type”:”text”,</p>
+
+<p>​                “analyzer”:”ws_analyze”</p>
+
+<p>​            },</p>
+
+<p>​            “position”:{</p>
+
+<p>​                “type”:”text”,</p>
+
+<p>​                “analyzer”:”s_analyze”</p>
+
+<p>​            },</p>
+
+<p>​            “personCount”:{</p>
+
+<p>​                “type”:”long”</p>
+
+<p>​            }</p>
+
+<p>​        }</p>
+
+<p>​    }</p>
+
+<p>}</p>
+
+<p>’</p>
+
+<p>创建索引kikaime的同时，指定了settings和mappings，</p>
+
+<h1 id="4-文档">4. 文档</h1>
+
+<p>索引中的文档，相当于数据库中表的记录record。</p>
+
+<h2 id="新增文档">新增文档</h2>
+
+<p>创建指定文档和文档的索引</p>
+
+<p>PUT 	localhost:9200/shop/_doc/1 -H ‘Content-type:</p>
+
+<p>application/json’ -d ‘</p>
+
+<p>{</p>
+
+<p>​	“name”:”小米”,</p>
+
+<p>​	“price”:”1.2”,</p>
+
+<p>​	“tag”:”属于食品”,</p>
+
+<p>​	“date”:”2021.9.10”</p>
+
+<p>}</p>
+
+<p>’</p>
+
+<p><img src="/Users/xm210408/Library/Application Support/typora-user-images/image-20211111172020265.png" alt="image-20211111172020265" /></p>
+
+<p>创建文档时不指定文档内的id，会自动创建文档索引</p>
+
+<p><img src="/Users/xm210408/Library/Application Support/typora-user-images/image-20211111172304123.png" alt="image-20211111172304123" /></p>
+
+<h2 id="查看文档">查看文档</h2>
+
+<p><img src="/Users/xm210408/Library/Application Support/typora-user-images/image-20211111171928445.png" alt="image-20211111171928445" /></p>
+
+<h2 id="查看多个文档">查看多个文档</h2>
+
+<p>post	localhost:9200/_mget -H ‘Content-Type:</p>
+
+<p>application/json’ -d ‘</p>
+
+<p>{</p>
+
+<p>​		“docs”:[</p>
+
+<p>​				{</p>
+
+<p>​						“_index”:”shop”,</p>
+
+<p>​						“_type”:”_doc”,</p>
+
+<p>​						“_id”:”1”</p>
+
+<p>​				}</p>
+
+<p>​		]</p>
+
+<p>}</p>
+
+<p>’</p>
+
+<p>或者在指定索引下查看多个文档</p>
+
+<p>POST	localhost:9200/shop/_mget -H ‘Content-Type:</p>
+
+<p>application/json’ -d ‘</p>
+
+<p>{</p>
+
+<p>​		“docs”:[</p>
+
+<p>​				{</p>
+
+<p>​						“_type”:”_doc”,</p>
+
+<p>​						“_id”:”1”</p>
+
+<p>​				}</p>
+
+<p>​		]</p>
+
+<p>}</p>
+
+<p>’</p>
+
+<h2 id="修改文档">修改文档</h2>
+
+<p>POST	localhost:9200/shop/_update/1 -H ‘Content-Type:</p>
+
+<p>application/json’ -d ‘</p>
+
+<p>{</p>
+
+<p>​	“name”:”小米”,</p>
+
+<p>​	<strong>“price”:”2”,</strong></p>
+
+<p>​	“tag”:”属于食品”,</p>
+
+<p>​	“date”:”2021.9.10”</p>
+
+<p>}</p>
+
+<p>’</p>
+
+<h1 id="5-搜索">5. 搜索</h1>
+
+<p>term：词条查询，词条查询不会分析查询条件，</p>
+
+<p>full text：全文查询</p>
+
+<h2 id="term查询">term查询</h2>
+
+<p>POST	localhost:9200/shop/_search 	-H ‘Content-Type:</p>
+
+<p>application/json’	-d ‘</p>
+
+<p>{</p>
+
+<p>​	“query”:{</p>
+
+<p>​		“term”:{</p>
+
+<p>​				“name”:”来一桶”</p>
+
+<p>​			}</p>
+
+<p>​	}</p>
+
+<p>}</p>
+
+<p>’</p>
+
+<p>term查询不支持一个字段查询多个值，比如只能查“来一桶”，不能一次查“来一桶”和“小米”。</p>
+
+<h2 id="full-text查询">full text查询</h2>
+
+<h3 id="match_all查询全部">match_all查询全部</h3>
+
+<p>match_all默认只显示10条，如果想显示全部，可以指定分页</p>
+
+<p>POST	localhost:9200/shop/_search 	-H ‘Content-Type:</p>
+
+<p>application/json’	-d ‘</p>
+
+<p>{</p>
+
+<p>​	“query”:{</p>
+
+<p>​		“match_all”:{}</p>
+
+<p>​	},</p>
+
+<p>​	“from”:0</p>
+
+<p>​	“size”:100</p>
+
+<p>}</p>
+
+<p>’</p>
+
+<p>这里从0开始，显示100条结果</p>
+
+<h3 id="match普通查询">match普通查询</h3>
+
+<p>POST	localhost:9200/shop/_search 	-H ‘Content-Type:</p>
+
+<p>application/json’	-d ‘</p>
+
+<p>{</p>
+
+<p>​	“query”:{</p>
+
+<p>​		“match”:{</p>
+
+<p>​			“name”:”小米”</p>
+
+<p>​		}</p>
+
+<p>​	}</p>
+
+<p>}</p>
+
+<p>’</p>
+
+<h3 id="multi_match多字段查询">multi_match多字段查询</h3>
+
+<p>POST	localhost:9200/nba/_search 	-H ‘Content-Type:</p>
+
+<p>application/json’	-d ‘</p>
+
+<p>{</p>
+
+<p>​    “query”:{</p>
+
+<p>​        “multi_match”:{</p>
+
+<p>​            “query”:”科比”,</p>
+
+<p>​            “fields”:[“team”,”name”]</p>
+
+<p>​        }</p>
+
+<p>​    }</p>
+
+<p>}</p>
+
+<p>’</p>
+
+<h3 id="match_phrase">match_phrase</h3>
+
+<p>类似term词条查询，查询字符串不会拆分</p>
+
+<p>语法类似match和term</p>
+
+<h3 id="match_phrase_prefix-前缀查询">match_phrase_prefix 前缀查询</h3>
+
+<p>match_phrase_prefix语法和match和term一致，一般针对英文单词来进行前缀查询</p>
+
+<h1 id="6-分词">6. 分词</h1>
+
+<p>查看分词效果</p>
+
+<p>POST	localhost:9200/_analyze 	-H ‘Content-Type:</p>
+
+<p>application/json’	-d ‘</p>
+
+<p>{</p>
+
+<p>​    “analyzer”:”standard”,</p>
+
+<p>​    “text”:”best 3-points Curry!”</p>
+
+<p>}</p>
+
+<p>’</p>
+
+<p><img src="/Users/xm210408/Library/Application Support/typora-user-images/image-20211112103331923.png" alt="image-20211112103331923" /></p>
+
+<h2 id="常见分词器">常见分词器</h2>
+
+<h2 id="内置分词器analyzer">内置分词器analyzer</h2>
+
+<p>​	standard:标准分词器是默认的分词器，大写会变成小写，字母和数字以外的字符会丢弃</p>
+
+<p>​	simple：simple分词器，大写变成小写，字母以外的字符会丢弃</p>
+
+<p>​	whitespace：空白字符分词器，按照空白符分词，所有字符都不会丢弃（除了空白字符）</p>
+
+<p>​	stop：停用词分词器，在simple基础上，将停用词丢弃（the is at in of等等会被丢弃），会有一个专门的停用词列表</p>
+
+<p>​	language：特定语言的分词器，比如英语english，内置语言：几十种海外语言</p>
+
+<p>​	pattern：正则分词器，使用正则表达式将文本进行分词，默认正则表达式是\W+，（这种默认表达式，保留字母和数字，其余字符丢弃），可以修改正则表达式。</p>
+
+<h2 id="中文分词器">中文分词器</h2>
+
+<p>内置分词器对中文不友好，需要使用中文分词器。</p>
+
+<h3 id="smartcn分词器">smartcn分词器</h3>
+
+<p>是中文或中英混合分词器</p>
+
+<p>安装：进入$(es_home)/bin/目录，在该目录下执行</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sh elasticsearch-plugin <span class="nb">install </span>analysis-smartcn
+</code></pre></div></div>
+
+<p>安装完成后重启es服务，即可使用该分词器。</p>
+
+<p>重新启动es时可能会报”org.elasticsearch.bootstrap.StartupException: java.lang.IllegalStateException: failed to obtain node locks“错误，是因为上一次启动的es没有关闭，需要关闭。</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>ps -ef</td>
+      <td>grep ‘elastic’查看es进程号，然后kill关闭该进程。然后再启动。</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="ik分词器">ik分词器</h3>
+
+<p>下载：https://github.com/medcl/elasticsearch-analysis-ik/releases</p>
+
+<p>下载与es版本一致的ik版本，本地使用的es是7.2.1，所以ik也选择7.2.1</p>
+
+<p>ik分词器的型别为：ik_max_word</p>
+
+<p><img src="/Users/xm210408/Library/Application Support/typora-user-images/image-20211112144355134.png" alt="image-20211112144355134" /></p>
+
+<h1 id="7-常见字段类型">7. 常见字段类型</h1>
+
+<h2 id="字符串类型">字符串类型</h2>
+
+<p>text</p>
+
+<p>keyword</p>
+
+<h2 id="数值型">数值型</h2>
+
+<p>long,integer,short,byte,double,float,half_float,scaled_float</p>
+
+<h2 id="布尔型">布尔型</h2>
+
+<p>boolean</p>
+
+<h2 id="二进制">二进制</h2>
+
+<p>binary</p>
+
+<p>该类型的字段把值当做经过base64编码的字符串，默认不存储，且不可搜索</p>
+
+<h2 id="范围类型">范围类型</h2>
+
+<p>范围类型表示值是一个范围，而不是一个具体值</p>
+
+<p>integer_range, float_range, long_range, double_range, date_range</p>
+
+<p>比如age的类型是integer_range，那么值可以是{“gte”:20, “lte”:40}; 搜索”term”:{“age”:21}可以搜索该值</p>
+
+<p>gte:大于等于，greate than equal</p>
+
+<p>lte:小于等于</p>
+
+<h2 id="日期类型">日期类型</h2>
+
+<p>date</p>
+
+<h2 id="数组类型">数组类型</h2>
+
+<h2 id="对象类型">对象类型</h2>
+
+<h2 id="专有类型">专有类型</h2>
+
+<p>ip地址</p>

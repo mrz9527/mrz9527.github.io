@@ -1,0 +1,2691 @@
+I"��<p>[toc]</p>
+
+<h1 id="redis介绍">Redis介绍</h1>
+
+<p>redis属于nosql数据库，默认有16个数据库，编号从0~15；
+数据使用key-value键值对方式存储在内存中，读写速度非常快，多用于高并发和高性能。数据还能持久化；
+属于单线程数据库，内部采用IO多路复用机制。
+Redis本质上只有一种数据结构，就是K-V键值对，但通过value衍生出5种数据结构。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>string
+list
+set
+zset
+hash
+</code></pre></div></div>
+
+<h1 id="redis安装">Redis安装</h1>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>wget http://download.redis.io/releases/redis-5.0.7.tar.gz
+<span class="nv">$ </span><span class="nb">tar</span> <span class="nt">-zvxf</span> redis-5.0.7.tar.gz
+<span class="nv">$ </span><span class="nb">mv </span>redis-5.0.7 redis
+<span class="nv">$ </span><span class="nb">cd </span>redis
+
+<span class="nv">$ </span>make <span class="nt">-j4</span>
+<span class="nv">$ </span>make <span class="nv">PREFIX</span><span class="o">=</span>/usr/local/redis <span class="nb">install</span>
+<span class="nv">$ </span><span class="nb">echo</span> <span class="s2">"export PATH=/usr/local/redis:</span><span class="nv">$PATH</span><span class="s2">"</span> <span class="o">&gt;&gt;</span> ~/.bashrc
+<span class="nv">$ </span><span class="nb">source</span> ~/.bashrc
+</code></pre></div></div>
+
+<p>redis其他版本可在官网下载，<a href="https://redis.io/">redis官网</a></p>
+
+<h1 id="redis服务端启动和关闭">Redis服务端启动和关闭</h1>
+
+<h2 id="1-redis服务启动">1) Redis服务启动</h2>
+
+<p>Redis服务程序: <strong>redis-server</strong></p>
+
+<ul>
+  <li><strong>默认启动</strong></li>
+</ul>
+
+<p>默认方式使用的端口号是：<strong>6379</strong></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">nohup </span>redis-server &amp;
+</code></pre></div></div>
+
+<ul>
+  <li><strong>配置文件启动</strong></li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">nohup </span>redis-server redis.conf &amp;
+</code></pre></div></div>
+
+<p>​	配置文件redis.conf中可以更改端口号</p>
+
+<h2 id="2-redis服务关闭">2) Redis服务关闭</h2>
+
+<p>有两种方式关闭redis服务</p>
+
+<ul>
+  <li>在服务器上关闭redis服务</li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>ps <span class="nt">-ef</span> | <span class="nb">grep </span>redis
+zhoukang  26681      1  0 Mar18 ?        00:01:42 redis-server <span class="k">*</span>:6379
+zhoukang  41957  40666  0 18:42 pts/0    00:00:00 <span class="nb">grep</span> <span class="nt">--color</span><span class="o">=</span>auto redis
+<span class="nb">kill</span> <span class="nt">-9</span> 26681
+</code></pre></div></div>
+
+<ul>
+  <li>通过客户端来关闭redis服务</li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>redis-cli
+127.0.0.1:6379&gt; shutdown
+</code></pre></div></div>
+
+<p>如果服务器是默认启动的，那么服务器没有配置日志文件，在客户端是不允许shutdown，会报错</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>redis-cli
+127.0.0.1:6379&gt; shutdown
+<span class="o">(</span>error<span class="o">)</span> ERR Errors trying to SHUTDOWN. Check logs.
+</code></pre></div></div>
+
+<h1 id="redis客户端启动和关闭">Redis客户端启动和关闭</h1>
+
+<p>Redis客户端程序: <strong>redis-cli</strong>
+还可以在自己的程序中连接redis数据库，此时自己的程序就是客户端</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>redis-cli <span class="nt">--help</span>
+redis-cli 5.0.7
+
+Usage: redis-cli <span class="o">[</span>OPTIONS] <span class="o">[</span>cmd <span class="o">[</span>arg <span class="o">[</span>arg ...]]]
+  <span class="nt">-h</span> &lt;<span class="nb">hostname</span><span class="o">&gt;</span>      Server <span class="nb">hostname</span> <span class="o">(</span>default: 127.0.0.1<span class="o">)</span><span class="nb">.</span>
+  <span class="nt">-p</span> &lt;port&gt;          Server port <span class="o">(</span>default: 6379<span class="o">)</span><span class="nb">.</span>
+  <span class="nt">-a</span> &lt;password&gt;      Password to use when connecting to the server.
+</code></pre></div></div>
+
+<p>redis-cli有很多选项，常用的是上面3个选项</p>
+
+<h2 id="1-本地连接redis服务">1) 本地连接redis服务</h2>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>redis-cli
+127.0.0.1:6379&gt; 
+</code></pre></div></div>
+
+<p>默认连的是127.0.0.1:6379</p>
+
+<h2 id="2-远程连接redis服务">2) 远程连接redis服务</h2>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>redis-cli <span class="nt">-h</span> 10.10.10.221 <span class="nt">-p</span> 6379
+10.10.10.221:6379&gt; 
+</code></pre></div></div>
+
+<p>远程连接redis服务，-h指定host ip，-p指定端口port，-a指定redis密码，author。</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>redis-cli <span class="nt">-h</span> 10.10.10.221 <span class="nt">-p</span> 6379
+Could not connect to Redis at 10.10.10.221:6379: Connection refused
+</code></pre></div></div>
+
+<p>这是因为：
+	服务端设置了bind属性，只有bind指定的ip才能访问，可以注释bind，或者指定ip，一般服务端会设置指定ip；
+	服务端设置了protected-mode属性为yes，需要设置为no，不采用保护模式。
+	然后重启redis服务，即可远程连接。</p>
+
+<h2 id="3-redis客户端关闭">3) redis客户端关闭</h2>
+
+<ul>
+  <li>通过exit命令退出</li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">exit</span>
+<span class="nv">$ </span>
+</code></pre></div></div>
+
+<ul>
+  <li>通过quit命令退出</li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; quit
+<span class="nv">$ </span>
+</code></pre></div></div>
+
+<h1 id="redis客户端帮助手册">Redis客户端帮助手册</h1>
+
+<h2 id="help">help</h2>
+
+<p>帮助手册，查看redis常见命令及用法</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help
+</span>redis-cli 4.0.14
+To get <span class="nb">help </span>about Redis commands <span class="nb">type</span>:
+      <span class="s2">"help @&lt;group&gt;"</span> to get a list of commands <span class="k">in</span> &lt;group&gt;
+      <span class="s2">"help &lt;command&gt;"</span> <span class="k">for </span><span class="nb">help </span>on &lt;<span class="nb">command</span><span class="o">&gt;</span>
+      <span class="s2">"help &lt;tab&gt;"</span> to get a list of possible <span class="nb">help </span>topics
+      <span class="s2">"quit"</span> to <span class="nb">exit
+
+</span>To <span class="nb">set </span>redis-cli preferences:
+      <span class="s2">":set hints"</span> <span class="nb">enable </span>online hints
+      <span class="s2">":set nohints"</span> disable online hints
+Set your preferences <span class="k">in</span> ~/.redisclirc
+10.10.10.221:6379&gt;
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p>“help @<group>"</group></p>
+
+    <p>​		 用于获取一个组里面的所有命令。一般是输入”help @”，然后按tab键，会自动提示组</p>
+  </li>
+  <li>
+    <p>“help <tab>"</tab></p>
+
+    <p>​		用于获取相关主体的所有命令。一般是输入”help “，然后按tab键，会自动提示相关主体</p>
+  </li>
+  <li>
+    <p>“help <command />”</p>
+
+    <p>​		用于获取指令命令的帮助</p>
+
+    <p>具体用法：”help @<group>"</group></p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help</span> @generic
+  
+  DEL key <span class="o">[</span>key ...]
+  summary: Delete a key
+  since: 1.0.0
+  
+  DUMP key
+  summary: Return a serialized version of the value stored at the specified key.
+  since: 2.6.0
+  
+  EXISTS key <span class="o">[</span>key ...]
+  summary: Determine <span class="k">if </span>a key exists
+  since: 1.0.0
+...
+</code></pre></div>    </div>
+
+    <p>此时输出：
+		generic组的所有命令
+		命令的作用
+		命令的版本</p>
+
+    <p>具体用法：”help <command />”</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>：10.10.10.221:6379&gt; <span class="nb">help set
+  
+  </span>SET key value <span class="o">[</span>EX seconds] <span class="o">[</span>PX milliseconds] <span class="o">[</span>NX|XX]
+  summary: Set the string value of a key
+  since: 1.0.0
+  group: string
+  
+10.10.10.221:6379&gt; 
+</code></pre></div>    </div>
+
+    <p>此时输出：
+	key的语法
+	key的作用
+	key的版本
+	key所在组</p>
+  </li>
+</ul>
+
+<p><strong>技巧：</strong>
+		一个命令的关联命令有哪些？先查看命令在哪个组，然后查看组内有哪些命令。以ping命令为例。</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>ping
+
+  PING <span class="o">[</span>message]
+  summary: Ping the server
+  since: 1.0.0
+  group: connection
+
+10.10.10.221:6379&gt;
+</code></pre></div></div>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help</span> @connection
+
+  AUTH password
+  summary: Authenticate to the server
+  since: 1.0.0
+
+  ECHO message
+  summary: Echo the given string
+  since: 1.0.0
+
+  PING <span class="o">[</span>message]
+  summary: Ping the server
+  since: 1.0.0
+
+  QUIT -
+  summary: Close the connection
+  since: 1.0.0
+
+  SELECT index
+  summary: Change the selected database <span class="k">for </span>the current connection
+  since: 1.0.0
+
+10.10.10.221:6379&gt;		
+</code></pre></div></div>
+
+<h1 id="redis客户端常用命令">Redis客户端常用命令</h1>
+
+<p>鉴于redis的帮助手册可以查看所有命令，故这里只列出常用命令。</p>
+
+<h2 id="1-server组常见命令">1) server组常见命令</h2>
+
+<p>server组的全部命令，可以通过help @server来查看</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help</span> @server
+</code></pre></div></div>
+
+<h3 id="config-get">config get</h3>
+
+<p>查看服务器启动时配置文件(redis.conf)中的参数</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>config get
+
+  CONFIG GET parameter
+  summary: Get the value of a configuration parameter
+  since: 2.0.0
+  group: server
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p>查看所有的配置参数</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; config get <span class="k">*</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>查看单个配置参数</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; config get port
+1<span class="o">)</span> <span class="s2">"port"</span>
+2<span class="o">)</span> <span class="s2">"6379"</span>
+10.10.10.221:6379&gt;
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h3 id="dbsize">dbsize</h3>
+
+<p>查看当前数据库的keys的数量</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>dbsize
+
+  DBSIZE -
+  summary: Return the number of keys <span class="k">in </span>the selected database
+  since: 1.0.0
+  group: server
+</code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; dbsize
+<span class="o">(</span>integer<span class="o">)</span> 0
+10.10.10.221:6379&gt; <span class="nb">set </span>k1 v1
+OK
+10.10.10.221:6379&gt; dbsize
+<span class="o">(</span>integer<span class="o">)</span> 1
+10.10.10.221:6379&gt; 
+</code></pre></div></div>
+
+<p>在空的数据库中添加了一条数据，keys数量变为1</p>
+
+<h3 id="flushdb">flushdb</h3>
+
+<p>删除当前数据库的所有key</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>flushdb
+
+  FLUSHDB -
+  summary: Remove all keys from the current database
+  since: 1.0.0
+  group: server
+
+10.10.10.221:6379&gt; 
+</code></pre></div></div>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; dbsize
+<span class="o">(</span>integer<span class="o">)</span> 1
+10.10.10.221:6379&gt; flushdb
+OK
+10.10.10.221:6379&gt; dbsize
+<span class="o">(</span>integer<span class="o">)</span> 0
+</code></pre></div></div>
+
+<p>数据库中有一条数据，删除当前数据看中所有key后，数据库为空</p>
+
+<h3 id="flushall">flushall</h3>
+
+<p>删除所有数据库中的所有key</p>
+
+<h3 id="info">info</h3>
+
+<p>查看redis服务的统计信息</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>info
+
+  INFO <span class="o">[</span>section]
+  summary: Get information and statistics about the server
+  since: 1.0.0
+  group: server
+</code></pre></div></div>
+
+<p>不加section，查看所有信息，加section之后，查看指定section的信息，这里查看section为clients的统计信息。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; info clients
+<span class="c"># Clients</span>
+connected_clients:1
+client_recent_max_input_buffer:2
+client_recent_max_output_buffer:0
+blocked_clients:0
+10.10.10.221:6379&gt; 
+</code></pre></div></div>
+
+<p>在redis集群中，查看主从复制</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; info replication
+<span class="c"># Replication</span>
+role:master
+connected_slaves:2
+slave0:ip<span class="o">=</span>10.10.10.221,port<span class="o">=</span>6380,state<span class="o">=</span>online,offset<span class="o">=</span>1806,lag<span class="o">=</span>1
+slave1:ip<span class="o">=</span>10.10.10.221,port<span class="o">=</span>6381,state<span class="o">=</span>online,offset<span class="o">=</span>1806,lag<span class="o">=</span>1
+master_replid:c788b7684bb1d2fe873d86ef4428849b8763abbd
+master_replid2:0000000000000000000000000000000000000000
+master_repl_offset:1820
+second_repl_offset:-1
+repl_backlog_active:1
+repl_backlog_size:1048576
+repl_backlog_first_byte_offset:1
+repl_backlog_histlen:1820
+10.10.10.221:6379&gt; 
+</code></pre></div></div>
+
+<p>可以看到当前redis服务(10.10.10.221:6379)是主机(role:master)，有两台从机(connected_slaves:2)</p>
+
+<h3 id="shutdown">shutdown</h3>
+
+<p>保存数据库数据到磁盘上，然后关闭redis服务。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>shutdown
+
+  SHUTDOWN <span class="o">[</span>NOSAVE|SAVE]
+  summary: Synchronously save the dataset to disk and <span class="k">then </span>shut down the server
+  since: 1.0.0
+  group: server
+</code></pre></div></div>
+
+<h2 id="2-generic组常见命令">2) generic组常见命令</h2>
+
+<p>generic组的全部命令，可以通过help @generic来查看</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help</span> @generic
+</code></pre></div></div>
+
+<h3 id="del">del</h3>
+
+<p>删除key，可以同时删除多个key，返回删除key的个数</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>del
+
+  DEL key <span class="o">[</span>key ...]
+  summary: Delete a key
+  since: 1.0.0
+  group: generic
+</code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">set </span>k1 v1
+OK
+10.10.10.221:6379&gt; <span class="nb">set </span>k2 v2
+OK
+10.10.10.221:6379&gt; <span class="nb">set </span>k3 v3
+OK
+10.10.10.221:6379&gt; del k1 k2
+<span class="o">(</span>integer<span class="o">)</span> 2
+</code></pre></div></div>
+
+<h3 id="exists">exists</h3>
+
+<p>判断key是否存在，可以同时判断多个key是否存在，返回存在key的个数</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>exists
+
+  EXISTS key <span class="o">[</span>key ...]
+  summary: Determine <span class="k">if </span>a key exists
+  since: 1.0.0
+  group: generic
+</code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">set </span>k1 v1
+OK
+10.10.10.221:6379&gt; <span class="nb">set </span>k2 v2
+OK
+10.10.10.221:6379&gt; <span class="nb">set </span>k3 v3
+OK
+10.10.10.221:6379&gt; exists k1 k2 k3 k4
+<span class="o">(</span>integer<span class="o">)</span> 3
+</code></pre></div></div>
+
+<h3 id="keys">keys</h3>
+
+<p>查看所有匹配上pattern的所有key. (通配符的方式匹配，而不是正则匹配)</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>keys
+
+  KEYS pattern
+  summary: Find all keys matching the given pattern
+  since: 1.0.0
+  group: generic
+</code></pre></div></div>
+
+<p>查看所有key</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; keys <span class="k">*</span>
+</code></pre></div></div>
+
+<p>查看匹配的key</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; keys <span class="k">*</span>
+1<span class="o">)</span> <span class="s2">"myhello"</span>
+2<span class="o">)</span> <span class="s2">"hello1"</span>
+3<span class="o">)</span> <span class="s2">"hello"</span>
+10.10.10.221:6379&gt; keys hel<span class="k">*</span>
+1<span class="o">)</span> <span class="s2">"hello1"</span>
+2<span class="o">)</span> <span class="s2">"hello"</span>
+10.10.10.221:6379&gt; keys ??llo<span class="k">*</span>
+1<span class="o">)</span> <span class="s2">"hello1"</span>
+2<span class="o">)</span> <span class="s2">"hello"</span>
+</code></pre></div></div>
+
+<h3 id="通配符和正则表达式的区别">通配符和正则表达式的区别</h3>
+
+<p>应用场景的区分：
+	<strong>通配符</strong>多用于文件搜索
+	<strong>正则表达式</strong>多用于字符子串的查找
+语法区分：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left"> </th>
+      <th style="text-align: left">通配符</th>
+      <th style="text-align: left">正则</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">*</td>
+      <td style="text-align: left">0个或多个任意字符</td>
+      <td style="text-align: left">0个或多个</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">?</td>
+      <td style="text-align: left">1个任意字符</td>
+      <td style="text-align: left">1个</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>正则中的任意字符，用”.”表示。
+正则中的”.*“，相当于通配符中的”*“。
+正则中的”.?”，相当于通配符中的”?”。</p>
+
+<h3 id="move">move</h3>
+
+<p>把当前数据库的key移动到其他数据库中</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>move
+
+  MOVE key db
+  summary: Move a key to another database
+  since: 1.0.0
+  group: generic
+</code></pre></div></div>
+
+<p>把当前数据库（0号数据库）中的key移动到1号数据库</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; keys <span class="k">*</span>
+1<span class="o">)</span> <span class="s2">"myhello"</span>
+2<span class="o">)</span> <span class="s2">"hello1"</span>
+3<span class="o">)</span> <span class="s2">"hello"</span>
+10.10.10.221:6379&gt; move hello 1
+<span class="o">(</span>integer<span class="o">)</span> 1
+10.10.10.221:6379&gt; <span class="k">select </span>1
+OK
+10.10.10.221:6379[1]&gt; keys <span class="k">*</span>
+1<span class="o">)</span> <span class="s2">"hello"</span>
+10.10.10.221:6379[1]&gt; <span class="k">select </span>0
+OK
+10.10.10.221:6379&gt; keys <span class="k">*</span>
+1<span class="o">)</span> <span class="s2">"myhello"</span>
+2<span class="o">)</span> <span class="s2">"hello1"</span>
+</code></pre></div></div>
+
+<h3 id="ttl">ttl</h3>
+
+<p>time to live。查看指定key的剩余生存时间。key的生存时间到期后，会自动销毁。
+应用场景：
+		redis是基于内存的数据库，数据是放在内存中的，如果某个数据在内存中只使用一次之后就不再使用了，那么这个数据会一直占用内存，消耗内存，所以不需要的时候，需要删除这个数据。
+		如果通过del命令来删除，还需要连数据库；可以通过ttl的方式来自动删除这个数据。</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>ttl
+
+  TTL key
+  summary: Get the <span class="nb">time </span>to live <span class="k">for </span>a key
+  since: 1.0.0
+  group: generic
+</code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; keys <span class="k">*</span>
+1<span class="o">)</span> <span class="s2">"myhello"</span>
+2<span class="o">)</span> <span class="s2">"hello1"</span>
+10.10.10.221:6379&gt; ttl username
+<span class="o">(</span>integer<span class="o">)</span> <span class="nt">-2</span>
+10.10.10.221:6379&gt; ttl hello1
+<span class="o">(</span>integer<span class="o">)</span> <span class="nt">-1</span>
+</code></pre></div></div>
+
+<p>返回值：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(integer) -2	: 指定的key不存在
+(integer) -1	: key永不过期
+(integer) n		: 返回剩余的有效期为n秒
+</code></pre></div></div>
+
+<h3 id="expire">expire</h3>
+
+<p>设置key的存活时间，单位为秒。从设置之后开始计时。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>expire
+
+  EXPIRE key seconds
+  summary: Set a key<span class="s1">'s time to live in seconds
+  since: 1.0.0
+  group: generic
+</span></code></pre></div></div>
+
+<p>实例：设置”hello1”的有效期为20s，在20s内，”hello1”一直有效，可以通过ttl查看”hello1”的剩余有效期，20s之后，删除”hello1”。</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; keys <span class="k">*</span>
+1<span class="o">)</span> <span class="s2">"myhello"</span>
+2<span class="o">)</span> <span class="s2">"hello1"</span>
+10.10.10.221:6379&gt; ttl hello1
+<span class="o">(</span>integer<span class="o">)</span> <span class="nt">-1</span>
+10.10.10.221:6379&gt; expire hello1 20
+<span class="o">(</span>integer<span class="o">)</span> 1
+10.10.10.221:6379&gt; ttl hello1
+<span class="o">(</span>integer<span class="o">)</span> 15
+10.10.10.221:6379&gt; ttl hello1
+<span class="o">(</span>integer<span class="o">)</span> <span class="nt">-2</span>
+10.10.10.221:6379&gt; keys <span class="k">*</span>
+1<span class="o">)</span> <span class="s2">"myhello"</span>
+</code></pre></div></div>
+
+<h3 id="type">type</h3>
+
+<p>查看指定key的数据类型。
+应用场景：比如想在指定key上添加数据，需要先查看指定key是哪一种数据类型（redis的key有5种数据类型），然后按照查询到的数据类型添加数据。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help type
+
+  </span>TYPE key
+  summary: Determine the <span class="nb">type </span>stored at key
+  since: 1.0.0
+  group: generic
+</code></pre></div></div>
+
+<p>实例</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; keys <span class="k">*</span>
+1<span class="o">)</span> <span class="s2">"myhello"</span>
+10.10.10.221:6379&gt; <span class="nb">type </span>myhello
+string
+10.10.10.221:6379&gt; 
+</code></pre></div></div>
+
+<h3 id="rename">rename</h3>
+
+<p>重命名key</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>rename
+
+  RENAME key newkey
+  summary: Rename a key
+  since: 1.0.0
+  group: generic
+</code></pre></div></div>
+
+<h2 id="redis五种数据结构">redis五种数据结构</h2>
+
+<h2 id="3-string组常见命令">3) string组常见命令</h2>
+
+<p>string: redis的数据结构
+string能存储任何类型的数据，包括二进制数据、序列化后的数据、Json化的对象、甚至图片，最大512M。
+特点：单key，单value</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>key</th>
+      <th>value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>username</td>
+      <td>zhangsan</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>string组的全部命令，可以通过help @string来查看</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help</span> @string
+</code></pre></div></div>
+
+<h3 id="set">set</h3>
+
+<p>设置字符串的key-value键值对。
+key是程序员自己取的名字，<strong>value是业务数据。</strong></p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help set
+
+  </span>SET key value <span class="o">[</span>EX seconds] <span class="o">[</span>PX milliseconds] <span class="o">[</span>NX|XX]
+  summary: Set the string value of a key
+  since: 1.0.0
+  group: string
+</code></pre></div></div>
+
+<p>类似于c/c++中</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">char</span> <span class="n">zsname</span><span class="p">[</span><span class="mi">20</span><span class="p">]</span><span class="o">=</span><span class="s">"zhangsan"</span><span class="p">;</span>
+<span class="kt">int</span> <span class="n">zsage</span> <span class="o">=</span> <span class="mi">20</span><span class="p">;</span>
+</code></pre></div></div>
+
+<table>
+  <thead>
+    <tr>
+      <th>redis</th>
+      <th>c/c++</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>key</td>
+      <td>变量名(类似zsname[20])</td>
+    </tr>
+    <tr>
+      <td>value</td>
+      <td>变量值(类似”zhangsan”)</td>
+    </tr>
+    <tr>
+      <td>redis均采用字符串</td>
+      <td>变量的数据类型(类似char)</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="get">get</h3>
+
+<p>获取key对应的value</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>get
+
+  GET key
+  summary: Get the value of a key
+  since: 1.0.0
+  group: string
+</code></pre></div></div>
+
+<h3 id="append">append</h3>
+
+<p>向指定的key对应的value追加字符串，返回追加之后，总的字符长度。如果key不存在，相当于创建key</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>append
+
+  APPEND key value
+  summary: Append a value to a key
+  since: 2.0.0
+  group: string
+</code></pre></div></div>
+
+<p>实例：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">set </span>phone 1338888
+OK
+10.10.10.221:6379&gt; get phone 
+<span class="s2">"1338888"</span>
+10.10.10.221:6379&gt; append phone 9999
+<span class="o">(</span>integer<span class="o">)</span> 11
+10.10.10.221:6379&gt; get phone
+<span class="s2">"13388889999"</span>
+</code></pre></div></div>
+
+<h3 id="strlen">strlen</h3>
+
+<p>获取字符串的长度</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>strlen
+
+  STRLEN key
+  summary: Get the length of the value stored <span class="k">in </span>a key
+  since: 2.2.0
+  group: string
+</code></pre></div></div>
+
+<p>实例:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; get phone
+<span class="s2">"13388889999"</span>
+10.10.10.221:6379&gt; strlen phone
+<span class="o">(</span>integer<span class="o">)</span> 11
+</code></pre></div></div>
+
+<h3 id="incr">incr</h3>
+
+<p>key对应的value的值加1，返回+1之后的值。如果key不存在，则设置key的值为0，然后+1，得到1。
+只能操作整形的value，非整形的value会操作失败；</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>incr
+
+  INCR key
+  summary: Increment the integer value of a key by one
+  since: 1.0.0
+  group: string
+</code></pre></div></div>
+
+<p>实例：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">set </span>age 20
+OK
+10.10.10.221:6379&gt; <span class="nb">set </span>name zhangsan
+OK
+10.10.10.221:6379&gt; <span class="nb">set </span>score 85.7
+OK
+10.10.10.221:6379&gt; INCR age
+<span class="o">(</span>integer<span class="o">)</span> 21
+10.10.10.221:6379&gt; get age
+<span class="s2">"21"</span>
+10.10.10.221:6379&gt; INCR name
+<span class="o">(</span>error<span class="o">)</span> ERR value is not an integer or out of range
+10.10.10.221:6379&gt; INCR score
+<span class="o">(</span>error<span class="o">)</span> ERR value is not an integer or out of range
+</code></pre></div></div>
+
+<h3 id="decr">decr</h3>
+
+<p>key对应的value的值减1，返回-1之后的值。如果key不存在，则设置key的值为0，然后-1，得到-1。
+只能操作整形的value，非整形的value会操作失败；</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>decr
+
+  DECR key
+  summary: Decrement the integer value of a key by one
+  since: 1.0.0
+  group: string
+</code></pre></div></div>
+
+<h3 id="incrby">incrby</h3>
+
+<p>key对应的value增加一个偏移量</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>incrby
+
+  INCRBY key increment
+  summary: Increment the integer value of a key by the given amount
+  since: 1.0.0
+  group: string
+</code></pre></div></div>
+
+<p>实例：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; get age
+<span class="s2">"20"</span>
+10.10.10.221:6379&gt; INCRBY age 10
+<span class="o">(</span>integer<span class="o">)</span> 30
+10.10.10.221:6379&gt; INCRBY age <span class="nt">-10</span>
+<span class="o">(</span>integer<span class="o">)</span> 20
+</code></pre></div></div>
+
+<h3 id="decrby">decrby</h3>
+
+<p>key对应的value减少一个偏移量</p>
+
+<h3 id="getrange">getrange</h3>
+
+<p>获取key对应字符串value的子串。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>getrange
+
+  GETRANGE key start end
+  summary: Get a substring of the string stored at a key
+  since: 2.4.0
+  group: string
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  start：指定起始索引
+  end：指定结束索引
+  区间: [start, end]
+  索引可以是负数
+</code></pre></div></div>
+
+<p>实例：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; get name
+<span class="s2">"zhangsan"</span>
+10.10.10.221:6379&gt; getrange name 2 5
+<span class="s2">"angs"</span>
+</code></pre></div></div>
+
+<h3 id="setrange">setrange</h3>
+
+<p>把下标offset之后n个字符替换为新的子串，n为新子串的长度</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>setrange
+
+  SETRANGE key offset value
+  summary: Overwrite part of a string at key starting at the specified offset
+  since: 2.2.0
+  group: string
+</code></pre></div></div>
+
+<p>实例：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; get name
+<span class="s2">"zhangsan"</span>
+10.10.10.221:6379&gt; setrange name 4 liu
+<span class="o">(</span>integer<span class="o">)</span> 8
+10.10.10.221:6379&gt; get name
+<span class="s2">"zhanliun"</span>
+</code></pre></div></div>
+
+<h3 id="setex">setex</h3>
+
+<p>设置值的同时，设置有效期</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>setex
+
+  SETEX key seconds value
+  summary: Set the value and expiration of a key
+  since: 2.0.0
+  group: string
+</code></pre></div></div>
+
+<p>实例：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; setex k2 10 v2
+OK
+10.10.10.221:6379&gt; ttl k2
+<span class="o">(</span>integer<span class="o">)</span> 8
+10.10.10.221:6379&gt; ttl k2
+<span class="o">(</span>integer<span class="o">)</span> <span class="nt">-2</span>
+</code></pre></div></div>
+
+<p>和expire的区别</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>setex是原子操作，设置值的同时，设置有效期。
+</code></pre></div></div>
+
+<h3 id="setnx">setnx</h3>
+
+<p>set not exist。当key不存在的时候，才设置</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>setnx
+
+  SETNX key value
+  summary: Set the value of a key, only <span class="k">if </span>the key does not exist
+  since: 1.0.0
+  group: string
+</code></pre></div></div>
+
+<p>和set的区别</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>set比较暴力，会直接覆盖原来的值
+setnx会判断key是否存在，如果不存在，才设置，否则，放弃设置
+</code></pre></div></div>
+
+<h3 id="mset">mset</h3>
+
+<p>批量设置键值对</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>mset
+
+  MSET key value <span class="o">[</span>key value ...]
+  summary: Set multiple keys to multiple values
+  since: 1.0.1
+  group: string
+</code></pre></div></div>
+
+<p>实例：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; mset k1 v1 k2 v2 k3 v3
+OK
+10.10.10.221:6379&gt; keys <span class="k">*</span>
+1<span class="o">)</span> <span class="s2">"k2"</span>
+2<span class="o">)</span> <span class="s2">"k1"</span>
+3<span class="o">)</span> <span class="s2">"k3"</span>
+</code></pre></div></div>
+
+<h3 id="mget">mget</h3>
+
+<p>批量获取给定一组key的一组value</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>mget
+
+  MGET key <span class="o">[</span>key ...]
+  summary: Get the values of all the given keys
+  since: 1.0.0
+  group: string
+</code></pre></div></div>
+
+<p>实例：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; keys <span class="k">*</span>
+1<span class="o">)</span> <span class="s2">"k2"</span>
+2<span class="o">)</span> <span class="s2">"k1"</span>
+3<span class="o">)</span> <span class="s2">"k3"</span>
+10.10.10.221:6379&gt; mget k1 k2 k3 k4
+1<span class="o">)</span> <span class="s2">"v1"</span>
+2<span class="o">)</span> <span class="s2">"v2"</span>
+3<span class="o">)</span> <span class="s2">"v3"</span>
+4<span class="o">)</span> <span class="o">(</span>nil<span class="o">)</span>
+</code></pre></div></div>
+
+<h3 id="msetnx">msetnx</h3>
+
+<p>批量设置键值对。当所有key都不存在时，才能设置成功，否则，只要有一个key存在，则放弃设置。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>msetnx
+
+  MSETNX key value <span class="o">[</span>key value ...]
+  summary: Set multiple keys to multiple values, only <span class="k">if </span>none of the keys exist
+  since: 1.0.1
+  group: string
+</code></pre></div></div>
+
+<h2 id="4-list组常见命令">4) list组常见命令</h2>
+
+<p>list: redis的基本数据结构。
+list是最简单的字符串列表，默认按照<strong>插入先后顺序排序</strong>，还可以添加一个元素到列表的头部、尾部、中间，底层是个链表结构。列表是有序的，可以通过下标索引来操作list中的数据。
+特点：单key，多value
+<strong>顺序：按插入位置排序</strong>
+<strong>表头：在列表的左侧left</strong>
+<strong>表尾：在列表的右侧right</strong>、</p>
+
+<p>实例，尾部依次插入beijing、shanghai、tianjin、chongqing，此时按照插入顺序排序。</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>key</th>
+      <th>value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>city</td>
+      <td>beijing  shanghai   tianjin   chongqing</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>list组的全部命令，可以通过help @list来查看</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help</span> @list
+</code></pre></div></div>
+
+<h3 id="lpush">lpush</h3>
+
+<p>lpush -&gt; left push。将一个或多个值依次插入到list的表头或左侧。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>lpush
+
+  LPUSH key value <span class="o">[</span>value ...]
+  summary: Prepend one or multiple values to a list
+  since: 1.0.0
+  group: list
+</code></pre></div></div>
+
+<p>实例：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; keys <span class="k">*</span>
+<span class="o">(</span>empty list or <span class="nb">set</span><span class="o">)</span>
+10.10.10.221:6379&gt; lpush listk v1 v2 v3 v4
+<span class="o">(</span>integer<span class="o">)</span> 4
+</code></pre></div></div>
+
+<p>在listk列表的表头(左侧)依次插入v1、v2、v3、v4，现在表头的第一个数据就是v4</p>
+
+<h3 id="lrange">lrange</h3>
+
+<p>lrange -&gt; list range。获取指定列表中的元素。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>lrange
+
+  LRANGE key start stop
+  summary: Get a range of elements from a list
+  since: 1.0.0
+  group: list
+</code></pre></div></div>
+
+<p>实例：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; lpush listk v1 v2 v3 v4
+<span class="o">(</span>integer<span class="o">)</span> 4
+10.10.10.221:6379&gt; lrange listk 0 2
+1<span class="o">)</span> <span class="s2">"v4"</span>
+2<span class="o">)</span> <span class="s2">"v3"</span>
+3<span class="o">)</span> <span class="s2">"v2"</span>
+10.10.10.221:6379&gt; lpush listk v5 v6 v7
+<span class="o">(</span>integer<span class="o">)</span> 7
+10.10.10.221:6379&gt; lrange listk 0 2
+1<span class="o">)</span> <span class="s2">"v7"</span>
+2<span class="o">)</span> <span class="s2">"v6"</span>
+3<span class="o">)</span> <span class="s2">"v5"</span>
+10.10.10.221:6379&gt; LRANGE listk 0 <span class="nt">-1</span>
+1<span class="o">)</span> <span class="s2">"v7"</span>
+2<span class="o">)</span> <span class="s2">"v6"</span>
+3<span class="o">)</span> <span class="s2">"v5"</span>
+4<span class="o">)</span> <span class="s2">"v4"</span>
+5<span class="o">)</span> <span class="s2">"v3"</span>
+6<span class="o">)</span> <span class="s2">"v2"</span>
+7<span class="o">)</span> <span class="s2">"v1"</span>
+</code></pre></div></div>
+
+<p>第一次在列表listk中lpush依次插入v1 v2 v3 v4时，v4是表头，是第一个数据；
+第二次在列表listk中lpush依次插入v5 v6 v7时，v7是表头，是第一个数据；</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>lrange key start stop
+start:列表的开始下标索引
+stop:列表的结束下标索引
+区间: [start, stop]
+支持下标索引为负
+</code></pre></div></div>
+
+<h3 id="rpush">rpush</h3>
+
+<p>rpush -&gt; right push。将一个或多个值依次插入到list的表尾或右侧。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>rpush
+
+  RPUSH key value <span class="o">[</span>value ...]
+  summary: Append one or multiple values to a list
+  since: 1.0.0
+  group: list
+</code></pre></div></div>
+
+<p>实例：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; rpush listk v8 v9
+<span class="o">(</span>integer<span class="o">)</span> 9
+10.10.10.221:6379&gt; lrange listk 0 <span class="nt">-1</span>
+1<span class="o">)</span> <span class="s2">"v7"</span>
+2<span class="o">)</span> <span class="s2">"v6"</span>
+3<span class="o">)</span> <span class="s2">"v5"</span>
+4<span class="o">)</span> <span class="s2">"v4"</span>
+5<span class="o">)</span> <span class="s2">"v3"</span>
+6<span class="o">)</span> <span class="s2">"v2"</span>
+7<span class="o">)</span> <span class="s2">"v1"</span>
+8<span class="o">)</span> <span class="s2">"v8"</span>
+9<span class="o">)</span> <span class="s2">"v9"</span>
+</code></pre></div></div>
+
+<h3 id="lpop">lpop</h3>
+
+<p>从list表头删除一个元素，并返回删除的元素</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>lpop
+
+  LPOP key
+  summary: Remove and get the first element <span class="k">in </span>a list
+  since: 1.0.0
+  group: list
+</code></pre></div></div>
+
+<h3 id="rpop">rpop</h3>
+
+<p>从list表尾删除一个元素，并返回删除的元素</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>rpop
+
+  RPOP key
+  summary: Remove and get the last element <span class="k">in </span>a list
+  since: 1.0.0
+  group: list
+</code></pre></div></div>
+
+<h3 id="lindex">lindex</h3>
+
+<p>获取list列表指定下标的元素</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>lindex
+
+  LINDEX key index
+  summary: Get an element from a list by its index
+  since: 1.0.0
+  group: list
+</code></pre></div></div>
+
+<p>实例：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; lrange listk 0 <span class="nt">-1</span>
+1<span class="o">)</span> <span class="s2">"v7"</span>
+2<span class="o">)</span> <span class="s2">"v6"</span>
+3<span class="o">)</span> <span class="s2">"v5"</span>
+4<span class="o">)</span> <span class="s2">"v4"</span>
+5<span class="o">)</span> <span class="s2">"v3"</span>
+6<span class="o">)</span> <span class="s2">"v2"</span>
+7<span class="o">)</span> <span class="s2">"v1"</span>
+8<span class="o">)</span> <span class="s2">"v8"</span>
+9<span class="o">)</span> <span class="s2">"v9"</span>
+10.10.10.221:6379&gt; lindex listk 4
+<span class="s2">"v3"</span>
+</code></pre></div></div>
+
+<h3 id="llen">llen</h3>
+
+<p>llen -&gt; list length。获取list列表的长度</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>llen
+
+  LLEN key
+  summary: Get the length of a list
+  since: 1.0.0
+  group: list
+</code></pre></div></div>
+
+<p>实例：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; llen listk
+<span class="o">(</span>integer<span class="o">)</span> 9
+10.10.10.221:6379&gt; lrange listk 0 <span class="nt">-1</span>
+1<span class="o">)</span> <span class="s2">"v7"</span>
+2<span class="o">)</span> <span class="s2">"v6"</span>
+3<span class="o">)</span> <span class="s2">"v5"</span>
+4<span class="o">)</span> <span class="s2">"v4"</span>
+5<span class="o">)</span> <span class="s2">"v3"</span>
+6<span class="o">)</span> <span class="s2">"v2"</span>
+7<span class="o">)</span> <span class="s2">"v1"</span>
+8<span class="o">)</span> <span class="s2">"v8"</span>
+9<span class="o">)</span> <span class="s2">"v9"</span>
+</code></pre></div></div>
+
+<h3 id="lrem">lrem</h3>
+
+<p>从list列表中删除元素</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>lrem
+
+  LREM key count value
+  summary: Remove elements from a list
+  since: 1.0.0
+  group: list
+</code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>lrem key count value
+count <span class="o">&gt;</span> 0: 从表头向表尾开始，删除count个值与value相等的元素
+count &lt; 0: 从表尾向表头开始，删除|count|个值与value相等的元素
+count <span class="o">=</span> 0: 删除所有值与value相等的元素
+count的正负号，决定了删除的方向，count的绝对值，决定了删除的个数
+</code></pre></div></div>
+
+<p>实例：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; lrange listk 0 <span class="nt">-1</span>
+ 1<span class="o">)</span> <span class="s2">"v1"</span>
+ 2<span class="o">)</span> <span class="s2">"v2"</span>
+ 3<span class="o">)</span> <span class="s2">"v3"</span>
+ 4<span class="o">)</span> <span class="s2">"v1"</span>
+ 5<span class="o">)</span> <span class="s2">"v2"</span>
+ 6<span class="o">)</span> <span class="s2">"v3"</span>
+ 7<span class="o">)</span> <span class="s2">"v1"</span>
+ 8<span class="o">)</span> <span class="s2">"v2"</span>
+ 9<span class="o">)</span> <span class="s2">"v3"</span>
+10<span class="o">)</span> <span class="s2">"v1"</span>
+11<span class="o">)</span> <span class="s2">"v2"</span>
+12<span class="o">)</span> <span class="s2">"v3"</span>
+10.10.10.221:6379&gt; lrem listk <span class="nt">-2</span> v2
+<span class="o">(</span>integer<span class="o">)</span> 2
+10.10.10.221:6379&gt; lrange listk 0 <span class="nt">-1</span>
+ 1<span class="o">)</span> <span class="s2">"v1"</span>
+ 2<span class="o">)</span> <span class="s2">"v2"</span>
+ 3<span class="o">)</span> <span class="s2">"v3"</span>
+ 4<span class="o">)</span> <span class="s2">"v1"</span>
+ 5<span class="o">)</span> <span class="s2">"v2"</span>
+ 6<span class="o">)</span> <span class="s2">"v3"</span>
+ 7<span class="o">)</span> <span class="s2">"v1"</span>
+ 8<span class="o">)</span> <span class="s2">"v3"</span>
+ 9<span class="o">)</span> <span class="s2">"v1"</span>
+10<span class="o">)</span> <span class="s2">"v3"</span>
+</code></pre></div></div>
+
+<h2 id="5-set组常见命令">5) set组常见命令</h2>
+
+<p>set: redis的基本数据结构。
+set是字符串集合，是无序的、无重复的集合，与插入先后顺序无关。
+<strong>顺序：无序</strong></p>
+
+<p>set组的全部命令，可以通过help @set来查看</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help</span> @set
+</code></pre></div></div>
+
+<h3 id="sadd">sadd</h3>
+
+<p>添加一个或多个元素到指定set集合中</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>sadd
+
+  SADD key member <span class="o">[</span>member ...]
+  summary: Add one or more members to a <span class="nb">set
+  </span>since: 1.0.0
+  group: <span class="nb">set</span>
+</code></pre></div></div>
+
+<p>实例：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; sadd setk s1 s2 s3 s4
+<span class="o">(</span>integer<span class="o">)</span> 4
+10.10.10.221:6379&gt; scard setk
+<span class="o">(</span>integer<span class="o">)</span> 4
+10.10.10.221:6379&gt; smembers setk
+1<span class="o">)</span> <span class="s2">"s1"</span>
+2<span class="o">)</span> <span class="s2">"s4"</span>
+3<span class="o">)</span> <span class="s2">"s2"</span>
+4<span class="o">)</span> <span class="s2">"s3"</span>
+</code></pre></div></div>
+
+<h3 id="scard">scard</h3>
+
+<p>获取set集合的元素个数</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>scard
+
+  SCARD key
+  summary: Get the number of members <span class="k">in </span>a <span class="nb">set
+  </span>since: 1.0.0
+  group: <span class="nb">set</span>
+</code></pre></div></div>
+
+<h3 id="smembers">smembers</h3>
+
+<p>查看set集合中的所有元素</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>smembers
+
+  SMEMBERS key
+  summary: Get all the members <span class="k">in </span>a <span class="nb">set
+  </span>since: 1.0.0
+  group: <span class="nb">set</span>
+</code></pre></div></div>
+
+<h3 id="srem">srem</h3>
+
+<p>删除set集合中的多个元素，返回成功删除的个数</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>srem
+
+  SREM key member <span class="o">[</span>member ...]
+  summary: Remove one or more members from a <span class="nb">set
+  </span>since: 1.0.0
+  group: <span class="nb">set</span>
+</code></pre></div></div>
+
+<h3 id="srandmember">srandmember</h3>
+
+<p>随机返回set集合中的count个元素。
+count &gt; 0:返回count个不相同的元素，类似不放回抽样
+count &lt;0: 返回count个元素，类似放回抽样，所以，可能存在重复的元素。
+应用：比如抽奖活动。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>srandmember
+
+  SRANDMEMBER key <span class="o">[</span>count]
+  summary: Get one or multiple random members from a <span class="nb">set
+  </span>since: 1.0.0
+  group: <span class="nb">set</span>
+</code></pre></div></div>
+
+<h3 id="spop">spop</h3>
+
+<p>从set集合中随机删除一个或多个元素，并返回删除的元素。
+应用：抽奖活动，每人最多抽一次。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>spop
+
+  SPOP key <span class="o">[</span>count]
+  summary: Remove and <span class="k">return </span>one or multiple random members from a <span class="nb">set
+  </span>since: 1.0.0
+  group: <span class="nb">set</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>spop和srem区别
+srem是按照value来删除member
+spop是随机删除member
+</code></pre></div></div>
+
+<p>实例：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; smembers setk
+1<span class="o">)</span> <span class="s2">"s6"</span>
+2<span class="o">)</span> <span class="s2">"s2"</span>
+3<span class="o">)</span> <span class="s2">"s4"</span>
+4<span class="o">)</span> <span class="s2">"s5"</span>
+5<span class="o">)</span> <span class="s2">"s3"</span>
+6<span class="o">)</span> <span class="s2">"s1"</span>
+10.10.10.221:6379&gt; spop setk 2
+1<span class="o">)</span> <span class="s2">"s1"</span>
+2<span class="o">)</span> <span class="s2">"s4"</span>
+</code></pre></div></div>
+
+<h3 id="sinter">sinter</h3>
+
+<p>获取多个set集合的交集。$set1 \cap set2 \cap set3 \cap …$</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>sinter
+
+  SINTER key <span class="o">[</span>key ...]
+  summary: Intersect multiple sets
+  since: 1.0.0
+  group: <span class="nb">set</span>
+</code></pre></div></div>
+
+<p>实例：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; smembers setk
+1<span class="o">)</span> <span class="s2">"s6"</span>
+2<span class="o">)</span> <span class="s2">"s2"</span>
+3<span class="o">)</span> <span class="s2">"s5"</span>
+4<span class="o">)</span> <span class="s2">"s3"</span>
+10.10.10.221:6379&gt; smembers set1
+1<span class="o">)</span> <span class="s2">"s1"</span>
+2<span class="o">)</span> <span class="s2">"s4"</span>
+3<span class="o">)</span> <span class="s2">"s2"</span>
+4<span class="o">)</span> <span class="s2">"s3"</span>
+10.10.10.221:6379&gt; smembers set2
+1<span class="o">)</span> <span class="s2">"s5"</span>
+2<span class="o">)</span> <span class="s2">"s4"</span>
+3<span class="o">)</span> <span class="s2">"s3"</span>
+10.10.10.221:6379&gt; sinter setk set1 set2
+1<span class="o">)</span> <span class="s2">"s3"</span>
+</code></pre></div></div>
+
+<h3 id="sunion">sunion</h3>
+
+<p>获取多个set集合的并集。$ set1 \cup set2 \cup set3 \cup …$</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>sunion
+
+  SUNION key <span class="o">[</span>key ...]
+  summary: Add multiple sets
+  since: 1.0.0
+  group: <span class="nb">set</span>
+</code></pre></div></div>
+
+<p>实例：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; smembers setk
+1<span class="o">)</span> <span class="s2">"s6"</span>
+2<span class="o">)</span> <span class="s2">"s2"</span>
+3<span class="o">)</span> <span class="s2">"s5"</span>
+4<span class="o">)</span> <span class="s2">"s3"</span>
+10.10.10.221:6379&gt; smembers set1
+1<span class="o">)</span> <span class="s2">"s1"</span>
+2<span class="o">)</span> <span class="s2">"s4"</span>
+3<span class="o">)</span> <span class="s2">"s2"</span>
+4<span class="o">)</span> <span class="s2">"s3"</span>
+10.10.10.221:6379&gt; smembers set2
+1<span class="o">)</span> <span class="s2">"s5"</span>
+2<span class="o">)</span> <span class="s2">"s4"</span>
+3<span class="o">)</span> <span class="s2">"s3"</span>
+10.10.10.221:6379&gt; sunion setk set1 set2
+1<span class="o">)</span> <span class="s2">"s6"</span>
+2<span class="o">)</span> <span class="s2">"s2"</span>
+3<span class="o">)</span> <span class="s2">"s5"</span>
+4<span class="o">)</span> <span class="s2">"s4"</span>
+5<span class="o">)</span> <span class="s2">"s3"</span>
+6<span class="o">)</span> <span class="s2">"s1"</span>
+</code></pre></div></div>
+
+<h3 id="sdiff">sdiff</h3>
+
+<p>第一个set集合减去其他集合的结果，差集。$set1 - set2 -set3 - … = set1 - (set2 \cup set3 \cup …)$</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>sdiff
+
+  SDIFF key <span class="o">[</span>key ...]
+  summary: Subtract multiple sets
+  since: 1.0.0
+  group: <span class="nb">set</span>
+</code></pre></div></div>
+
+<p>实例：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; smembers setk
+1<span class="o">)</span> <span class="s2">"s6"</span>
+2<span class="o">)</span> <span class="s2">"s2"</span>
+3<span class="o">)</span> <span class="s2">"s5"</span>
+4<span class="o">)</span> <span class="s2">"s3"</span>
+10.10.10.221:6379&gt; smembers set1
+1<span class="o">)</span> <span class="s2">"s1"</span>
+2<span class="o">)</span> <span class="s2">"s4"</span>
+3<span class="o">)</span> <span class="s2">"s2"</span>
+4<span class="o">)</span> <span class="s2">"s3"</span>
+10.10.10.221:6379&gt; smembers set2
+1<span class="o">)</span> <span class="s2">"s5"</span>
+2<span class="o">)</span> <span class="s2">"s4"</span>
+3<span class="o">)</span> <span class="s2">"s3"</span>
+10.10.10.221:6379&gt; sdiff setk set1 set2
+1<span class="o">)</span> <span class="s2">"s6"</span>
+</code></pre></div></div>
+
+<h2 id="hash组常见命令">hash组常见命令</h2>
+
+<p>hash: redis的基本数据结构
+hash是一个字符串类型的filed和value的映射表，特别适合存储struct结构体对象。
+key field1 value1 field2 value2 ….</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>key</th>
+      <th>field:value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>person</td>
+      <td>name:zhangsan age:20 sex:girl  height:170</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>类似于c/c++结构体</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="nc">Person</span> <span class="p">{</span>
+  <span class="n">string</span> <span class="n">name</span><span class="p">;</span>
+  <span class="n">string</span> <span class="n">age</span><span class="p">;</span>
+  <span class="n">string</span> <span class="n">sex</span><span class="p">;</span>
+  <span class="n">string</span> <span class="n">height</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="n">Person</span> <span class="n">person</span><span class="p">{</span><span class="s">"zhangsan"</span><span class="p">,</span> <span class="s">"20"</span><span class="p">,</span> <span class="s">"girl"</span><span class="p">,</span> <span class="s">"height"</span><span class="p">};</span>
+</code></pre></div></div>
+
+<p>hash组的全部命令，可以通过help @hash来查看</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help</span> @hash
+</code></pre></div></div>
+
+<h3 id="hset">hset</h3>
+
+<p>设置hash表的field和value</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>hset
+
+  HSET key field value
+  summary: Set the string value of a <span class="nb">hash </span>field
+  since: 2.0.0
+  group: <span class="nb">hash</span>
+</code></pre></div></div>
+
+<p>实例：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; hset hashk f1 v1 f2 v2
+<span class="o">(</span>integer<span class="o">)</span> 2
+</code></pre></div></div>
+
+<h3 id="hget">hget</h3>
+
+<p>获取hash表中指定field的value</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>hget
+
+  HGET key field
+  summary: Get the value of a <span class="nb">hash </span>field
+  since: 2.0.0
+  group: <span class="nb">hash</span>
+</code></pre></div></div>
+
+<h3 id="hmset">hmset</h3>
+
+<p>批量设置hash表的多组filed和value。实际上hset也可以批量设置，两者没有区别。<strong>官方给出：hmset被弃用。</strong></p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>hmset
+
+  HMSET key field value <span class="o">[</span>field value ...]
+  summary: Set multiple <span class="nb">hash </span>fields to multiple values
+  since: 2.0.0
+  group: <span class="nb">hash</span>
+</code></pre></div></div>
+
+<h3 id="hmget">hmget</h3>
+
+<p>批量获取hash表中多个field的多个value。hget一次只能获取一个value。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>hmget
+
+  HMGET key field <span class="o">[</span>field ...]
+  summary: Get the values of all the given <span class="nb">hash </span>fields
+  since: 2.0.0
+  group: <span class="nb">hash</span>
+</code></pre></div></div>
+
+<h3 id="hgetall">hgetall</h3>
+
+<p>获取hash表中所有的fields和values</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>hgetall
+
+  HGETALL key
+  summary: Get all the fields and values <span class="k">in </span>a <span class="nb">hash
+  </span>since: 2.0.0
+  group: <span class="nb">hash</span>
+</code></pre></div></div>
+
+<p>实例：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; hgetall hashk
+1<span class="o">)</span> <span class="s2">"f1"</span>
+2<span class="o">)</span> <span class="s2">"v1"</span>
+3<span class="o">)</span> <span class="s2">"f2"</span>
+4<span class="o">)</span> <span class="s2">"v2"</span>
+5<span class="o">)</span> <span class="s2">"f3"</span>
+6<span class="o">)</span> <span class="s2">"v3"</span>
+</code></pre></div></div>
+
+<h3 id="hdel">hdel</h3>
+
+<p>删除hash表的多个成对的filed和value</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>hdel
+
+  HDEL key field <span class="o">[</span>field ...]
+  summary: Delete one or more <span class="nb">hash </span>fields
+  since: 2.0.0
+  group: <span class="nb">hash</span>
+</code></pre></div></div>
+
+<h3 id="hlen">hlen</h3>
+
+<p>获取hash表中filed的个数</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>hlen
+
+  HLEN key
+  summary: Get the number of fields <span class="k">in </span>a <span class="nb">hash
+  </span>since: 2.0.0
+  group: <span class="nb">hash</span>
+</code></pre></div></div>
+
+<h3 id="hexists">hexists</h3>
+
+<p>判断hash表中指定的field是否存在</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>hexists
+
+  HEXISTS key field
+  summary: Determine <span class="k">if </span>a <span class="nb">hash </span>field exists
+  since: 2.0.0
+  group: <span class="nb">hash</span>
+</code></pre></div></div>
+
+<h3 id="hkeys">hkeys</h3>
+
+<p>获取hash表中所有的fields</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>hkeys
+
+  HKEYS key
+  summary: Get all the fields <span class="k">in </span>a <span class="nb">hash
+  </span>since: 2.0.0
+  group: <span class="nb">hash</span>
+</code></pre></div></div>
+
+<h3 id="hvals">hvals</h3>
+
+<p>获取hash表中所有的values</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>hvals
+
+  HVALS key
+  summary: Get all the values <span class="k">in </span>a <span class="nb">hash
+  </span>since: 2.0.0
+  group: <span class="nb">hash</span>
+</code></pre></div></div>
+
+<h3 id="hincrby">hincrby</h3>
+
+<p>给hash表中指定field的整数value增加一个整数</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>hincrby
+
+  HINCRBY key field increment
+  summary: Increment the integer value of a <span class="nb">hash </span>field by the given number
+  since: 2.0.0
+  group: <span class="nb">hash</span>
+</code></pre></div></div>
+
+<p>实例：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; hset hashk age 20
+<span class="o">(</span>integer<span class="o">)</span> 1
+10.10.10.221:6379&gt; hincrby hashk age 5
+<span class="o">(</span>integer<span class="o">)</span> 25
+10.10.10.221:6379&gt; hget hashk age
+<span class="s2">"25"</span>
+10.10.10.221:6379&gt; 
+</code></pre></div></div>
+
+<h3 id="hincrbyfloat">hincrbyfloat</h3>
+
+<p>给hash表中指定field的浮点数value增加一个浮点数</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>hincrbyfloat
+
+  HINCRBYFLOAT key field increment
+  summary: Increment the float value of a <span class="nb">hash </span>field by the given amount
+  since: 2.6.0
+  group: <span class="nb">hash</span>
+</code></pre></div></div>
+
+<p>实例：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; hset hashk height 1.72
+<span class="o">(</span>integer<span class="o">)</span> 1
+10.10.10.221:6379&gt; hincrbyfloat hashk height 0.21
+<span class="s2">"1.93"</span>
+10.10.10.221:6379&gt; hgetall hashk
+1<span class="o">)</span> <span class="s2">"age"</span>
+2<span class="o">)</span> <span class="s2">"25"</span>
+3<span class="o">)</span> <span class="s2">"height"</span>
+4<span class="o">)</span> <span class="s2">"1.93"</span>
+</code></pre></div></div>
+
+<h3 id="hsetnx">hsetnx</h3>
+
+<p>给hash表添加field-value对，如果field已经存在，则添加失败。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>hsetnx
+
+  HSETNX key field value
+  summary: Set the value of a <span class="nb">hash </span>field, only <span class="k">if </span>the field does not exist
+  since: 2.0.0
+  group: <span class="nb">hash</span>
+</code></pre></div></div>
+
+<h2 id="sorted_set组常见命令">sorted_set组常见命令</h2>
+
+<p>sorted_set首字母为s，(相应的操作按理说应该是s开头)，与set的s冲突，所以有了zset的名字。
+zset是有序无重复的集合，介于set和list之间，zset相关的命令结合了set和list的命令。
+zset的每个元素都会关联一个分数（分数可以重复），redis通过分数来为集合中的成员进行从小到大的顺序来排序。</p>
+
+<p><strong>顺序：按照分数排序，元素可以有下标索引</strong>
+<strong>本质：是set集合，元素不能重复</strong></p>
+
+<p>实例：key是分数score，先后插入zhangsan 80分，lisi 75分，wangwu 90分。</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>key</th>
+      <th>value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>score</td>
+      <td>zhangsan 80<br />lisi              75<br />wangwu   90</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>插入后实际排序，按照分数从小到大来排序。</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>key</th>
+      <th>value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>score</td>
+      <td>lisi              75<br />zhangsan 80<br />wangwu   90</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>sorted_set组的全部命令，可以通过help @sorted_set来查看</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help</span> @sorted_set
+</code></pre></div></div>
+
+<h3 id="zadd">zadd</h3>
+
+<p>向zset集合中添加多组元素及对应的分数，如果元素存在，则更新元素的分数</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>zadd
+
+  ZADD key <span class="o">[</span>NX|XX] <span class="o">[</span>CH] <span class="o">[</span>INCR] score member <span class="o">[</span>score member ...]
+  summary: Add one or more members to a sorted <span class="nb">set</span>, or update its score <span class="k">if </span>it already exists
+  since: 1.2.0
+  group: sorted_set
+</code></pre></div></div>
+
+<p>实例：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; zadd zsetk 50 zhangsan 40 wangwu 60 zhangliu
+<span class="o">(</span>integer<span class="o">)</span> 3
+10.10.10.221:6379&gt; zrange zsetk 0 <span class="nt">-1</span>
+1<span class="o">)</span> <span class="s2">"wangwu"</span>
+2<span class="o">)</span> <span class="s2">"zhangsan"</span>
+3<span class="o">)</span> <span class="s2">"zhangliu"</span>
+</code></pre></div></div>
+
+<h3 id="zcard">zcard</h3>
+
+<p>获取zset集合的元素个数</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>zcard
+
+  ZCARD key
+  summary: Get the number of members <span class="k">in </span>a sorted <span class="nb">set
+  </span>since: 1.2.0
+  group: sorted_set
+</code></pre></div></div>
+
+<h3 id="zcount">zcount</h3>
+
+<p>统计zset集合中指定分数区间的元素个数，闭区间[min, max]</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>zcount
+
+  ZCOUNT key min max
+  summary: Count the members <span class="k">in </span>a sorted <span class="nb">set </span>with scores within the given values
+  since: 2.0.0
+  group: sorted_set
+</code></pre></div></div>
+
+<p>实例：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; zcount zsetk 45 55
+<span class="o">(</span>integer<span class="o">)</span> 1
+10.10.10.221:6379&gt;
+</code></pre></div></div>
+
+<h3 id="zincrby">zincrby</h3>
+
+<p>增加zset集合中指定元素的分数。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>zincrby
+
+  ZINCRBY key increment member
+  summary: Increment the score of a member <span class="k">in </span>a sorted <span class="nb">set
+  </span>since: 1.2.0
+  group: sorted_set
+</code></pre></div></div>
+
+<h3 id="zrange">zrange</h3>
+
+<p>返回zset集合中指定索引区间的元素，闭区间[start, stop]</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>zrange
+
+  ZRANGE key start stop <span class="o">[</span>WITHSCORES]
+  summary: Return a range of members <span class="k">in </span>a sorted <span class="nb">set</span>, by index
+  since: 1.2.0
+  group: sorted_set
+</code></pre></div></div>
+
+<p>实例：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; zrange zsetk 0 <span class="nt">-1</span>
+1<span class="o">)</span> <span class="s2">"wangwu"</span>
+2<span class="o">)</span> <span class="s2">"zhangliu"</span>
+3<span class="o">)</span> <span class="s2">"zhangsan"</span>
+10.10.10.221:6379&gt; zrange zsetk 0 <span class="nt">-1</span> withscores
+1<span class="o">)</span> <span class="s2">"wangwu"</span>
+2<span class="o">)</span> <span class="s2">"40"</span>
+3<span class="o">)</span> <span class="s2">"zhangliu"</span>
+4<span class="o">)</span> <span class="s2">"60"</span>
+5<span class="o">)</span> <span class="s2">"zhangsan"</span>
+6<span class="o">)</span> <span class="s2">"80"</span>
+</code></pre></div></div>
+
+<p>zrange和zcount区别：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th> </th>
+      <th>zrange</th>
+      <th>zcount</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>区间</td>
+      <td>下标索引区间</td>
+      <td>分数区间</td>
+    </tr>
+    <tr>
+      <td>返回值</td>
+      <td>返回元素(及分数)</td>
+      <td>返回元素的个数</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="zrangebyscore">zrangebyscore</h3>
+
+<p>返回zset集合中指定分数区间的元素，闭区间[min, max]</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>zrangebyscore
+
+  ZRANGEBYSCORE key min max <span class="o">[</span>WITHSCORES] <span class="o">[</span>LIMIT offset count]
+  summary: Return a range of members <span class="k">in </span>a sorted <span class="nb">set</span>, by score
+  since: 1.0.5
+  group: sorted_set
+</code></pre></div></div>
+
+<p>实例：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; zrangebyscore zsetk 40 60 
+1<span class="o">)</span> <span class="s2">"wangwu"</span>
+2<span class="o">)</span> <span class="s2">"zhangliu"</span>
+10.10.10.221:6379&gt; zrangebyscore zsetk 40 60 withscores
+1<span class="o">)</span> <span class="s2">"wangwu"</span>
+2<span class="o">)</span> <span class="s2">"40"</span>
+3<span class="o">)</span> <span class="s2">"zhangliu"</span>
+4<span class="o">)</span> <span class="s2">"60"</span>
+</code></pre></div></div>
+
+<h3 id="zrem">zrem</h3>
+
+<p>删除zset集合中的多个元素，返回成功删除的个数</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>zrem
+
+  ZREM key member <span class="o">[</span>member ...]
+  summary: Remove one or more members from a sorted <span class="nb">set
+  </span>since: 1.2.0
+  group: sorted_set
+
+</code></pre></div></div>
+
+<h3 id="zrank">zrank</h3>
+
+<p>获取zset集合中指定元素的排名(排名从0开始)，排名是按照分数从小到大排序的。所以分数越低，排名越靠前。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>zrank
+
+  ZRANK key member
+  summary: Determine the index of a member <span class="k">in </span>a sorted <span class="nb">set
+  </span>since: 2.0.0
+  group: sorted_set
+</code></pre></div></div>
+
+<h3 id="zscore">zscore</h3>
+
+<p>获取zset集合中指定元素的分数。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>zscore
+
+  ZSCORE key member
+  summary: Get the score associated with the given member <span class="k">in </span>a sorted <span class="nb">set
+  </span>since: 1.2.0
+  group: sorted_set
+</code></pre></div></div>
+
+<p>实例：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; zscore zsetk zhangsan
+<span class="s2">"80"</span>
+</code></pre></div></div>
+
+<h3 id="zrevrank">zrevrank</h3>
+
+<p>获取zset集合中指定元素的排名(排名从0开始)，反向排名，也就是分数从大到小排名。所以分数越高，排名越靠前。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>zrevrank
+
+  ZREVRANK key member
+  summary: Determine the index of a member <span class="k">in </span>a sorted <span class="nb">set</span>, with scores ordered from high to low
+  since: 2.0.0
+  group: sorted_set
+</code></pre></div></div>
+
+<p>实例：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; zrank zsetk zhangsan
+<span class="o">(</span>integer<span class="o">)</span> 4
+10.10.10.221:6379&gt; zrevrank zsetk zhangsan
+<span class="o">(</span>integer<span class="o">)</span> 0
+</code></pre></div></div>
+
+<h1 id="redis配置文件">Redis配置文件</h1>
+
+<h2 id="0-配置的更改">0) 配置的更改</h2>
+
+<p>方式1：通过命令来更改配置：config set。更改后从下条指令生效。
+<strong>不是所有的参数都能通过config set来配置。</strong></p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>config <span class="nb">set
+
+  </span>CONFIG SET parameter value
+  summary: Set a configuration parameter to the given value
+  since: 2.0.0
+  group: server
+</code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; config <span class="nb">set </span>port 6969
+</code></pre></div></div>
+
+<p>方式2：通过修改配置文件并重启redis服务来更改。</p>
+
+<h2 id="1-redis-连接相关配置">1) redis 连接相关配置</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>配置参数</th>
+      <th>作用</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>bind</td>
+      <td>设置服务端绑定的ip，本质是socket通信中的bind()函数。如果redis不指定bind参数，就是绑定服务端任意网卡</td>
+    </tr>
+    <tr>
+      <td>port</td>
+      <td>redis服务绑定的端口</td>
+    </tr>
+    <tr>
+      <td>tcp-keepalive</td>
+      <td>保活策略，单位是秒。redis服务支持的连接数是有限的，不用的连接需要及时释放，否则是浪费。</td>
+    </tr>
+    <tr>
+      <td>requirepass</td>
+      <td>设置redis的登录密码，客户端连接时使用</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="2-redis日志相关配置">2) redis日志相关配置</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>配置参数</th>
+      <th>作用</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>loglevel</td>
+      <td>日志级别</td>
+    </tr>
+    <tr>
+      <td>logfile</td>
+      <td>日志文件</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>日志级别，默认为notice，开发阶段debug，上线阶段notice或warning。
+如果logfile没有指定，会输出到控制台终端，如果以守护进程运行，会输出到/dev/null。logfile可以是相对路径，也可以是绝对路径。</p>
+
+<h2 id="3redis持久化相关配置">3redis持久化相关配置</h2>
+
+<p>redis是内存数据库，大部分时间，数据都是存储在内存中，所以高效，但是redis服务关闭后，内存中的数据会消失。</p>
+
+<h3 id="redis持久化">redis持久化</h3>
+
+<p>redis支持持久化，在适当的时机采用适当的策略，把内存中的数据保存到磁盘中，redis服务重启时可以再次加载到内存中使用。
+两种持久化策略，RDB策略和</p>
+
+<p><strong>RDB策略</strong></p>
+
+<p>通过快照的方式持久化，每隔一段时间，或者每执行若干次写操作之后，就触发一次持久化（快照）。所以最后一次快照之后操作的数据会丢失。
+<strong>redis默认采用的是RDB的持久化策略</strong>。如果要关闭RDB策略，需要注释掉配置文件redis.conf中的所有save参数。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># save seconds changes
+# 多少秒完成多少次改变（写操作），就触发一次写操作
+
+# redis默认RDB策略
+save 900 1
+219 save 300 10
+220 save 60 10000
+</code></pre></div></div>
+
+<table>
+  <thead>
+    <tr>
+      <th>配置参数</th>
+      <th>作用</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>save</td>
+      <td>设置rdb持久化策略</td>
+    </tr>
+    <tr>
+      <td>dbfilename</td>
+      <td>redis持久化数据生成的文件名，默认是dump.rdb</td>
+    </tr>
+    <tr>
+      <td>dir</td>
+      <td>redis持久化数据生成文件保存的目录，默认是./，即启动目录</td>
+    </tr>
+    <tr>
+      <td>rdbcompression</td>
+      <td>设置对存储到磁盘的快照进行压缩</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>日志级别，默认为notice，开发阶段debug，上线阶段notice或warning。
+如果logfile没有指定，会输出到控制台终端，如果以守护进程运行，会输出到/dev/null。logfile可以是相对路径，也可以是绝对路径。</p>
+
+<p><strong>AOF策略</strong></p>
+
+<p>append only file。采用操作日志来记录每一次写操作。每次redis服务启动时，都会重新执行一遍操作日志中的指令。</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>配置参数</th>
+      <th>作用</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>appendonly</td>
+      <td>是否开启aof策略</td>
+    </tr>
+    <tr>
+      <td>appendfilename</td>
+      <td>aof持久化的保存的文件名</td>
+    </tr>
+    <tr>
+      <td>appendfsync</td>
+      <td>aof异步持久化策略。<br />always:同步持久化，每次发生数据变化都会立刻写入磁盘，性能较差，但数据完整性好;<br />everysec:出厂默认推荐，每秒异步记录一次;<br />no:不及时同步，由操作系统决定何时同步;</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="4-其它配置">4) 其它配置</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>配置参数</th>
+      <th>作用</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>databases</td>
+      <td>数据库数量</td>
+    </tr>
+    <tr>
+      <td>requirepass</td>
+      <td>设置redis服务登录密码，配合安全模式(protected-mode=yes)使用，不建议设置密码，因为redis追求的是高效，设置密码后，每次redis请求都会验证权限和密码，影响效率。</td>
+    </tr>
+    <tr>
+      <td>masterauth</td>
+      <td>redis集群密码，主要是针对master对应的slave节点设置的，在slave节点数据同步的时候用到。集群的masterauth必须一致。</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>requirepass和masterauth区别：
+requirepass：主要用于redis客户端登录redis服务端的登录密码，每个redis服务都可以设置自己的登录密码，一般不设置
+masterauth：主要用于redis集群密码，集群中的主机和从机的集群密码必须相同，在集群中必须设置，不设置，从机连不上主机。
+</code></pre></div></div>
+
+<h1 id="redis事务">Redis事务</h1>
+
+<p>transaction。
+事务：把一组数据库操作（尤其是写操作）放在一起执行，保证操作原子性，要么同时成功，要么同时失败。
+redis事务：允许把一组redis命令放在一起执行，把命令进行序列化，然后一起执行。<strong>redis只能保证部分原子性</strong>。</p>
+
+<h2 id="transactions组常见命令">transactions组常见命令</h2>
+
+<p>transactions组的全部命令，可以通过help @transactions来查看</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help</span> @transactions
+</code></pre></div></div>
+
+<h3 id="multi">multi</h3>
+
+<p>标记一个事务的开始。标记一个事务开始之后，输入的所有操作命令，都不会立即执行，而是放入到一个事务队列中，直到给出事务执行命令，然后顺序执行事务队列中的命令。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>multi
+
+  MULTI -
+  summary: Mark the start of a transaction block
+  since: 1.2.0
+  group: transactions
+</code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; keys <span class="k">*</span>
+<span class="o">(</span>empty list or <span class="nb">set</span><span class="o">)</span>
+10.10.10.221:6379&gt; multi
+OK
+10.10.10.221:6379&gt; <span class="nb">set </span>k1 v1
+QUEUED
+10.10.10.221:6379&gt; <span class="nb">set </span>k2 v2
+QUEUED
+10.10.10.221:6379&gt; <span class="nb">exec
+</span>1<span class="o">)</span> OK
+2<span class="o">)</span> OK
+10.10.10.221:6379&gt; keys <span class="k">*</span>
+1<span class="o">)</span> <span class="s2">"k2"</span>
+2<span class="o">)</span> <span class="s2">"k1"</span>
+</code></pre></div></div>
+
+<h3 id="exec">exec</h3>
+
+<p>开始执行事务队列中的所有命令</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help exec
+
+  </span>EXEC -
+  summary: Execute all commands issued after MULTI
+  since: 1.2.0
+  group: transactions
+</code></pre></div></div>
+
+<h3 id="原子性案例">原子性案例</h3>
+
+<p>案例-事务原子性1：<strong>错误的命令</strong>压入事务队列中，会压入失败，则本事务中所有的命令都不执行，能够保证原子性。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>multi
+<span class="nb">set </span>k1 v1
+setwww k2 v2
+<span class="nb">exec</span>
+</code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; keys <span class="k">*</span>
+<span class="o">(</span>empty list or <span class="nb">set</span><span class="o">)</span>
+10.10.10.221:6379&gt; multi
+OK
+10.10.10.221:6379&gt; <span class="nb">set </span>k1 v1
+QUEUED
+10.10.10.221:6379&gt; setwww k2 v2
+<span class="o">(</span>error<span class="o">)</span> ERR unknown <span class="nb">command</span> <span class="sb">`</span>setwww<span class="sb">`</span>, with args beginning with: <span class="sb">`</span>k2<span class="sb">`</span>, <span class="sb">`</span>v2<span class="sb">`</span>, 
+10.10.10.221:6379&gt; <span class="nb">exec</span>
+<span class="o">(</span>error<span class="o">)</span> EXECABORT Transaction discarded because of previous errors.
+10.10.10.221:6379&gt; keys <span class="k">*</span>
+<span class="o">(</span>empty list or <span class="nb">set</span><span class="o">)</span>
+</code></pre></div></div>
+
+<p>案例-事务部分原子性：命令压入事务队列正常，但是在执行事务队列命令时，<strong>命令执行错误</strong>，则只影响发生错误的命令，不会影响其他命令的执行。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>multi
+set k1 v1
+incr k1
+set k2 v2
+exec
+
+# k1对应的值是v1，是字符串，不是整形数值，incr k1执行会出错
+</code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; keys <span class="k">*</span>
+<span class="o">(</span>empty list or <span class="nb">set</span><span class="o">)</span>
+10.10.10.221:6379&gt; multi
+OK
+10.10.10.221:6379&gt; <span class="nb">set </span>k1 v1
+QUEUED
+10.10.10.221:6379&gt; incr k1
+QUEUED
+10.10.10.221:6379&gt; <span class="nb">set </span>k2 v2
+QUEUED
+10.10.10.221:6379&gt; <span class="nb">exec
+</span>1<span class="o">)</span> OK
+2<span class="o">)</span> <span class="o">(</span>error<span class="o">)</span> ERR value is not an integer or out of range
+3<span class="o">)</span> OK
+10.10.10.221:6379&gt; keys <span class="k">*</span>
+1<span class="o">)</span> <span class="s2">"k2"</span>
+2<span class="o">)</span> <span class="s2">"k1"</span>
+</code></pre></div></div>
+
+<h3 id="discard">discard</h3>
+
+<p>丢弃已经压入事务队列中的命令，并结束整个事务。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>discard
+
+  DISCARD -
+  summary: Discard all commands issued after MULTI
+  since: 2.0.0
+  group: transactions
+</code></pre></div></div>
+
+<h3 id="watch">watch</h3>
+
+<p>watch 监视一个或多个 key , 跟踪 key 的 value 修改情况，如果有key 的 value 值在事务 exec 执行之前被修改了，整个事务被取消。exec 返回提示信息，表示事务已经失败。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>watch配合multi、exec一起使用
+Redis禁止在multi和exec之间执行watch指令，而必须在 multi之前做好盯住关键变量，否则会出错
+watch使的事务exec变的有条件，事务只有在被watch的key没有修改的前提下才能执行。不满足条件，事务被取消。
+</code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>watch
+
+  WATCH key <span class="o">[</span>key ...]
+  summary: Watch the given keys to determine execution of the MULTI/EXEC block
+  since: 2.2.0
+  group: transactions
+</code></pre></div></div>
+
+<p>客户端1：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; keys <span class="k">*</span>
+<span class="o">(</span>empty list or <span class="nb">set</span><span class="o">)</span>
+10.10.10.221:6379&gt; <span class="nb">set </span>refcount 0
+OK
+10.10.10.221:6379&gt; watch refcount
+OK
+10.10.10.221:6379&gt; multi
+OK
+10.10.10.221:6379&gt; <span class="nb">set </span>k1 v1
+QUEUED
+10.10.10.221:6379&gt; <span class="nb">set </span>k2 v2
+QUEUED
+10.10.10.221:6379&gt; <span class="nb">set </span>k3 v3
+QUEUED
+10.10.10.221:6379&gt; <span class="nb">exec</span>
+<span class="o">(</span>nil<span class="o">)</span>
+</code></pre></div></div>
+
+<p>客户端2：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; keys <span class="k">*</span>
+1<span class="o">)</span> <span class="s2">"refcount"</span>
+10.10.10.221:6379&gt; incr refcount
+<span class="o">(</span>integer<span class="o">)</span> 1
+10.10.10.221:6379&gt; get refcount
+<span class="s2">"1"</span>
+</code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>在watch之后，到exec之前，如果watch监视的key被修改（比如被其他客户端修改），则exec失败。
+</code></pre></div></div>
+
+<h3 id="unwatch">unwatch</h3>
+
+<p>取消所有的监视。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>unwatch
+
+  UNWATCH -
+  summary: Forget about all watched keys
+  since: 2.2.0
+  group: transactions
+</code></pre></div></div>
+
+<div class="language-s highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">监视取消的时机</span><span class="err">：</span><span class="w">
+</span><span class="err">①</span><span class="n">watch命令可以被调用多次</span><span class="err">。</span><span class="n">对键的监视从watch执行之后开始生效</span><span class="err">，</span><span class="n">直到调用exec为止</span><span class="err">。</span><span class="n">不管事务是否成功执行</span><span class="err">，</span><span class="n">对所有键的监视都会被取消</span><span class="err">。</span><span class="w">
+</span><span class="err">②</span><span class="n">当客户端断开连接时</span><span class="err">，</span><span class="n">该客户端对键的监视也会被取消</span><span class="err">。</span><span class="w">
+</span><span class="err">③</span><span class="n">unwatch命令可以手动取消对所有键的监视</span><span class="err">。</span><span class="n">unwatch命令应该在watch之后</span><span class="err">，</span><span class="n">multi之前执行</span><span class="err">，</span><span class="n">如果unwatch放入multi之后</span><span class="err">，</span><span class="n">exec之前</span><span class="err">，</span><span class="n">不会起到unwatch的作用</span><span class="err">。</span><span class="w">
+</span></code></pre></div></div>
+
+<h1 id="redis消息发布与订阅">Redis消息发布与订阅</h1>
+
+<p>redis消息和发布，主要用于多个redis客户端之间。</p>
+
+<p>场景：redis客户端和客户端之间不能直接通信，都是连接的redis服务器。redis客户端client1更改了某个数据，redis客户端client2不知道被修改，redis客户端和客户端之间可以通过rediis服务器来通信。
+redis client2订阅某个频道channel，redis client1往频道channel发送消息，此时redis client2就会接收到redis client1发过来的消息。</p>
+
+<p><strong>redis消息的发布与订阅类似于设计模式中的观察者模式。</strong>
+<strong>相同点：</strong></p>
+
+<table>
+  <thead>
+    <tr>
+      <th>redis</th>
+      <th>观察者模式</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>订阅subscribe</td>
+      <td>注册register</td>
+    </tr>
+    <tr>
+      <td>发布publish</td>
+      <td>通知notify</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>区别：</strong>
+redis：
+	假定有一个发布者client-publish，2个订阅者client-subscribe1和client-subscribe2。
+	订阅的动作是client-subscribe发起的，订阅者client-subscribe会处于<strong>阻塞</strong>状态
+观察者：
+	假定有一个被观察者（姑且称为中心）center，2个观察者observer1和observer2。
+	注册的动作是中心发起的，center-&gt;register(observer1)，center-&gt;register(observer2)，所以观察者<strong>非阻塞</strong>。</p>
+
+<h2 id="pubsub组常见命令">pubsub组常见命令</h2>
+
+<p>sub -&gt; subscribe，订阅
+pub -&gt; publish，发布</p>
+
+<p>pubsub组的全部命令，可以通过help @pubsub来查看</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help</span> @pubsub
+</code></pre></div></div>
+
+<h3 id="subscribe">subscribe</h3>
+
+<p>redis客户端可以订阅(或监听)多个给定的频道。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>subscribe
+
+  SUBSCRIBE channel <span class="o">[</span>channel ...]
+  summary: Listen <span class="k">for </span>messages published to the given channels
+  since: 2.0.0
+  group: pubsub
+</code></pre></div></div>
+
+<p>redis client1:订阅频道</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; subscribe channel1 channel2
+Reading messages... <span class="o">(</span>press Ctrl-C to quit<span class="o">)</span>
+1<span class="o">)</span> <span class="s2">"subscribe"</span>
+2<span class="o">)</span> <span class="s2">"channel1"</span>
+3<span class="o">)</span> <span class="o">(</span>integer<span class="o">)</span> 1
+1<span class="o">)</span> <span class="s2">"subscribe"</span>
+2<span class="o">)</span> <span class="s2">"channel2"</span>
+3<span class="o">)</span> <span class="o">(</span>integer<span class="o">)</span> 2
+</code></pre></div></div>
+
+<p>redis client2：给频道发布消息</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; publish channel1 hello
+<span class="o">(</span>integer<span class="o">)</span> 1
+</code></pre></div></div>
+
+<p>此时redis client1收到频道消息</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; subscribe channel1 channel2
+Reading messages... <span class="o">(</span>press Ctrl-C to quit<span class="o">)</span>
+1<span class="o">)</span> <span class="s2">"subscribe"</span>
+2<span class="o">)</span> <span class="s2">"channel1"</span>
+3<span class="o">)</span> <span class="o">(</span>integer<span class="o">)</span> 1
+1<span class="o">)</span> <span class="s2">"subscribe"</span>
+2<span class="o">)</span> <span class="s2">"channel2"</span>
+3<span class="o">)</span> <span class="o">(</span>integer<span class="o">)</span> 2
+
+
+1<span class="o">)</span> <span class="s2">"message"</span>
+2<span class="o">)</span> <span class="s2">"channel1"</span>
+3<span class="o">)</span> <span class="s2">"hello"</span>
+</code></pre></div></div>
+
+<h3 id="publish">publish</h3>
+
+<p>redis客户端发送消息到指定频道。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>publish
+
+  PUBLISH channel message
+  summary: Post a message to a channel
+  since: 2.0.0
+  group: pubsub
+</code></pre></div></div>
+
+<h3 id="psubscribe">psubscribe</h3>
+
+<p>redis客户端可以订阅(或监听)多个给定的频道。订阅的频道支持通配符</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>psubscribe
+
+  PSUBSCRIBE pattern <span class="o">[</span>pattern ...]
+  summary: Listen <span class="k">for </span>messages published to channels matching the given patterns
+  since: 2.0.0
+  group: pubsub
+</code></pre></div></div>
+
+<h1 id="redis主从复制">redis主从复制</h1>
+
+<p>master/slave机制：
+<strong>主少从多</strong>
+<strong>主写从读</strong>
+<strong>读写分离</strong>
+一旦主从关系确定，<strong>主机上已有数据自动同步复制到从机</strong>。</p>
+
+<h2 id="搭建一主二从集群">搭建一主二从集群</h2>
+
+<p>搭建3台redis服务。实际生产中使用3台服务器。
+<strong>redis集群中的机器，需要安装相同的redis版本。</strong>
+这里为了简化，在同一台服务器上模拟3台redis服务，3个服务的端口分别为6379、6380、6381。把端口6379所在服务作为主机，6380、6381作为从机。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1. 提供3份配置文件，分别为6379.conf、6380.conf、6381.conf。修改每个配置文件如下信息，以6380.conf为例：
+		port		6380								
+		pidfile /var/run/redis_6380.pid
+		logfile "/tmp/redis/redis_6380.log"
+		dbfilename dump_6380.rdb
+		masterauth masterpassword
+		
+		主机和从机的masterauth密码需要设置，并且设置相同密码
+2. 用3个配置文件启动三次redis-server服务(此时的三个服务各自独立)
+3. 开启三个server-cli，分别连三个服务
+4. 查看每个redis服务的角色。info replication
+		此时每个redis服务都是主机master
+5. 连接6380、6381的两个客户端，分别执行slaveof 10.10.10.221 6379
+6. 再次查看redis服务角色。info replication
+		此时6379是主机master，6380、6381是slave				
+</code></pre></div></div>
+
+<p>如果主机能显示从机，从机显示主机down，不能从主机复制到从机，可能需要先删除dump.rdb数据文件，重新启动redis服务，如果dump.rdb中已有数据，慎重删除。</p>
+
+<h3 id="server组常见命令">server组常见命令</h3>
+
+<h3 id="slaveof">slaveof</h3>
+
+<p>设置主从关系，<strong>设从不设主</strong>。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6379&gt; <span class="nb">help </span>slaveof
+
+  SLAVEOF host port
+  summary: Make the server a slave of another instance, or promote it as master
+  since: 1.0.0
+  group: server
+</code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 两种用法</span>
+<span class="c"># 用法1：设置主从关系，从属于某个master主机</span>
+slaveof host port
+<span class="c"># 用法2: 放弃主从关系，自己提升为master。</span>
+slaveof no one
+
+<span class="c"># 用法1用来搭建主从集群，让从机隶属于某个主机</span>
+<span class="c"># 用法2用来提升从机的角色，成为master</span>
+</code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6380&gt; slaveof 10.10.10.221 6379
+OK
+10.10.10.221:6380&gt; info replication
+<span class="c"># Replication</span>
+role:slave
+master_host:10.10.10.221
+master_port:6379
+master_link_status:up
+master_last_io_seconds_ago:5
+master_sync_in_progress:0
+slave_repl_offset:14
+slave_priority:100
+slave_read_only:1
+connected_slaves:0
+master_replid:c788b7684bb1d2fe873d86ef4428849b8763abbd
+master_replid2:0000000000000000000000000000000000000000
+master_repl_offset:14
+second_repl_offset:-1
+repl_backlog_active:1
+repl_backlog_size:1048576
+repl_backlog_first_byte_offset:1
+repl_backlog_histlen:14
+10.10.10.221:6380&gt; 
+</code></pre></div></div>
+
+<p><strong>a) 如果主机宕机，端口为6379的redis服务关闭。</strong></p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>查看从机在集群中状态
+从机角色不变<span class="o">(</span>role:slave<span class="o">)</span>
+显示主机宕机<span class="o">(</span>master_link_status:down<span class="o">)</span>
+从机仍然只读不写
+</code></pre></div></div>
+
+<p>主机重新启动。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>主机重新启动后，不需要做任何设置，即可恢复主机master身份，从机仍然附属于主机。
+</code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10.10.10.221:6380&gt; info replication
+<span class="c"># Replication</span>
+role:slave
+master_host:10.10.10.221
+master_port:6379
+master_link_status:down
+master_last_io_seconds_ago:-1
+master_sync_in_progress:0
+slave_repl_offset:10805
+master_link_down_since_seconds:6
+slave_priority:100
+slave_read_only:1
+connected_slaves:0
+master_replid:c788b7684bb1d2fe873d86ef4428849b8763abbd
+master_replid2:0000000000000000000000000000000000000000
+master_repl_offset:10805
+second_repl_offset:-1
+repl_backlog_active:1
+repl_backlog_size:1048576
+repl_backlog_first_byte_offset:10470
+repl_backlog_histlen:336
+10.10.10.221:6380&gt; 
+</code></pre></div></div>
+
+<p><strong>b) 如果从机宕机，端口为6380的redis服务关闭。</strong></p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>查看其他从机在集群中状态：没有任何变化
+查看主机在集群中的状态：从机数量少了一个
+</code></pre></div></div>
+
+<p>从机6380重新启动</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>客户端连接6380，并查看6380服务在集群中的状态:成为一个独立的master，和之前的集群没有任何关系。
+连接6380的客户端重新执行slaveof 10.10.10.221 6379
+此时6380再次成为6379的从机
+</code></pre></div></div>
+
+<p>关键点：从机宕机后重启，需要重新设置。</p>
+
+<p><strong>a) 如果主机宕机，让从机6380上位。</strong></p>
+
+<p>场景：如果主机宕机，并且无法修复，或者修复时间过长，让一个从机升级为主机。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 1. 让6379宕机</span>
+10.10.10.221:6379&gt; shutdown
+</code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 2. 让6380提升为主机</span>
+10.10.10.221:6380&gt; slaveof no one
+OK
+10.10.10.221:6380&gt; info replication
+<span class="c"># Replication</span>
+role:master
+connected_slaves:0
+master_replid:05c69556aca23fd551fc0730332605e75648387a
+master_replid2:979dc92d8aeb605ea22a2b568d2121dae3d2f321
+master_repl_offset:17528
+second_repl_offset:17529
+repl_backlog_active:1
+repl_backlog_size:1048576
+repl_backlog_first_byte_offset:1
+repl_backlog_histlen:17528
+</code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 3. 让6381成为6380的从机</span>
+10.10.10.221:6381&gt; slaveof 10.10.10.221 6380
+OK
+10.10.10.221:6381&gt; info replication
+<span class="c"># Replication</span>
+role:slave
+master_host:10.10.10.221
+master_port:6380
+master_link_status:up
+master_last_io_seconds_ago:8
+master_sync_in_progress:0
+slave_repl_offset:17542
+slave_priority:100
+slave_read_only:1
+connected_slaves:0
+master_replid:05c69556aca23fd551fc0730332605e75648387a
+master_replid2:0000000000000000000000000000000000000000
+master_repl_offset:17542
+second_repl_offset:-1
+repl_backlog_active:1
+repl_backlog_size:1048576
+repl_backlog_first_byte_offset:17529
+repl_backlog_histlen:14
+</code></pre></div></div>
+
+<h2 id="redis哨兵服务">redis哨兵服务</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>redis集群中，如果主机宕机，从机原地待命；此时从机上位，需要手动设置。
+缺陷：不能立刻知道谁宕机，而且需要手动设置从机上位。
+</code></pre></div></div>
+
+<p>提出了哨兵模式：主机宕机，从机自动上位。
+专门的哨兵服务：redis-sentinel
+哨兵配置文件:		sentinel.conf</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># sentinel monitor &lt;master-name&gt; &lt;ip&gt; &lt;redis-port&gt; &lt;quorum&gt;</span>
+sentinel monitor xxx1 10.10.10.221 6379 1
+<span class="c"># sentinel		：	表示哨兵</span>
+<span class="c"># monitor			：	表示监控</span>
+<span class="c"># master-name	：	表示哨兵的名字，任意起一个名字</span>
+<span class="c"># ip					：	监控的主机ip，redis主机中bind的ip</span>
+<span class="c"># port				：	监控的端口</span>
+<span class="c"># quorum			： 得到哨兵的投票数</span>
+
+<span class="c"># 比如有1主5从，主机宕机，内部有一个投票机制，哪一个从机率先到达指定的投票数quorum，就将该从机提升为主机，其余从机从属于新主机。</span>
+<span class="c"># 默认投票机制：</span>
+<span class="c">#		quorum越大，会挑选一个性能最好的从机，quorum越小，比如为1，只要有一个从机率先得到1票，该从机就提升为主机。</span>
+<span class="c">#		quorum一般等于或小于从机数，quorum值越小，挑选从机的速度就越快，一般选择一个居中的值。</span>
+</code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">echo</span> <span class="s2">"sentinel monitor sm1 10.10.10.221 6379 1"</span> <span class="o">&gt;</span> my_sentinel.conf
+<span class="nv">$ </span><span class="c"># 启动哨兵服务</span>
+<span class="nv">$ </span>redis-sentinel sentinel.conf
+</code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 1. 主机6379宕机</span>
+10.10.10.221:6379&gt; shutdown
+
+<span class="c"># 2. 根据哨兵内部投票规则，此时从机6380上位，查看6380集群状态</span>
+10.10.10.221:6380&gt; info replication
+<span class="c"># Replication</span>
+role:slave
+master_host:10.10.10.221
+master_port:6379
+master_link_status:down
+master_last_io_seconds_ago:-1
+master_sync_in_progress:0
+slave_repl_offset:22098
+master_link_down_since_seconds:4
+slave_priority:100
+slave_read_only:1
+connected_slaves:1
+slave0:ip<span class="o">=</span>10.10.10.221,port<span class="o">=</span>6381,state<span class="o">=</span>online,offset<span class="o">=</span>22098,lag<span class="o">=</span>1
+master_replid:979dc92d8aeb605ea22a2b568d2121dae3d2f321
+master_replid2:0000000000000000000000000000000000000000
+master_repl_offset:22098
+second_repl_offset:-1
+repl_backlog_active:1
+repl_backlog_size:1048576
+repl_backlog_first_byte_offset:18407
+repl_backlog_histlen:3692
+10.10.10.221:6380&gt; 
+
+<span class="c"># 3.重启6379，在哨兵模式下，6379会从属于新的主机6380</span>
+</code></pre></div></div>
+:ET

@@ -1,0 +1,118 @@
+<p>c/c++ 统计程序运行时间</p>
+
+<h1 id="案例">案例</h1>
+
+<h2 id="写10万次redis数据">写10万次redis数据</h2>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">redisContext</span> <span class="o">*</span><span class="n">context</span><span class="p">;</span>
+<span class="n">redisReply</span> <span class="o">*</span><span class="n">reply</span><span class="p">;</span>
+  
+<span class="c1">// 写10w条数据</span>
+<span class="kt">void</span> <span class="nf">redis_write_10w</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">100000</span><span class="p">;</span>
+    <span class="kt">char</span> <span class="n">cmd</span><span class="p">[</span><span class="mi">50</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">count</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">memset</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">cmd</span><span class="p">));</span>
+        <span class="n">sprintf</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="s">"set c++k%d %d"</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">5</span><span class="p">);</span>
+        <span class="n">reply</span> <span class="o">=</span> <span class="p">(</span><span class="n">redisReply</span> <span class="o">*</span><span class="p">)</span> <span class="n">redisCommand</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">cmd</span><span class="p">);</span>
+      	<span class="n">freeReplyObject</span><span class="p">(</span><span class="n">reply</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">redis_flushdb</span><span class="p">()</span> <span class="p">{</span>
+  	<span class="n">reply</span> <span class="o">=</span> <span class="p">(</span><span class="n">redisReply</span> <span class="o">*</span><span class="p">)</span> <span class="n">redisCommand</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="s">"flushdb"</span><span class="p">);</span>
+  	<span class="n">freeReplyObject</span><span class="p">(</span><span class="n">reply</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// redis 连接</span>
+  <span class="n">context</span> <span class="o">=</span> <span class="n">redisConnect</span><span class="p">(</span><span class="n">ip</span><span class="p">,</span> <span class="n">port</span><span class="p">);</span>
+  
+  <span class="c1">// gettimeofday</span>
+  <span class="k">struct</span>  <span class="nc">timeval</span>  <span class="n">s_timeval</span><span class="p">,</span> <span class="n">e_timeval</span><span class="p">;</span>
+  <span class="n">gettimeofday</span><span class="p">(</span><span class="o">&amp;</span><span class="n">s_timeval</span><span class="p">,</span><span class="nb">nullptr</span><span class="p">);</span>
+  <span class="n">redis_write_10w</span><span class="p">();</span>
+  <span class="n">gettimeofday</span><span class="p">(</span><span class="o">&amp;</span><span class="n">e_timeval</span><span class="p">,</span><span class="nb">nullptr</span><span class="p">);</span>
+  <span class="kt">double</span> <span class="n">costtime</span> <span class="o">=</span> <span class="p">(</span><span class="kt">double</span><span class="p">)(</span><span class="n">e_timeval</span><span class="p">.</span><span class="n">tv_sec</span><span class="o">-</span><span class="n">s_timeval</span><span class="p">.</span><span class="n">tv_sec</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">e_timeval</span><span class="p">.</span><span class="n">tv_usec</span><span class="o">-</span><span class="n">s_timeval</span><span class="p">.</span><span class="n">tv_usec</span><span class="p">)</span><span class="o">/</span><span class="mi">1000000</span><span class="p">;</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">"timeval : %f s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">costtime</span><span class="p">);</span>
+  
+  <span class="n">redis_flushdb</span><span class="p">();</span>
+  
+  <span class="c1">// time</span>
+  <span class="kt">time_t</span> <span class="n">s_time</span><span class="p">,</span> <span class="n">e_time</span><span class="p">;</span>
+  <span class="n">time</span><span class="p">(</span><span class="o">&amp;</span><span class="n">s_time</span><span class="p">);</span>
+  <span class="n">redis_write_10w</span><span class="p">();</span>
+  <span class="n">time</span><span class="p">(</span><span class="o">&amp;</span><span class="n">e_time</span><span class="p">);</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">"time : %d s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">e_time</span> <span class="o">-</span> <span class="n">s_time</span><span class="p">);</span>
+  
+  <span class="n">redis_flushdb</span><span class="p">();</span>
+  
+  <span class="c1">// clock</span>
+  <span class="kt">clock_t</span> <span class="n">s_clock</span><span class="p">,</span> <span class="n">e_clock</span><span class="p">;</span>
+  <span class="n">s_clock</span> <span class="o">=</span> <span class="n">clock</span><span class="p">();</span>
+  <span class="n">redis_write_10w</span><span class="p">();</span>
+  <span class="n">e_clock</span> <span class="o">=</span> <span class="n">clock</span><span class="p">();</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">"clock : %f s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="p">(</span><span class="kt">double</span><span class="p">)</span> <span class="p">(</span><span class="n">e_clock</span> <span class="o">-</span> <span class="n">s_clock</span><span class="p">)</span> <span class="o">/</span> <span class="n">CLOCKS_PER_SEC</span><span class="p">);</span>
+  
+  <span class="c1">// 断开连接</span>
+  <span class="n">redisFree</span><span class="p">(</span><span class="n">context</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="耗时结果">耗时结果</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>timeval : 18.871461 s
+time : 19 s
+clock : 3.684796 s
+</code></pre></div></div>
+
+<h2 id="结果分析">结果分析</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>为什么clock的耗时结果很离谱呢？
+
+gettimeofday:获取当前系统时间，精确到微秒。
+time:获取当前系统时间。精确到秒，精度较差
+clock:获取cpu运行时间，精度到毫秒。
+
+clock返回的是 CPU 耗费在本程序上的时间。也就是说，途中 有阻塞函数 的话，由于 CPU 资源被释放，那段时间将不被计算在内。因此，若函数中存在阻塞函数，则阻塞函数消耗的时间将不包含在内；而案例中使用的是redis的同步api，每次请求都会造成阻塞。
+</code></pre></div></div>
+
+<h1 id="函数用法">函数用法</h1>
+
+<h2 id="1-gettimeofday">1. gettimeofday</h2>
+
+<p>获取当前时间，精确到微秒。
+配合结构体struct  timeval使用。</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="c1">// gettimeofday</span>
+  <span class="k">struct</span>  <span class="nc">timeval</span>  <span class="n">s_timeval</span><span class="p">,</span> <span class="n">e_timeval</span><span class="p">;</span>
+  <span class="n">gettimeofday</span><span class="p">(</span><span class="o">&amp;</span><span class="n">s_timeval</span><span class="p">,</span><span class="nb">nullptr</span><span class="p">);</span>
+  <span class="c1">// 执行耗时代码</span>
+  <span class="n">gettimeofday</span><span class="p">(</span><span class="o">&amp;</span><span class="n">e_timeval</span><span class="p">,</span><span class="nb">nullptr</span><span class="p">);</span>
+  <span class="kt">double</span> <span class="n">costtime</span> <span class="o">=</span> <span class="p">(</span><span class="kt">double</span><span class="p">)(</span><span class="n">e_timeval</span><span class="p">.</span><span class="n">tv_sec</span><span class="o">-</span><span class="n">s_timeval</span><span class="p">.</span><span class="n">tv_sec</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">e_timeval</span><span class="p">.</span><span class="n">tv_usec</span><span class="o">-</span><span class="n">s_timeval</span><span class="p">.</span><span class="n">tv_usec</span><span class="p">)</span><span class="o">/</span><span class="mi">1000000</span><span class="p">;</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">"timeval : %f s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">costtime</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h2 id="2-time">2. time</h2>
+
+<p>获取当前时间，精确到秒。</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// time</span>
+  <span class="kt">time_t</span> <span class="n">s_time</span><span class="p">,</span> <span class="n">e_time</span><span class="p">;</span>
+  <span class="n">time</span><span class="p">(</span><span class="o">&amp;</span><span class="n">s_time</span><span class="p">);</span>
+  <span class="c1">// 执行耗时代码</span>
+  <span class="n">time</span><span class="p">(</span><span class="o">&amp;</span><span class="n">e_time</span><span class="p">);</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">"time : %d s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">e_time</span> <span class="o">-</span> <span class="n">s_time</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h2 id="3-clock">3. clock</h2>
+
+<p>获取cpu执行时间。精确到毫秒。</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="kt">clock_t</span> <span class="n">s_clock</span><span class="p">,</span> <span class="n">e_clock</span><span class="p">;</span>
+  <span class="n">s_clock</span> <span class="o">=</span> <span class="n">clock</span><span class="p">();</span>
+  <span class="n">redis_write_10w</span><span class="p">();</span>
+  <span class="n">e_clock</span> <span class="o">=</span> <span class="n">clock</span><span class="p">();</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">"clock : %f s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="p">(</span><span class="kt">double</span><span class="p">)</span> <span class="p">(</span><span class="n">e_clock</span> <span class="o">-</span> <span class="n">s_clock</span><span class="p">)</span> <span class="o">/</span> <span class="n">CLOCKS_PER_SEC</span><span class="p">);</span>
+</code></pre></div></div>
+
