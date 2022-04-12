@@ -1,0 +1,176 @@
+I"V
+<ul>
+  <li><a href="#redis介绍">Redis介绍</a></li>
+  <li><a href="#redis安装">Redis安装</a></li>
+  <li><a href="#redis服务端启动和关闭">Redis服务端启动和关闭</a>
+    <ul>
+      <li><a href="#1-redis服务启动">1) Redis服务启动</a></li>
+      <li><a href="#2-redis服务关闭">2) Redis服务关闭</a></li>
+    </ul>
+  </li>
+  <li><a href="#redis客户端启动和关闭">Redis客户端启动和关闭</a>
+    <ul>
+      <li><a href="#1-本地连接redis服务">1) 本地连接redis服务</a></li>
+      <li><a href="#2-远程连接redis服务">2) 远程连接redis服务</a></li>
+      <li><a href="#3-redis客户端关闭">3) redis客户端关闭</a></li>
+    </ul>
+  </li>
+  <li><a href="#redis客户端帮助手册">Redis客户端帮助手册</a>
+    <ul>
+      <li><a href="#help">help</a></li>
+    </ul>
+  </li>
+  <li><a href="#redis客户端常用命令">Redis客户端常用命令</a>
+    <ul>
+      <li><a href="#1-server组常见命令">1) server组常见命令</a>
+        <ul>
+          <li><a href="#config-get">config get</a></li>
+          <li><a href="#dbsize">dbsize</a></li>
+          <li><a href="#flushdb">flushdb</a></li>
+          <li><a href="#flushall">flushall</a></li>
+          <li><a href="#info">info</a></li>
+          <li><a href="#shutdown">shutdown</a></li>
+        </ul>
+      </li>
+      <li><a href="#2-generic组常见命令">2) generic组常见命令</a>
+        <ul>
+          <li><a href="#del">del</a></li>
+          <li><a href="#exists">exists</a></li>
+          <li><a href="#keys">keys</a></li>
+          <li><a href="#通配符和正则表达式的区别">通配符和正则表达式的区别</a></li>
+          <li><a href="#move">move</a></li>
+          <li><a href="#ttl">ttl</a></li>
+          <li><a href="#expire">expire</a></li>
+          <li><a href="#type">type</a></li>
+          <li><a href="#rename">rename</a></li>
+        </ul>
+      </li>
+      <li><a href="#redis五种数据结构">redis五种数据结构</a></li>
+      <li><a href="#3-string组常见命令">3) string组常见命令</a>
+        <ul>
+          <li><a href="#set">set</a></li>
+          <li><a href="#get">get</a></li>
+          <li><a href="#append">append</a></li>
+          <li><a href="#strlen">strlen</a></li>
+          <li><a href="#incr">incr</a></li>
+          <li><a href="#decr">decr</a></li>
+          <li><a href="#incrby">incrby</a></li>
+          <li><a href="#decrby">decrby</a></li>
+          <li><a href="#getrange">getrange</a></li>
+          <li><a href="#setrange">setrange</a></li>
+          <li><a href="#setex">setex</a></li>
+          <li><a href="#setnx">setnx</a></li>
+          <li><a href="#mset">mset</a></li>
+          <li><a href="#mget">mget</a></li>
+          <li><a href="#msetnx">msetnx</a></li>
+        </ul>
+      </li>
+      <li><a href="#4-list组常见命令">4) list组常见命令</a>
+        <ul>
+          <li><a href="#lpush">lpush</a></li>
+          <li><a href="#lrange">lrange</a></li>
+          <li><a href="#rpush">rpush</a></li>
+          <li><a href="#lpop">lpop</a></li>
+          <li><a href="#rpop">rpop</a></li>
+          <li><a href="#lindex">lindex</a></li>
+          <li><a href="#llen">llen</a></li>
+          <li><a href="#lrem">lrem</a></li>
+        </ul>
+      </li>
+      <li><a href="#5-set组常见命令">5) set组常见命令</a>
+        <ul>
+          <li><a href="#sadd">sadd</a></li>
+          <li><a href="#scard">scard</a></li>
+          <li><a href="#smembers">smembers</a></li>
+          <li><a href="#srem">srem</a></li>
+          <li><a href="#srandmember">srandmember</a></li>
+          <li><a href="#spop">spop</a></li>
+          <li><a href="#sinter">sinter</a></li>
+          <li><a href="#sunion">sunion</a></li>
+          <li><a href="#sdiff">sdiff</a></li>
+        </ul>
+      </li>
+      <li><a href="#hash组常见命令">hash组常见命令</a>
+        <ul>
+          <li><a href="#hset">hset</a></li>
+          <li><a href="#hget">hget</a></li>
+          <li><a href="#hmset">hmset</a></li>
+          <li><a href="#hmget">hmget</a></li>
+          <li><a href="#hgetall">hgetall</a></li>
+          <li><a href="#hdel">hdel</a></li>
+          <li><a href="#hlen">hlen</a></li>
+          <li><a href="#hexists">hexists</a></li>
+          <li><a href="#hkeys">hkeys</a></li>
+          <li><a href="#hvals">hvals</a></li>
+          <li><a href="#hincrby">hincrby</a></li>
+          <li><a href="#hincrbyfloat">hincrbyfloat</a></li>
+          <li><a href="#hsetnx">hsetnx</a></li>
+        </ul>
+      </li>
+      <li><a href="#sorted_set组常见命令">sorted_set组常见命令</a>
+        <ul>
+          <li><a href="#zadd">zadd</a></li>
+          <li><a href="#zcard">zcard</a></li>
+          <li><a href="#zcount">zcount</a></li>
+          <li><a href="#zincrby">zincrby</a></li>
+          <li><a href="#zrange">zrange</a></li>
+          <li><a href="#zrangebyscore">zrangebyscore</a></li>
+          <li><a href="#zrem">zrem</a></li>
+          <li><a href="#zrank">zrank</a></li>
+          <li><a href="#zscore">zscore</a></li>
+          <li><a href="#zrevrank">zrevrank</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#redis配置文件">Redis配置文件</a>
+    <ul>
+      <li><a href="#0-配置的更改">0) 配置的更改</a></li>
+      <li><a href="#1-redis-连接相关配置">1) redis 连接相关配置</a></li>
+      <li><a href="#2-redis日志相关配置">2) redis日志相关配置</a></li>
+      <li><a href="#3redis持久化相关配置">3redis持久化相关配置</a>
+        <ul>
+          <li><a href="#redis持久化">redis持久化</a></li>
+        </ul>
+      </li>
+      <li><a href="#4-其它配置">4) 其它配置</a></li>
+    </ul>
+  </li>
+  <li><a href="#redis事务">Redis事务</a>
+    <ul>
+      <li><a href="#transactions组常见命令">transactions组常见命令</a>
+        <ul>
+          <li><a href="#multi">multi</a></li>
+          <li><a href="#exec">exec</a></li>
+          <li><a href="#原子性案例">原子性案例</a></li>
+          <li><a href="#discard">discard</a></li>
+          <li><a href="#watch">watch</a></li>
+          <li><a href="#unwatch">unwatch</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#redis消息发布与订阅">Redis消息发布与订阅</a>
+    <ul>
+      <li><a href="#pubsub组常见命令">pubsub组常见命令</a>
+        <ul>
+          <li><a href="#subscribe">subscribe</a></li>
+          <li><a href="#publish">publish</a></li>
+          <li><a href="#psubscribe">psubscribe</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#redis主从复制">redis主从复制</a>
+    <ul>
+      <li><a href="#搭建一主二从集群">搭建一主二从集群</a>
+        <ul>
+          <li><a href="#server组常见命令">server组常见命令</a></li>
+          <li><a href="#slaveof">slaveof</a></li>
+        </ul>
+      </li>
+      <li><a href="#redis哨兵服务">redis哨兵服务</a></li>
+    </ul>
+  </li>
+</ul>
+:ET
