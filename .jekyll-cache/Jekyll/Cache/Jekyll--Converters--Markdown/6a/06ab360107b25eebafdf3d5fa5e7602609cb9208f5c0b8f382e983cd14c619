@@ -1,0 +1,131 @@
+I"0	<h1 id="docker用法">docker用法</h1>
+
+<p>ctrl + p + q，退出当前容器，但是不结束当前容器（好比退到后台）</p>
+
+<p>容器-&gt;镜像-&gt;仓库</p>
+
+<p>docker images</p>
+
+<p>docker ps -a</p>
+
+<p>docker ps -qf</p>
+
+<p>docker login</p>
+
+<p>docker pull</p>
+
+<p>docker push</p>
+
+<p>docker logs</p>
+
+<p>docker restart</p>
+
+<p>docker start</p>
+
+<p>docker stop</p>
+
+<p>docker exec</p>
+
+<p>docker attach</p>
+
+<p>docker info</p>
+
+<p>docker run -ti –name –rm</p>
+
+<p>docker run -ti –name -d</p>
+
+<p>docker run</p>
+
+<p>​		-t	：终端方式</p>
+
+<p>​		-i	: 	交互方式</p>
+
+<p>​		–name xxx : 设置容器名字</p>
+
+<p>​		-d	: 后台方式运行</p>
+
+<p>​		-p	: 端口映射</p>
+
+<p>​		-v  	:  容器中的目录挂载到本地目录上</p>
+
+<p>docker rm</p>
+
+<p>docker rmi</p>
+
+<p>docker tag</p>
+
+<p>docker commit</p>
+
+<p>docker save imageid &gt; image.tar</p>
+
+<p>docker load &lt; image.tar</p>
+
+<p>docker inspect 查看地址映射（目录挂载映射），同时还能查看是否有导出端口</p>
+
+<p>打印容器的环境变量</p>
+
+<p>docker exec -ti xxx printenv</p>
+
+<p>docker run -ti xxx printenv</p>
+
+<h1 id="dockerfile编写">dockerfile编写</h1>
+
+<h2 id="基本语法">基本语法</h2>
+
+<p>假定本机上src/1.txt中内容为123</p>
+
+<p>创建文件Dockerfile</p>
+
+<p>FROM   centos_image</p>
+
+<p>​	基于哪个镜像，必须的命令，比如</p>
+
+<p>​	FROM alpine</p>
+
+<p>WORKDIR  dirpath</p>
+
+<p>​	基于哪个目录下，比如</p>
+
+<p>​	WORKDIR /app</p>
+
+<p>COPY 	src/   /app</p>
+
+<p>​	把本机文件拷贝到镜像中，比如</p>
+
+<p>​	COPY 	src/   /app</p>
+
+<p>RUN</p>
+
+<p>​	构建容器时，运行shell语句，比如</p>
+
+<p>​	RUN echo 321 » 1.txt</p>
+
+<p>​	# 追加321到1.txt文件中，变为123321</p>
+
+<p>CMD</p>
+
+<p>​	启动容器时，运行的脚本，脚本运行结束后，容器的整个运行就结束了，一般写成阻塞式的运行脚本，比如</p>
+
+<p>​	CMD tail -f 1.txt</p>
+
+<h2 id="其他不常见语法">其他不常见语法</h2>
+
+<p>ADD</p>
+
+<p>​	和COPY类似，但是ADD源路径除了可以是本机地址，还可以是URL地址</p>
+
+<p>ENTRYPOINT</p>
+
+<p>​	和CMD类似</p>
+
+<p>EXPOSE</p>
+
+<p>​	端口暴露</p>
+
+<h1 id="基于dockerfile构建">基于dockerfile构建</h1>
+
+<p>docker build -t name:tag  .</p>
+
+<p>​</p>
+
+:ET

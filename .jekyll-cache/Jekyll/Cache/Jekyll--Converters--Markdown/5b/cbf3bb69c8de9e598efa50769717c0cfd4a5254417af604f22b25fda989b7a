@@ -1,0 +1,71 @@
+I"H
+<ul>
+  <li><a href="#0-概念和语法">0. 概念和语法</a></li>
+  <li><a href="#1下载安装启动配置文件">1.下载安装、启动、配置文件</a></li>
+  <li><a href="#2-索引增删改查">2. 索引：增删改查</a>
+    <ul>
+      <li><a href="#创建索引">创建索引</a></li>
+      <li><a href="#查看指定索引"><strong>查看指定索引</strong></a></li>
+      <li><a href="#查看所有索引"><strong>查看所有索引</strong></a></li>
+      <li><a href="#关闭索引">关闭索引</a></li>
+      <li><a href="#打开索引">打开索引</a></li>
+    </ul>
+  </li>
+  <li><a href="#3映射mapping">3.映射mapping</a>
+    <ul>
+      <li><a href="#创建索引的映射">创建索引的映射</a></li>
+      <li><a href="#查看索引的映射">查看索引的映射</a></li>
+      <li><a href="#查看所有索引的映射">查看所有索引的映射</a></li>
+      <li><a href="#增加映射的字段不能修改字段的类型">增加映射的字段（不能修改字段的类型）</a></li>
+      <li><a href="#创建索引的同时创建映射和其他配置项比如分词器">创建索引的同时创建映射和其他配置项，比如分词器</a></li>
+    </ul>
+  </li>
+  <li><a href="#4-文档">4. 文档</a>
+    <ul>
+      <li><a href="#新增文档">新增文档</a></li>
+      <li><a href="#查看文档">查看文档</a></li>
+      <li><a href="#查看多个文档">查看多个文档</a></li>
+      <li><a href="#修改文档">修改文档</a></li>
+    </ul>
+  </li>
+  <li><a href="#5-搜索">5. 搜索</a>
+    <ul>
+      <li><a href="#term查询">term查询</a></li>
+      <li><a href="#full-text查询">full text查询</a>
+        <ul>
+          <li><a href="#match_all查询全部">match_all查询全部</a></li>
+          <li><a href="#match普通查询">match普通查询</a></li>
+          <li><a href="#multi_match多字段查询">multi_match多字段查询</a></li>
+          <li><a href="#match_phrase">match_phrase</a></li>
+          <li><a href="#match_phrase_prefix-前缀查询">match_phrase_prefix 前缀查询</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#6-分词">6. 分词</a>
+    <ul>
+      <li><a href="#常见分词器">常见分词器</a></li>
+      <li><a href="#内置分词器analyzer">内置分词器analyzer</a></li>
+      <li><a href="#中文分词器">中文分词器</a>
+        <ul>
+          <li><a href="#smartcn分词器">smartcn分词器</a></li>
+          <li><a href="#ik分词器">ik分词器</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#7-常见字段类型">7. 常见字段类型</a>
+    <ul>
+      <li><a href="#字符串类型">字符串类型</a></li>
+      <li><a href="#数值型">数值型</a></li>
+      <li><a href="#布尔型">布尔型</a></li>
+      <li><a href="#二进制">二进制</a></li>
+      <li><a href="#范围类型">范围类型</a></li>
+      <li><a href="#日期类型">日期类型</a></li>
+      <li><a href="#数组类型">数组类型</a></li>
+      <li><a href="#对象类型">对象类型</a></li>
+      <li><a href="#专有类型">专有类型</a></li>
+    </ul>
+  </li>
+</ul>
+:ET

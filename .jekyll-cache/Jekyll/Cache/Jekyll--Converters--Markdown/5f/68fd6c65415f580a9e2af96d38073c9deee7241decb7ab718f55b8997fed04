@@ -1,0 +1,19 @@
+I"�
+<ul>
+  <li><a href="#文件系统">文件系统</a></li>
+  <li><a href="#mbr主引导扇区">MBR主引导扇区</a></li>
+  <li><a href="#fdisk-分区">fdisk 分区</a>
+    <ul>
+      <li><a href="#fdisk--l-查看磁盘和分区">fdisk -l 查看磁盘和分区</a></li>
+      <li><a href="#fdisk-devsdb-创建分区">fdisk /dev/sdb 创建分区</a></li>
+      <li><a href="#格式化分区">格式化分区</a></li>
+      <li><a href="#创建一个挂载点目录用于挂载">创建一个挂载点（目录）用于挂载</a></li>
+      <li><a href="#开机自动挂载">开机自动挂载</a></li>
+      <li><a href="#uuid方式设置开机自动挂载">uuid方式设置开机自动挂载</a></li>
+      <li><a href="#查看分区的uuid">查看分区的uuid</a></li>
+      <li><a href="#卸载">卸载</a></li>
+      <li><a href="#重新挂载fstab配置中的所有文件系统">重新挂载fstab配置中的所有文件系统</a></li>
+    </ul>
+  </li>
+</ul>
+:ET

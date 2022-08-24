@@ -1,0 +1,46 @@
+I"l
+<ul>
+  <li><a href="#工具分类">工具分类</a></li>
+  <li><a href="#部分工具介绍">部分工具介绍</a>
+    <ul>
+      <li><a href="#ping">ping</a>
+        <ul>
+          <li><a href="#测试对方ip是否存在">测试对方ip是否存在</a></li>
+          <li><a href="#测试网速">测试网速</a></li>
+          <li><a href="#解析域名">解析域名</a></li>
+          <li><a href="#测试mtu">测试MTU</a></li>
+        </ul>
+      </li>
+      <li><a href="#telnet">telnet</a>
+        <ul>
+          <li><a href="#测试对方开放的端口">测试对方开放的端口</a></li>
+        </ul>
+      </li>
+      <li><a href="#lsof">lsof</a>
+        <ul>
+          <li><a href="#查看网络通信的进程号">查看网络通信的进程号</a></li>
+        </ul>
+      </li>
+      <li><a href="#netstat">netstat</a>
+        <ul>
+          <li><a href="#查看处于监听的tcp连接及端口号">查看处于监听的tcp连接及端口号</a></li>
+          <li><a href="#查看路由">查看路由</a></li>
+          <li><a href="#查看网关">查看网关</a></li>
+        </ul>
+      </li>
+      <li><a href="#traceroute">traceroute</a>
+        <ul>
+          <li><a href="#查看主机及目标之间的路由路径">查看主机及目标之间的路由路径</a></li>
+        </ul>
+      </li>
+      <li><a href="#nc">nc</a>
+        <ul>
+          <li><a href="#测试对方开放的端口-1">测试对方开放的端口</a></li>
+          <li><a href="#当做聊天工具">当做聊天工具</a></li>
+          <li><a href="#文件传输">文件传输</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+:ET

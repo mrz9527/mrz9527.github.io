@@ -1,0 +1,18 @@
+I"�
+<ul>
+  <li><a href="#案例">案例</a>
+    <ul>
+      <li><a href="#写10万次redis数据">写10万次redis数据</a></li>
+      <li><a href="#耗时结果">耗时结果</a></li>
+      <li><a href="#结果分析">结果分析</a></li>
+    </ul>
+  </li>
+  <li><a href="#函数用法">函数用法</a>
+    <ul>
+      <li><a href="#1-gettimeofday">1. gettimeofday</a></li>
+      <li><a href="#2-time">2. time</a></li>
+      <li><a href="#3-clock">3. clock</a></li>
+    </ul>
+  </li>
+</ul>
+:ET

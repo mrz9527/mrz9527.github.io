@@ -1,0 +1,131 @@
+I"=%<h1 id="simpleperf耗时分析">simpleperf耗时分析</h1>
+
+<p>simpleperf是ndk包下的一个性能分析工具，专门用于分析ndk代码。</p>
+
+<p>simpleperf有两种工作方式，一种是可执行文件的方式，一种是脚本的方式。</p>
+
+<p>下载ndk包，里面自带simpleperf。</p>
+
+<p>/Users/xm210408/Library/Android/sdk/ndk/21.1.6352462/simpleperf
+在simpleperf目录下，有很多的脚本可供使用</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">ls</span> | <span class="nb">grep</span> <span class="s2">"</span><span class="se">\.</span><span class="s2">py"</span>
+__init__.py
+annotate.py
+api_profiler.py
+app_profiler.py
+binary_cache_builder.py
+debug_unwind_reporter.py
+pprof_proto_generator.py
+profile_pb2.py
+report.py
+report_html.py
+report_sample.py
+run_simpleperf_on_device.py
+run_simpleperf_without_usb_connection.py
+simpleperf_report_lib.py
+utils.py
+</code></pre></div></div>
+
+<h2 id="介绍">介绍</h2>
+
+<p>https://developer.android.com/ndk/guides/simpleperf</p>
+
+<h2 id="输出性能数据">输出性能数据</h2>
+
+<p>记录设备上app运行过程，在本机pc上生成性能数据perf.data。用到的脚本是app_profiler.py。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kangzhou-mac:simpleperf xm210408<span class="nv">$ </span>python app_profiler.py <span class="nt">--help</span>
+usage: app_profiler.py <span class="o">[</span><span class="nt">-h</span><span class="o">]</span>
+                       <span class="o">(</span><span class="nt">-p</span> APP | <span class="nt">-np</span> NATIVE_PROGRAM | <span class="nt">-cmd</span> CMD | <span class="nt">--pid</span> PID <span class="o">[</span>PID ...] | <span class="nt">--tid</span> TID <span class="o">[</span>TID ...] | <span class="nt">--system_wide</span><span class="o">)</span>
+                       <span class="o">[</span><span class="nt">--compile_java_code</span><span class="o">]</span> <span class="o">[</span><span class="nt">-a</span> ACTIVITY | <span class="nt">-t</span> TEST]
+                       <span class="o">[</span><span class="nt">-r</span> RECORD_OPTIONS] <span class="o">[</span><span class="nt">-lib</span> NATIVE_LIB_DIR]
+                       <span class="o">[</span><span class="nt">-o</span> PERF_DATA_PATH] <span class="o">[</span><span class="nt">-nb</span><span class="o">]</span> <span class="o">[</span><span class="nt">--ndk_path</span> NDK_PATH]
+                       <span class="o">[</span><span class="nt">--disable_adb_root</span><span class="o">]</span> <span class="o">[</span><span class="nt">--log</span> <span class="o">{</span>debug,info,warning<span class="o">}]</span>
+
+app_profiler.py: Record cpu profiling data of an android app or native program.
+
+    It downloads simpleperf on device, uses it to collect profiling data on the selected app,
+    and pulls profiling data and related binaries on host.
+
+optional arguments:
+  <span class="nt">-h</span>, <span class="nt">--help</span>            show this <span class="nb">help </span>message and <span class="nb">exit
+
+</span>Select profiling target:
+  <span class="nt">-p</span> APP, <span class="nt">--app</span> APP     Profile an Android app, given the package name. Like
+                        <span class="sb">`</span><span class="nt">-p</span> com.example.android.myapp<span class="sb">`</span><span class="nb">.</span>
+  <span class="nt">-np</span> NATIVE_PROGRAM, <span class="nt">--native_program</span> NATIVE_PROGRAM
+                        Profile a native program running on the Android
+                        device. Like <span class="sb">`</span><span class="nt">-np</span> surfaceflinger<span class="sb">`</span><span class="nb">.</span>
+  <span class="nt">-cmd</span> CMD              Profile running a <span class="nb">command </span>on the Android device. Like
+                        <span class="sb">`</span><span class="nt">-cmd</span> <span class="s2">"pm -l"</span><span class="sb">`</span><span class="nb">.</span>
+  <span class="nt">--pid</span> PID <span class="o">[</span>PID ...]   Profile native processes running on device given their
+                        process ids.
+  <span class="nt">--tid</span> TID <span class="o">[</span>TID ...]   Profile native threads running on device given their
+                        thread ids.
+  <span class="nt">--system_wide</span>         Profile system wide.
+
+Extra options <span class="k">for </span>profiling an app:
+  <span class="nt">--compile_java_code</span>   Used with <span class="nt">-p</span><span class="nb">.</span> On Android N and Android O, we need to
+                        compile Java code into native instructions to profile
+                        Java code. Android O also needs wrap.sh <span class="k">in </span>the apk to
+                        use the native instructions.
+  <span class="nt">-a</span> ACTIVITY, <span class="nt">--activity</span> ACTIVITY
+                        Used with <span class="nt">-p</span><span class="nb">.</span> Profile the launch <span class="nb">time </span>of an activity
+                        <span class="k">in </span>an Android app. The app will be started or
+                        restarted to run the activity. Like <span class="sb">`</span><span class="nt">-a</span>
+                        .MainActivity<span class="sb">`</span><span class="nb">.</span>
+  <span class="nt">-t</span> TEST, <span class="nt">--test</span> TEST  Used with <span class="nt">-p</span><span class="nb">.</span> Profile the launch <span class="nb">time </span>of an
+                        instrumentation <span class="nb">test </span><span class="k">in </span>an Android app. The app will
+                        be started or restarted to run the instrumentation
+                        test. Like <span class="sb">`</span><span class="nt">-t</span> test_class_name<span class="sb">`</span><span class="nb">.</span>
+
+Select recording options:
+  <span class="nt">-r</span> RECORD_OPTIONS, <span class="nt">--record_options</span> RECORD_OPTIONS
+                        Set recording options <span class="k">for</span> <span class="sb">`</span>simpleperf record<span class="sb">`</span> command.
+                        Use <span class="sb">`</span>run_simpleperf_on_device.py record <span class="nt">-h</span><span class="sb">`</span> to see all
+                        accepted options. Default is <span class="s2">"-e task-clock:u -f 1000
+                        -g --duration 10"</span><span class="nb">.</span>
+  <span class="nt">-lib</span> NATIVE_LIB_DIR, <span class="nt">--native_lib_dir</span> NATIVE_LIB_DIR
+                        When profiling an Android app containing native
+                        libraries, the native libraries are usually stripped
+                        and lake of symbols and debug information to provide
+                        good profiling result. By using <span class="nt">-lib</span>, you tell
+                        app_profiler.py the path storing unstripped native
+                        libraries, and app_profiler.py will search all shared
+                        libraries with suffix .so <span class="k">in </span>the directory. Then the
+                        native libraries will be downloaded on device and
+                        collected <span class="k">in </span>build_cache.
+  <span class="nt">-o</span> PERF_DATA_PATH, <span class="nt">--perf_data_path</span> PERF_DATA_PATH
+                        The path to store profiling data. Default is
+                        perf.data.
+  <span class="nt">-nb</span>, <span class="nt">--skip_collect_binaries</span>
+                        By default we collect binaries used <span class="k">in </span>profiling data
+                        from device to binary_cache directory. It can be used
+                        to annotate <span class="nb">source </span>code and disassembly. This option
+                        skips it.
+
+Other options:
+  <span class="nt">--ndk_path</span> NDK_PATH   Set the path of a ndk release. app_profiler.py needs
+                        some tools <span class="k">in </span>ndk, like readelf.
+  <span class="nt">--disable_adb_root</span>    Force adb to run <span class="k">in </span>non root mode. By default,
+                        app_profiler.py will try to switch to root mode to be
+                        able to profile released Android apps.
+  <span class="nt">--log</span> <span class="o">{</span>debug,info,warning<span class="o">}</span>
+                        <span class="nb">set </span>log level
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python app_profiler.py -p com.tencent.olhct2soLibrary -lib /Users/xm210408/program2/olhct_sdk/app/build/intermediates/cmake/debug/obj/arm64-v8a/
+</code></pre></div></div>
+
+<p>-p simpleperf.example.cpp是手机中android项目的进程，-lib libdir是ndk编译后的so所在的目录，运行python脚本需要python3的环境。</p>
+
+<h2 id="生成报告">生成报告</h2>
+
+<p>解析性能数据文件perf.data，生成分析报告。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python report_html.py --add_source_code --source_dirs /Users/xm210408/program2/olhct_sdk/app/src/main/cpp --add_disassembly -o xxx.html
+</code></pre></div></div>
+
+<p>–source_dirs ../demo是源码cpp所在目录。</p>
+:ET

@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>Mysql用法</title>
+  <meta name="description" content="DDL:	Data Definition LanguageDML:	Data Manipulation LanguageDQL：Data Query LanguageDCL:	Data Control Language">
+  <meta name="author" content="leopardpan">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Mysql用法">
+  <meta name="twitter:description" content="DDL:	Data Definition LanguageDML:	Data Manipulation LanguageDQL：Data Query LanguageDCL:	Data Control Language">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Mysql用法">
+  <meta property="og:description" content="DDL:	Data Definition LanguageDML:	Data Manipulation LanguageDQL：Data Query LanguageDCL:	Data Control Language">
+  
+  <link rel="icon" type="image/png" href="/images/favicon.png" />
+  <link href="/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="https://mrz9527.github.io/2022/04/mysql%E7%94%A8%E6%B3%95/">
+  <link rel="alternate" type="application/rss+xml" title="mrz9527" href="https://mrz9527.github.io/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+
+<!-- 站点统计 -->
+  <script 
+  async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+  </script>  
+
+<!-- 百度统计 -->
+  
+  <script>
+      var _hmt = _hmt || [];
+      (function() {
+        var hm = document.createElement("script");
+        hm.src = "//hm.baidu.com/hm.js?7a362b671f24dfc0640fd67032b87184";
+        var s = document.getElementsByTagName("script")[0]; 
+        s.parentNode.insertBefore(hm, s);
+      })();
+  </script>
+  
+
+<!-- google 统计 -->
+  
+
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({
+    google_ad_client: "ca-pub-9005224472374751",
+    enable_page_level_ads: true
+  });
+</script>
+
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">        
+      <div class="nav_container">
+         <nav class="nav-menu-item" style = "float:right">
+            <i class="nav-menu-item">
+              <a href="/#blog" title="" class="blog-button">  博客主页
+              </a>
+            </i>
+            
+                <i class="nav-menu-item">
+
+                  <a href="/archive" title="archive" class="btn-mobile-menu__icon">
+                      所有文章
+                  </a>
+                </i>
+            
+                <i class="nav-menu-item">
+
+                  <a href="/tags" title="tags" class="btn-mobile-menu__icon">
+                      标签
+                  </a>
+                </i>
+            
+          </nav>
+      </div>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+        <!-- 头像效果-start -->
+        <div class="ih-item circle effect right_to_left">            
+            <a href="/#blog" title="前往 mrz9527 的主页" class="blog-button">
+                <div class="img"><img src="/images/avatar.jpg" alt="img"></div>
+                <div class="info">
+                    <div class="info-back">
+                        <h2> 
+                            
+                                mrz9527
+                            
+                        </h2>
+                        <p>
+                           
+                                c++ / 机器学习
+                            
+                        </p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <!-- 头像效果-end -->
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for mrz9527" class="blog-button">mrz9527</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">个人站</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">欢迎来到我的个人站~</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        
+
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="" class="blog-button">博客主页</a></li>
+                
+                  <li class="navigation__item"><a href="/archive" title="archive">所有文章</a></li>
+                
+                  <li class="navigation__item"><a href="/tags" title="tags">标签</a></li>
+                
+              </ul>
+            </nav>
+          </div>          
+        </div>
+
+
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-clear"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <head>
+  <link rel="stylesheet" href="/css/post.css">
+</head>
+
+<article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <h1 class="post-title">Mysql用法</h1>
+    <div class="post-meta">
+      <img src="/images/calendar.png" width="20px"/> 
+      <time datetime="2022-04-14 00:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2022-04-14</time>  
+
+      <span id="busuanzi_container_page_pv"> | 阅读：<span id="busuanzi_value_page_pv"></span>次</span>
+    </p>
+    </div>
+  </header>
+
+  
+    <h2 class="post-title">目录</h2>
+    <ul>
+  <li><a href="#sql语言">sql语言</a>
+    <ul>
+      <li><a href="#ddl">DDL</a></li>
+      <li><a href="#dml">DML</a></li>
+      <li><a href="#dql">DQL</a>
+        <ul>
+          <li><a href="#基本查询">基本查询</a></li>
+          <li><a href="#对结果排序">对结果排序</a></li>
+          <li><a href="#对结果分组">对结果分组</a></li>
+          <li><a href="#对结果分页">对结果分页</a></li>
+        </ul>
+      </li>
+      <li><a href="#dcl">DCL</a>
+        <ul>
+          <li><a href="#用户管理">用户管理</a></li>
+          <li><a href="#权限管理">权限管理</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#函数">函数</a>
+    <ul>
+      <li><a href="#字符串函数">字符串函数</a></li>
+      <li><a href="#数值函数">数值函数</a></li>
+      <li><a href="#日期函数">日期函数</a></li>
+      <li><a href="#流程控制函数">流程控制函数</a></li>
+    </ul>
+  </li>
+  <li><a href="#约束">约束</a>
+    <ul>
+      <li><a href="#普通约束">普通约束</a></li>
+      <li><a href="#外键约束">外键约束</a>
+        <ul>
+          <li><a href="#创建外键约束">创建外键约束</a></li>
+          <li><a href="#删除外键约束">删除外键约束</a></li>
+          <li><a href="#外键删除更新行为">外键删除更新行为</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#多表">多表</a>
+    <ul>
+      <li><a href="#多表关系">多表关系</a></li>
+      <li><a href="#多表查询">多表查询</a></li>
+      <li><a href="#联合查询">联合查询</a></li>
+      <li><a href="#子查询">子查询</a>
+        <ul>
+          <li><a href="#标量子查询">标量子查询</a></li>
+          <li><a href="#列子查询">列子查询</a></li>
+          <li><a href="#行子查询">行子查询</a></li>
+          <li><a href="#表子查询">表子查询</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#事务">事务</a>
+    <ul>
+      <li><a href="#事务操作">事务操作</a></li>
+      <li><a href="#事务特性acid">事务特性ACID</a></li>
+      <li><a href="#并发事务问题">并发事务问题</a></li>
+      <li><a href="#事务隔离级别">事务隔离级别</a></li>
+    </ul>
+  </li>
+  <li><a href="#mysql体系结构">mysql体系结构</a></li>
+  <li><a href="#存储引擎">存储引擎</a>
+    <ul>
+      <li><a href="#基本操作">基本操作</a></li>
+    </ul>
+  </li>
+</ul>
+
+  
+
+  <section class="post">
+    <p>DDL:	Data Definition Language
+DML:	Data Manipulation Language
+DQL：Data Query Language
+DCL:	Data Control Language</p>
+
+<h1 id="sql语言">sql语言</h1>
+
+<h2 id="ddl">DDL</h2>
+
+<p>定义数据库、表、字段。
+<strong>数据库</strong>：</p>
+
+<pre><code class="language-mysql"># 查看数据库列表
+show databases;
+# 创建数据库
+create database if not exists db_name;
+# 删除数据库
+drop database db_name;
+# 清空数据库，但保留数据库名和表头
+TRUNCATE database db_name;
+</code></pre>
+
+<p><strong>表</strong>:</p>
+
+<pre><code class="language-mysql"># 先进入数据库，才能进行表操作
+use db_name;
+# 创建表
+create table if not exists tbl_name (
+field1 int commit "字段1注释",
+field2 varchar(20) commit "字段2注释"
+) commit "表注释";
+# 查看表
+desc tbl_name;
+# 查看表的创建语句
+show create table tbl_name;
+# 删除表
+drop table tbl_name;
+# 修改表名
+alter table old_tbl_name rename to new_tbl_name;
+</code></pre>
+
+<p>字段</p>
+
+<pre><code class="language-mysql"># 先进入数据库，才能进行表的字段操作
+use db_name;
+# 修改表字段类型
+alter table tbl_name modify field1 int int unsigned;
+# 修改表字段名和类型
+alter table tbl_name change old_field new_field int;
+# 添加表字段
+alter table tbl_name add filedn char(10);
+# 删除表字段
+alter table tbl_name drop filedn;
+</code></pre>
+
+<h2 id="dml">DML</h2>
+
+<p>向表中插入、删除、修改记录
+<strong>插入数据</strong>：insert into</p>
+
+<pre><code class="language-mysql"># 插入一条数据，没有列出的字段，使用默认值
+insert into tbl_name(field1, field2...) values(val1, val2)
+# 插入一条数据，不使用默认值
+insert into tbl_name values(val1, val2, ....valn)
+# 批量插入数据
+insert into tbl_name(field1, field2...) values(val1, val2),values(val1, val2),values(val1, val2)
+</code></pre>
+
+<p><strong>删除数据</strong>: delete from</p>
+
+<pre><code class="language-mysql"># 删除指定数据
+delete from tbl_name where fieldn = value;
+</code></pre>
+
+<p><strong>修改数据</strong>: update</p>
+
+<pre><code class="language-mysql"># 找到field1 = val1的所有记录，修改对应记录的filed2为val2
+update tbl_name set filed2 = val2 where field1 = val1;
+</code></pre>
+
+<h2 id="dql">DQL</h2>
+
+<p>查询表中记录</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>select 字段
+from 表名
+where	查询条件
+group by	分组字段列表
+having	分组后条件列表
+order by	排序字段列表
+limit	分页参数
+</code></pre></div></div>
+
+<h3 id="基本查询">基本查询</h3>
+
+<pre><code class="language-mysql"># 查询多个字段
+select field1， field2, ...fieldn from tbl_name;
+# 查询所有字段
+select * from tbl_name;
+</code></pre>
+
+<p><strong>设置查询结果字段的别名</strong></p>
+
+<pre><code class="language-mysql"># 给查询后返回结果的字段filed1和field2分别设置别名。
+select field1 [as alais1], field2 [as alais2] from tbl_name;
+</code></pre>
+
+<p><strong>查询结果去重</strong></p>
+
+<pre><code class="language-mysql">select distinct 字段列表 from tbl_name;
+</code></pre>
+
+<p><strong>条件查询</strong></p>
+
+<pre><code class="language-mysql">select 字段列表 from tbl_name where 条件列表
+</code></pre>
+
+<p><strong>条件</strong></p>
+
+<p>分为两类，比较运算符和逻辑运算符。</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>比较运算符</th>
+      <th>功能</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>&gt;</td>
+      <td>大于</td>
+    </tr>
+    <tr>
+      <td>&gt;=</td>
+      <td>大于等于</td>
+    </tr>
+    <tr>
+      <td>&lt;</td>
+      <td>小于</td>
+    </tr>
+    <tr>
+      <td>&lt;=</td>
+      <td>小于等于</td>
+    </tr>
+    <tr>
+      <td>=</td>
+      <td>等于</td>
+    </tr>
+    <tr>
+      <td>&lt;&gt;或!=</td>
+      <td>不等于</td>
+    </tr>
+    <tr>
+      <td>field1 between low and high</td>
+      <td>field在范围[low, high]内，闭区间</td>
+    </tr>
+    <tr>
+      <td>in(…)</td>
+      <td>in之后的列表中，多选1</td>
+    </tr>
+    <tr>
+      <td>like</td>
+      <td>占位符，模糊匹配。(匹配单个字符: “_“，匹配任意个字符:”%”)</td>
+    </tr>
+    <tr>
+      <td>is null</td>
+      <td>是null</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>逻辑运算符</th>
+      <th>功能</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>and 或 &amp;&amp;</td>
+      <td>多个条件同时成立</td>
+    </tr>
+    <tr>
+      <td>or 或 ||</td>
+      <td>多个条件任意一个成立</td>
+    </tr>
+    <tr>
+      <td>not 或 !</td>
+      <td>非，不是</td>
+    </tr>
+  </tbody>
+</table>
+
+<pre><code class="language-mysql"># 查询身份证号为空的信息
+select * from tbl_name where card is null;
+# 查询身份证号不为空的信息
+select * from tbl_name where card is not null;
+# 查询年龄为18、20、40的所有信息
+select * from tbl_name where age = 18 or age = 20 or age = 40;
+select * from tbl_name where age in (18,20,40);
+# 查询年龄在20到30之间的所有信息
+select * from tbl_name where age &gt;=20 and where age &lt;= 30;
+select * from tbl_name where age between 20 and 30;
+# 查询姓名为2个字的所有信息，用模糊查询，使用两个下划线_
+select * from tbl_name where name like "__";
+# 查询身份证号最后一位是X的所有信息
+select * from tbl_name where card like "%X";
+</code></pre>
+
+<p><strong>聚合函数</strong></p>
+
+<p>将一列数据作为一个整体，进行纵向计算。
+常见聚合函数。</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>函数</th>
+      <th>功能</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>count</td>
+      <td>统计数量</td>
+    </tr>
+    <tr>
+      <td>max</td>
+      <td>最大值</td>
+    </tr>
+    <tr>
+      <td>min</td>
+      <td>最小值</td>
+    </tr>
+    <tr>
+      <td>avg</td>
+      <td>平均值</td>
+    </tr>
+    <tr>
+      <td>sum</td>
+      <td>求和</td>
+    </tr>
+  </tbody>
+</table>
+
+<pre><code class="language-mysql"># 统计表的记录长度
+select count(*) from tbl_name;
+select count(name) from tbl_name;
+</code></pre>
+
+<h3 id="对结果排序">对结果排序</h3>
+
+<pre><code class="language-mysql"># 对表中的数据，按照字段field1升序排序，如果字段field1对应的值相同，再按照字段field2进行降序排序.
+select * from tbl_name order by field1 asc, field2 desc;
+</code></pre>
+
+<h3 id="对结果分组">对结果分组</h3>
+
+<pre><code class="language-mysql"># 按照性别对表进行分组，统计不同性别的人数
+select gender, count(*) as "peopleCount" from tbl_name group by gender;
+</code></pre>
+
+<h3 id="对结果分页">对结果分页</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>limit index count
+对结果进行分页，count是每页展示的数据条数，index是数据的索引。页码下标从1开始。
+index = (页码 - 1) * count;
+比如每页展示10个，从第7页开始，那么索引下标就是(7-1)*10=60
+</code></pre></div></div>
+
+<pre><code class="language-mysql"># 第1页，每页展示10条数据
+select * from tbl_name limit 0, 10;
+# 第7页，每页展示10条数据
+select * from tbl_name limit 60, 10;
+</code></pre>
+
+<h2 id="dcl">DCL</h2>
+
+<p>管理访问数据库的用户，以及用户的访问数据库中表的权限。
+mysql用户相关的信息存放在mysql数据库的user表中。表中主要存放:
+Host:用户所在的主机
+User:用户名
+以及各种各样的权限。Select_priv、Insert_priv、Update_priv、Delete_priv、Create_priv等等</p>
+
+<h3 id="用户管理">用户管理</h3>
+
+<pre><code class="language-mysql"># 查询用户
+use mysql;
+select * from user;
+</code></pre>
+
+<pre><code class="language-mysql"># 创建用户
+create user '用户名'@'主机名' identified by '密码';
+# 创建本机的用户u_itcast，密码是123456
+create user 'u_itcast'@'localhost' identified by '123456';
+# 创建任意远程的用户u_heima，密码是1234
+create user 'u_heima'@'%' identified by '1234';
+</code></pre>
+
+<pre><code class="language-mysql"># 修改用户密码
+alter user '用户名'@'主机名' identified with mysql_native_password by '新密码';
+alter user 'u_itcast'@'localhost' identified with mysql_native_password by '1234';
+</code></pre>
+
+<pre><code class="language-mysql"># 删除用户
+drop user '用户名'@'主机名';
+drop user 'u_itcast'@'localhost';
+</code></pre>
+
+<h3 id="权限管理">权限管理</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>权限</th>
+      <th>说明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>all</td>
+      <td>所有权限</td>
+    </tr>
+    <tr>
+      <td>select</td>
+      <td>查询数据</td>
+    </tr>
+    <tr>
+      <td>insert</td>
+      <td>插入数据</td>
+    </tr>
+    <tr>
+      <td>update</td>
+      <td>修改数据</td>
+    </tr>
+    <tr>
+      <td>alter</td>
+      <td>修改表</td>
+    </tr>
+    <tr>
+      <td>drop</td>
+      <td>删除数据库/表/视图</td>
+    </tr>
+    <tr>
+      <td>create</td>
+      <td>创建数据库/表</td>
+    </tr>
+  </tbody>
+</table>
+
+<pre><code class="language-mysql"># 查看权限
+show grants for '用户名'@'主机名';
+show grants for 'u_itcast'@'localhoost';
+# 授予权限
+grant 权限列表 on 数据库名.表名 to '用户名'@'主机名';
+# 给用户'u_itcast'@'localhost'授予数据库db_name中所有表所有权限
+grant all on db_name.* to 'u_itcast'@'localhost';
+# 撤销权限
+revoke 权限列表 on 数据库名.表名 from '用户名'@'主机名';
+</code></pre>
+
+<h1 id="函数">函数</h1>
+
+<h2 id="字符串函数">字符串函数</h2>
+
+<pre><code class="language-mysql"># 字符串拼接
+concat(str1, str2, ...)
+# 字符串转小写
+lower(str)
+# 字符串转大写
+upper(str)
+# 左填充字符串，使得str的长度为length，不足的部分，左侧填充字符ch
+lpad(str, length, ch)
+# 右填充字符串
+rpad(str, length, ch)
+# 去除str头尾空白字符
+trim(str)
+# 获取子串
+substring(str, pos, length)
+</code></pre>
+
+<pre><code class="language-mysql"># 拼接
+select concat('hello', ' world');
+# 转小写
+select lower('Hello');
+# 转大写
+select upper('Hello');
+# 左填充。得到xxxxxhello
+select lpad('hello', 10, 'x');
+# 去除空格
+select trim ('  hello world  ');
+# 子串,
+select substring('hello world', 1, 5);
+</code></pre>
+
+<pre><code class="language-mysql"># 修改表数据，将编号统一扩充到5位数，不足5位数的在前面填充0，比如编号为1，应该显示00001
+update tbl_name set id = lpad(id, 5, '0');
+</code></pre>
+
+<h2 id="数值函数">数值函数</h2>
+
+<pre><code class="language-mysql"># 向上取整
+ceil(x)
+# 向下取整
+floor(x)
+# 取模 x%y
+mod(x, y)
+# 返回0~1之间随机数
+rand()
+# x四舍五入，保留小数点位数y
+round(x, y)
+</code></pre>
+
+<pre><code class="language-mysql"># 随机返回6位数验证码
+select lpad(floor(rand()*1000000), 6, '0');
+</code></pre>
+
+<h2 id="日期函数">日期函数</h2>
+
+<pre><code class="language-mysql"># 日期：年月日
+curdate()
+# 时间：时分秒
+curtime()
+# 日期+时间
+now()
+# 获取指定日期的年份
+year(date)
+# 获取指定日期的月份
+month(date)
+# 获取指定日期的日
+day(date)
+# 返回一个日期(时间值)+时间间隔expr后的时间值，这里的type是时间间隔expr的单位。单位有year\month\day\hour\minute\second
+date_add(date, interval expr type)
+# 返回结束时间date1和起始时间date2之间的天数，date1 - date2
+datediff(date1, date2)
+</code></pre>
+
+<pre><code class="language-mysql"># 查看当前日期
+select curdate();
+# 查看当前时间
+select curtime();
+# 查看当前日期+时间
+select now();
+# 查看当前年份
+select year(now());
+# 查看当前月份
+select month(now());
+# 查看当前日
+select day(now());
+# 查看30天后的日期
+select date_add(now(), interval 30 day);
+select date_add(now(), interval 30 hour);
+select date_add(now(), interval 30 minute);
+select date_add(now(), interval 30 second);
+# 查看当前日期和指定日期之间的天数。日期的格式与curdate()或now()函数输出的格式保持一致。
+select datediff(now(), "2022-4-1");
+select datediff("2022-4-3 08:46:13", "2022-4-1 08:46:10");
+</code></pre>
+
+<pre><code class="language-mysql"># 查看员工入职天数,并按照哦入职天数降序排列
+select name, datediff(curdate(), entrydate) as 'entrydays' from tbl_name order by entrydays desc;
+</code></pre>
+
+<h2 id="流程控制函数">流程控制函数</h2>
+
+<p>实现条件筛选，从而提高语句的效率。</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>函数</th>
+      <th>功能</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>if(value, t, f)</td>
+      <td>如果value为true，返回t，否则返回f</td>
+    </tr>
+    <tr>
+      <td>ifnull(value1, value2)</td>
+      <td>如果value1不为null，则返回value1，否则返回value2</td>
+    </tr>
+    <tr>
+      <td>case when val1 then res1 when val2 then res2 … else default end</td>
+      <td>如果val1为true，返回res1，否则返回默认值</td>
+    </tr>
+    <tr>
+      <td>case expr when val1 then res1 when val2 then res2 … else default end</td>
+      <td>如果expr等于val1，返回res1，否则返回默认值</td>
+    </tr>
+  </tbody>
+</table>
+
+<pre><code class="language-mysql"># if函数，条件为true，返回ok
+select if(true, 'ok', 'error');
+# if函数，条件为false，返回error
+select if(false, 'ok', 'error');
+
+# ifnull函数，value1是字符串，不为null，返回value1
+ifnull('ok', 'val2');
+# ifnull函数，value1是字符串，虽然是空串，但是不为null，返回空串
+ifnull('', 'val2');
+# ifnull函数，value1为null，返回val2
+ifnull(null, 'val2');
+
+# case
+select name, if(address = 'bj' || address = 'sh', '一线', '二线') as '城市等级' from tbl_name;
+select name, case address when 'bj' then '一线' when 'sh' then '一线' else '二线' end as '城市等级' from tbl_name
+</code></pre>
+
+<pre><code class="language-mysql">select 
+	id,
+	name,
+	(case when math&gt;=85 then '优秀' when math&gt;=60 then '及格' else '不及格' end) as '数学',
+	(case when english&gt;=85 then '优秀' when english&gt;=60 then '及格' else '不及格' end) as '英语',
+	(case when chinese&gt;=85 then '优秀' when chinese&gt;=60 then '及格' else '不及格' end) as '语文',
+from score;
+</code></pre>
+
+<h1 id="约束">约束</h1>
+
+<p>概念：约束作用于表中字段的规则，用于限制存储在表中的数据。
+目的：保证数据库中数据的正确、有效和完整。
+分类：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>约束</th>
+      <th>描述</th>
+      <th>关键字</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>非空约束</td>
+      <td>限制该字段的数据不能为null</td>
+      <td>not null</td>
+    </tr>
+    <tr>
+      <td>唯一约束</td>
+      <td>保证该字段的所有数据都是唯一、不重复的</td>
+      <td>unique</td>
+    </tr>
+    <tr>
+      <td>主键约束</td>
+      <td>主键是一行数据的唯一标识，要求非空且唯一</td>
+      <td>primary key</td>
+    </tr>
+    <tr>
+      <td>默认约束</td>
+      <td>保存数据时，如果未指定该字段的值，则采用默认值</td>
+      <td>default</td>
+    </tr>
+    <tr>
+      <td>检查约束(8.0.16之后版本)</td>
+      <td>保证字段值满足某一条件</td>
+      <td>check</td>
+    </tr>
+    <tr>
+      <td>外键约束</td>
+      <td>用来关联两张表之间的连接，保证数据的一致性和完整性</td>
+      <td>foreign key</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>约束作用于表中字段上，可以在创建表或修改表中添加约束。
+案例需求。</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>字段名</th>
+      <th>字段含义</th>
+      <th>字段类型</th>
+      <th>约束条件</th>
+      <th>约束关键字</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>id</td>
+      <td>id唯一标识</td>
+      <td>int</td>
+      <td>主键，并且自动增长</td>
+      <td>primary key, auto_incremennt</td>
+    </tr>
+    <tr>
+      <td>name</td>
+      <td>姓名</td>
+      <td>varchar(10)</td>
+      <td>不为空，并且唯一</td>
+      <td>not null, unique</td>
+    </tr>
+    <tr>
+      <td>age</td>
+      <td>年龄</td>
+      <td>int</td>
+      <td>大于0，并且小于等于120</td>
+      <td>check</td>
+    </tr>
+    <tr>
+      <td>status</td>
+      <td>转态</td>
+      <td>char(1)</td>
+      <td>如果没有指定该值，默认为1</td>
+      <td>default</td>
+    </tr>
+    <tr>
+      <td>gender</td>
+      <td>性别</td>
+      <td>char(1)</td>
+      <td>无</td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="普通约束">普通约束</h2>
+
+<pre><code class="language-mysql">create table u_user (
+	id int primary key auto_increment comment '主键',
+  name varchar(10) not null unique comment "姓名",
+  age int check(age&gt;0 &amp;&amp; age&lt;=120) comment '年龄',
+  status char(1) default '1' comment '状态',
+  gender char(1) comment '性别'
+) comment '用户表';
+</code></pre>
+
+<h2 id="外键约束">外键约束</h2>
+
+<p>主要用来保证子表和父表数据的完整性。创建外键约束有两种方式。创建表时指定外键约束，或者修改表时指定外键约束。</p>
+
+<h3 id="创建外键约束">创建外键约束</h3>
+
+<p><strong>创建表时指定外键约束</strong></p>
+
+<pre><code class="language-mysql"># 创建父表
+create table dept (
+  id int primary key auto_increment,
+  name varchar(10) not null unique,
+) comment '子表，员工信息表';
+insert into emp(name) values('总经办'),('研发部'), ('销售部'), ('商务部');
+
+# 创建子表
+create table emp (
+  id int primary key auto_increment,
+  name varchar(10) not null unique,
+  dept_id int,
+  # 创建约束
+  constraint fk_emp_dept foreign key (子表外键字段名dept_id) references dept(父表主键字段名id);
+) comment '子表，员工信息表';
+insert into emp(name, dept_id) values('金庸', 5),('张无忌', 1), ('小昭', 1), ('赵敏', 2);
+
+
+</code></pre>
+
+<p><strong>修改表时指定外键约束</strong></p>
+
+<pre><code class="language-mysql"># 创建子表
+create table emp (
+  id int primary key auto_increment,
+  name varchar(10) not null unique,
+  dept_id int
+) comment '子表，员工信息表';
+insert into emp(name, dept_id) values('金庸', 5),('张无忌', 1), ('小昭', 1), ('赵敏', 2);
+
+# 创建父表
+create table dept (
+  id int primary key auto_increment,
+  name varchar(10) not null unique,
+) comment '父表，部门信息表';
+insert into emp(name) values('总经办'),('研发部'), ('销售部'), ('商务部');
+
+# 给子表添加外键约束。外键名称可以自己随意起。
+alter table 子表名 add constraint 外键名称 foreign key(子表外键字段名) references 父表名(父表主键字段名);
+alter table emp add constraint fk_emp_dept foreign key(dept_id) references dept(id);
+</code></pre>
+
+<h3 id="删除外键约束">删除外键约束</h3>
+
+<pre><code class="language-mysql"># 删除外键
+alter table emp drop foreign key 外键名称;
+alter table emp drop foreign key fk_emp_dept;
+</code></pre>
+
+<h3 id="外键删除更新行为">外键删除更新行为</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>行为</th>
+      <th>说明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>no_action</td>
+      <td>在父表中删除/更新记录，如果该记录对应有外键，则不允许删除/更新，通restrict</td>
+    </tr>
+    <tr>
+      <td>restrict</td>
+      <td>同no_action</td>
+    </tr>
+    <tr>
+      <td>cascade</td>
+      <td>在父表中删除/更新记录，如果该记录对应有外键，则删除/更新外键在子表中的记录</td>
+    </tr>
+    <tr>
+      <td>set null</td>
+      <td>在父表中删除/更新记录，如果该记录对应有外键，则设置子表中该外键字段的值为null（前提是子表中该字段允许取null）</td>
+    </tr>
+    <tr>
+      <td>set default</td>
+      <td>父表变更时，子表将外键字段的值设置为默认值（innodb引擎不支持）</td>
+    </tr>
+  </tbody>
+</table>
+
+<pre><code class="language-mysql"># 创建表时指定外键约束
+create table tbl_name(
+	....,
+  ....,
+  # 外键字段
+  xxxid int,
+  # 外键约束
+  constraint fk_name foreign key xxxid references 父表(主键id) on update cascade on delete cascade
+);
+</code></pre>
+
+<pre><code class="language-mysql"># 修改表时指定外键约束
+alter table emp add constraint fk_emp_dept foreign key(dept_id) references dept(id) on update cascade on delete 	cascade;
+</code></pre>
+
+<h1 id="多表">多表</h1>
+
+<h2 id="多表关系">多表关系</h2>
+
+<p>多表关系，主要用于多个表之间通过外键关联。
+对应的关系有:一对一、一对n、m对n。
+一对n。把1的一方称为父表，把n的一方称为子表，在子表中增加外键。
+m对n。把m和n所对应的表称为父表，再单独增加一个子表，在子表中增加两个外键。
+一对1。适用于单表拆分成两个表或多个表。在任意一方中增加外键字段，为了确保1对1，外键字段必须设置为unique约束。</p>
+
+<h2 id="多表查询">多表查询</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>多表查询</th>
+      <th>语法</th>
+      <th>说明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>内连接</td>
+      <td>表1 [inner] join 表2 on 连接条件</td>
+      <td>两个表的交集</td>
+    </tr>
+    <tr>
+      <td>左外连接</td>
+      <td>表1 left outer join 表2 on 连接条件</td>
+      <td>完整的左表和交集部分。</td>
+    </tr>
+    <tr>
+      <td>右外连接</td>
+      <td>表1 right outer join 表2 on 连接条件</td>
+      <td>完整的右表和交集部分。</td>
+    </tr>
+    <tr>
+      <td>自连接</td>
+      <td>表1 alias1 join 表1 alias2 on alias1.field1 = alias2.field2;</td>
+      <td>属于单表自连接。</td>
+    </tr>
+  </tbody>
+</table>
+
+<pre><code class="language-mysql"># 笛卡尔积。返回的结果数量是size(tbl_name1) * size(tbl_name2)。
+select * from tbl_name1, tbl_name2;
+# 内连接，指定连接条件(一般是通过外键来指定连接条件)
+select * from tbl_name1, tbl_name2 where tbl_name1.外键 = tbl_name2.主键;
+select * from tbl_name1 inner join tbl_name2 on tbl_name1.外键 = tbl_name2.主键;
+
+# 左外连接
+select * from tbl_name1 left outer join tbl_name2 on tbl1_name.外键 = tbl_name2.主键;
+
+# 右外连接
+select * from tbl_name1 right outer join tbl_name2 on tbl1_name.外键 = tbl_name2.主键;
+
+# 右外连接可以转为左外连接，只需要调换两个表的先后顺序
+select * from tbl_name2 left outer join tbl_name1 on tbl1_name.外键 = tbl_name2.主键;
+
+# 自连接
+select * from tbl_name as ta join tbl_name as tb on ta.field1 = tb.field2;
+</code></pre>
+
+<h2 id="联合查询">联合查询</h2>
+
+<p>将多次查询的结果合并起来，形成一个新的查询结果集。一般是单表的多次查询，因为联合查询的字段及字段数量需要保持一致。
+union:联合查询，会去重。
+union all:联合查询，查询的结果可能会出现重复数据。</p>
+
+<pre><code class="language-mysql">select * from tbl_name ...
+union
+select * from tbl_name ...;
+</code></pre>
+
+<pre><code class="language-mysql"># 将年龄小于20或者工资小于5000的数据全部查出来。
+select * from tbl_name where age &gt; 20
+union
+select * from tbl_name where salary &lt;5000;
+</code></pre>
+
+<h2 id="子查询">子查询</h2>
+
+<p>sql语句中嵌套select语句，称为嵌套查询，又称子查询</p>
+
+<pre><code class="language-mysql">select * from tbl_name1 where field1 = (select field from tbl_name2);
+</code></pre>
+
+<p>里面是select语句，外面可以是select/insert/update/delete中的任何一个。
+根据子查询的结果不同，分为：
+标量子查询，子查询结果为单个值
+列子查询，子查询结果为一列
+行子查询，子查询结果为一行
+表子查询，子查询结果为多行多列。</p>
+
+<p>根据子查询位置，分为where之后，from之后，select之后。</p>
+
+<h3 id="标量子查询">标量子查询</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>标量子查询
+	子查询返回的结果是单个值（数字、字符串、日期）
+	常用的操作符为	= /&lt;&gt; /&gt; /&gt;=	/&lt;	/&lt;=
+</code></pre></div></div>
+
+<pre><code class="language-mysql">#	员工信息表emp
+# 部门表dept
+# 1对多。一个员工只属于一个部门，一个部门可以有多个员工。员工信息表为子表，部门表为父表。
+# 子表（员工信息表）中，dept_id为员工信息表的外键字段。
+</code></pre>
+
+<pre><code class="language-mysql">#	需求：查询销售部的所有员工信息
+# 分析：先在部门表中找到销售部的id，然后在员工信息表中查询dept_id为销售部id的数据。
+
+select * from emp where dept_id = (select id from dept where dept_name = "销售部");
+</code></pre>
+
+<h3 id="列子查询">列子查询</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>列子查询
+	常用的操作符	in	/not in	/any	some	/all
+	in	在指定的集合范围之内，多选1
+	not in	不在指定集合范围之内
+	any	在指定的集合范围内，有任意一个满足即可
+	some	同any
+	all	子查询返回列表的所有值都必须满足
+</code></pre></div></div>
+
+<pre><code class="language-mysql"># 需求：查询销售部和市场部的所有员工信息
+#	分析：在部门表中查询销售部和市场部的id，然后在员工信息表中查询dept_id为销售部id或市场部id的数据。
+
+select * from emp where dept_id in (select id from dept where dept_name in ("销售部", "市场部"));
+</code></pre>
+
+<pre><code class="language-mysql"># 需求：查询比财务部所有人工资都高的员工信息
+#	分析：在部门表中查询财务部id，在员工信息表中查询财务人员工资，在员工信息表中查询比财务人员工资都高的员工
+
+select * from emp where salary &gt; all(select salary from emp where dept_id = (select id from dept where dept_name = "财务部"));
+</code></pre>
+
+<h3 id="行子查询">行子查询</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>行子查询
+	常用操作符	=	/&lt;&gt;	/in	/not in
+</code></pre></div></div>
+
+<pre><code class="language-mysql"># 需求：查询与张三的工资和直属领导都相同的员工信息
+# 分析：在员工信息表中查询张三的工资和直属领导，在员工信息表中查询工资和直属领导都和张三的工资和直属领导相同的员工信息
+
+select * from emp where (salary, manageid) = (select salary, manageid from emp where name = '张三');
+</code></pre>
+
+<h3 id="表子查询">表子查询</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>表子查询
+	常用操作符	in
+</code></pre></div></div>
+
+<pre><code class="language-mysql"># 需求：查询入职日期是"2006-01-01"之后的员工信息及对应的部门信息
+# 分析：
+# 表结构:员工表emp、部门信息dept
+# 左外连接：将员工表和部门表连接起来
+# 连接条件: emp.dept_id = dept.id
+# 查询条件: emp.enetydate&gt;“2006-01-01”
+# 查询结果: emp.*, dept.name
+select e.*, d.name from emp e left outer join dept d on e.dept_id = d.id  where e.entrydate&gt;"2006-01-01";
+</code></pre>
+
+<h1 id="事务">事务</h1>
+
+<p>事务是一组操作的集合，它是一个不可分割的工作单位，事务会把所有的操作作为一个整体一起向系统提交或撤销操作请求，这些操作要么同时成功，要么同时失败。</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># 需求: 银行转账业务,a给b转100元
+
+# 开启事务
+
+# 查询a的余额
+# a减少100
+# b增加100
+
+# 提交事务
+</code></pre></div></div>
+
+<p><strong>mysql的事务默认是自动提交的，当执行一条DML语句时，mysql会立即隐式的提交事务。</strong>
+开启事务是需要手动开启的。如果事务执行失败，需要手动回滚。</p>
+
+<h2 id="事务操作">事务操作</h2>
+
+<p>有两种事务操作方式，第一种是设置事务提交方式为手动提交，执行DML语句之后，执行commit手动提交；第二种是设置手动开启事务，</p>
+
+<p>查看/设置事务提交的方式。如果事务提交方式为手动，则执行DML语句之后，不再立即提交事务，而是等到执行commit命令才会提交事务，如果执行DML语句失败，需要通过命令rollback回滚到之前的状态。</p>
+
+<pre><code class="language-mysql"># 查看事务的提交方式，返回1表示自动提交，返回0表示手动提交。@@autocoommit是系统变量
+select @@autocommit;
+
+# 设置事务的提交方式为手动
+set @@autocommit = 0; 
+
+# 执行事务：一组sql语句
+
+# 事务执行成功，手动提交事务
+commit;
+
+# 事务执行失败，手动回滚
+rollback;
+</code></pre>
+
+<pre><code class="language-mysql"># 需求：银行转账业务,a给b转100元
+
+# 1. 设置事务提交方式为手动提交
+set @@autocommit = 0;
+
+# 2. 查询用户a的余额
+select money from tbl_name where name = "userA";
+# 3. 修改用户a的余额
+update table tbl_name set money = money -100 where name = 'userA';
+# 4. 修改用户b的余额
+update table tbl_name set money = money +100 where name = 'userB';
+
+# 5. 如果2\3\4执行成功，commit 提交事务，如果执行失败，rollback回滚事务。
+commit; 
+</code></pre>
+
+<p>手动开启事务</p>
+
+<pre><code class="language-mysql"># 开启事务
+start transaction;
+# 执行事务：一组sql语句
+...
+...
+# 事务执行成功，提交事务
+commit;
+# 事务执行失败，回滚事务
+rollback;
+</code></pre>
+
+<h2 id="事务特性acid">事务特性ACID</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>原子性：atomicity，事务是不可分割的最小操作单元，要么全部成功，要么全部失败。
+一致性：consistency，事务完成时，必须使所有的数据都保持一致状态。
+隔离性：isolation，数据库系统提供的隔离机制，保证事务在不受外部并发操作影响的独立环境下运行。
+持久性：durability，事务一旦提交或回滚，它对数据库中的数据的改变就是永久的。
+</code></pre></div></div>
+
+<h2 id="并发事务问题">并发事务问题</h2>
+
+<p>并发事务出现的场景，主要针对多个客户端连接mysql服务，并且在不同客户端上执行不同的事务。</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>问题</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>脏读</td>
+      <td>一个事务读到另外一个事务还没有提交的数据。</td>
+    </tr>
+    <tr>
+      <td>不可重复读</td>
+      <td>一个事务先后读取同一条记录，但两次读取的数据不同，称为不可重复读。</td>
+    </tr>
+    <tr>
+      <td>幻读</td>
+      <td>一个事务按照条件查询数据时，没有对应的数据行，但在插入数据时，又发现这行数据已经存在，好像出现了“幻影”</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="事务隔离级别">事务隔离级别</h2>
+
+<p>不同的隔离级别，出现并发事务问题的现象不同，下表中✅表示会出现对应现象，❎表示不会出现对应现象。
+事务隔离级别是为了解决并发事务问题。</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>隔离级别</th>
+      <th>脏读</th>
+      <th>不可重复读</th>
+      <th>幻读</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>read uncommitted</td>
+      <td>✅</td>
+      <td>✅</td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td>read committed(oracle默认)</td>
+      <td>❎</td>
+      <td>✅</td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td>repeatable read(mysql 默认)</td>
+      <td>❎</td>
+      <td>❎</td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td>serializeable</td>
+      <td>❎</td>
+      <td>❎</td>
+      <td>❎</td>
+    </tr>
+  </tbody>
+</table>
+
+<pre><code class="language-mysql"># 查看事务隔离级别
+select @@transaction_isolation;
+
+# 修改事务隔离级别
+set [session | global] transaction isolation level [read uncommitted | read committed | repeatable read | serializable]
+</code></pre>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 客户端1登录</span>
+<span class="nv">$ </span>mysql <span class="nt">-u</span> root <span class="nt">-p</span>
+<span class="nv">$ </span>Enter password: <span class="k">*****</span>
+<span class="c"># 选择数据库itcast</span>
+mysql <span class="o">&gt;</span> use itcast<span class="p">;</span>
+<span class="c"># 查看account表</span>
+mysql <span class="o">&gt;</span> <span class="k">select</span> <span class="k">*</span> from account<span class="p">;</span>
+</code></pre></div></div>
+
+<h1 id="mysql体系结构">mysql体系结构</h1>
+
+<p><strong>mysql客户端体系结构</strong>
+客户端连接器：Native C API、JDBC、ODBC、.NET、PHP、Perl、Python、Ruby、Cobol
+客户端连接器用于连接mysql服务器
+<strong>mysql服务端体系结构</strong>
+连接层：第一层。和客户端进行连接。主要完成连接处理、授权认证、安全等。服务器会为接入的客户端验证它具有的操作权限。
+服务层：第二层。完成核心服务功能，如sql接口、缓存的查询、sql的分析和优化、部分内置函数的执行、跨存储引擎功能。
+引擎层：存储引擎真正的负责了mysql中数据的存储和提取，服务器通过api和存储引擎进行通信。不同存储引擎具有不同功能，可以根据				需要选择合适的存储引擎。
+存储层：将数据存储在文件系统上，完成与存储引擎的交互。</p>
+
+<h1 id="存储引擎">存储引擎</h1>
+
+<p>存储引擎就是存储数据、建立索引、更新/查询数据等技术的实现方式。存储引擎是基于表的，而不是基于库的，所以存储引擎也被称为表类型。同一个数据库下的不同表，可以选择不同的存储引擎。</p>
+
+<h2 id="基本操作">基本操作</h2>
+
+<pre><code class="language-mysql"># 创建表时指定存储引擎
+create table account (
+	id int primary key auto_increment,
+  name varchar(10) not null,
+  memory float not null default 0
+) engine=innodb comment "账户表";
+
+# 查看表采用的存储引擎：通过查看建表语句方式
+show create table account;
+
+# 查看mysql所支持的存储引擎
+show engines;
+</code></pre>
+
+<p>存储引擎特点</p>
+
+<p>主要介绍innodb
+innodb兼顾高可靠性和高性能的通用存储引擎，在mysql5.5之后，innodb为默认mysql引擎。
+特点</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>DML操作遵循ACID模型，支持事务;
+行级锁，提高并发访问性能;
+支持外键约束，保证数据的完整性和正确性;
+</code></pre></div></div>
+
+<p>磁盘文件
+xxx.ibd: xxx代表的是表名，innodb引擎的每张表都会对应这样一个表空间文件，存储该表的表结构(frm、sdi)、数据和索引。
+逻辑存储结构
+tablespace:表空间
+segment：段
+extent：区
+page：页
+row：行</p>
+
+  </section>
+
+</article>
+
+<section>
+
+            <div class="content-play">
+              <p><a href="javascript:void(0)" onclick="dashangToggle()" class="dashang" title="打赏，支持一下">打赏一个呗</a></p>
+              <div class="hide_box-play"></div>
+              <div class="shang_box-play">
+                <a class="shang_close-play" href="javascript:void(0)" onclick="dashangToggle()" title="关闭"><img src="/images/payimg/close.jpg" alt="取消" /></a>
+                <div class="shang_tit-play">
+                  <p>感谢您的支持，我会继续努力的!</p>
+                </div>
+                <div class="shang_payimg">
+                    <img src="/images/payimg/alipayimg.jpg" alt="扫码支持" title="扫一扫" />
+                </div>
+              <div class="shang_payimg">    
+                    <img src="/images/payimg/weipayimg.jpg" alt="扫码支持" title="扫一扫" />
+                </div>
+                <div class="pay_explain">扫码打赏，你说多少就多少</div>
+                <div class="shang_payselect">
+                  <div class="pay_item checked" data-id="alipay">
+                    <span class="pay_logo"><img src="/images/payimg/alipay.jpg" alt="支付宝" /></span>
+                  </div>
+                  <div class="pay_item" data-id="weipay">
+                    <span class="pay_logo"><img src="/images/payimg/wechat.jpg" alt="微信" /></span>
+                  </div>
+                </div>
+                <div class="shang_info-play">
+                  <p>打开<span id="shang_pay_txt">支付宝</span>扫一扫，即可进行扫码打赏哦</p>
+                </div>
+              </div>
+            </div>
+            <script type="text/javascript">
+            function dashangToggle(){
+              $(".hide_box-play").fadeToggle();
+              $(".shang_box-play").fadeToggle();
+            }
+            </script>
+
+            <div style="text-align:center;margin:50px 0; font:normal 14px/24px 'MicroSoft YaHei';"></div>
+
+            <style type="text/css">
+              .content-play{width:80%;margin-top: 20px;margin-bottom: 10px;height:40px;}
+              .hide_box-play{z-index:999;filter:alpha(opacity=50);background:#666;opacity: 0.5;-moz-opacity: 0.5;left:0;top:0;height:99%;width:100%;position:fixed;display:none;}
+              .shang_box-play{width:540px;height:540px;padding:10px;background-color:#fff;border-radius:10px;position:fixed;z-index:1000;left:50%;top:50%;margin-left:-280px;margin-top:-280px;border:1px dotted #dedede;display:none;}
+              .shang_box-play img{border:none;border-width:0;}
+              .dashang{display:block;width:100px;margin:5px auto;height:25px;line-height:25px;padding:10px;background-color:#E74851;color:#fff;text-align:center;text-decoration:none;border-radius:10px;font-weight:bold;font-size:16px;transition: all 0.3s;}
+              .dashang:hover{opacity:0.8;padding:15px;font-size:18px;}
+              .shang_close-play{float:right;display:inline-block;
+                margin-right: 10px;margin-top: 20px;
+              }
+              .shang_logo{display:block;text-align:center;margin:20px auto;}
+              .shang_tit-play{width: 100%;height: 75px;text-align: center;line-height: 66px;color: #a3a3a3;font-size: 16px;background: url('/images/payimg/cy-reward-title-bg.jpg');font-family: 'Microsoft YaHei';margin-top: 7px;margin-right:2px;}
+              .shang_tit-play p{color:#a3a3a3;text-align:center;font-size:16px;}
+              .shang_payimg{width:140px;padding:10px;padding-left: 80px; /*border:6px solid #EA5F00;**/margin:0 auto;border-radius:3px;height:140px;display:inline-block;}
+              .shang_payimg img{display:inline-block;margin-right:10px;float:left;text-align:center;width:140px;height:140px; }
+              .pay_explain{text-align:center;margin:10px auto;font-size:12px;color:#545454;}
+              .shang_payselect{text-align:center;margin:0 auto;margin-top:40px;cursor:pointer;height:60px;width:500px;margin-left:110px;}
+              .shang_payselect .pay_item{display:inline-block;margin-right:140px;float:left;}
+              .shang_info-play{clear:both;}
+              .shang_info-play p,.shang_info-play a{color:#C3C3C3;text-align:center;font-size:12px;text-decoration:none;line-height:2em;}
+            </style>
+
+       <ul class="pager">
+        
+        <li class="previous">
+            <a href="/2022/04/ndk%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E4%B9%8Bsimpleperf/" data-toggle="tooltip" data-placement="top" title="Ndk性能分析工具之simpleperf">上一篇：  <span>Ndk性能分析工具之simpleperf</span>
+            </a>
+        </li>
+        
+        
+        <li class="next">
+            <a href="/2022/04/vim+vimplus%E6%89%8B%E5%86%8C/" data-toggle="tooltip" data-placement="top" title="Vim+vimplus手册">下一篇：  <span>Vim+vimplus手册</span>
+            </a>
+        </li>
+        
+    </ul>
+</section>
+
+<section class="post-comments">
+
+  
+    <div id="disqus_thread"></div>
+    <script>
+    
+    var disqus_config = function () {
+        this.page.url = "https://mrz9527.github.io/2022/04/mysql%E7%94%A8%E6%B3%95/";
+        this.page.identifier = "/2022/04/mysql%E7%94%A8%E6%B3%95/";
+    };
+    var disqus_shortname = 'leopard';
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>要查看<a href="http://disqus.com/?ref_noscript"> Disqus </a>评论，请启用 JavaScript</noscript>
+    
+  
+
+</section>
+
+
+            <section class="footer">
+    <footer>
+        <div class = "footer_div">  
+        <nav class="cover-navigation navigation--social">
+          <ul class="navigation">
+
+          
+          <!-- Github -->
+          <li class="navigation__item_social">
+            <a href="https://github.com/mrz9527" title="@mrz9527 的 Github" target="_blank">
+              <div class="footer-social-icon" style="background:url(/images/github.png);"></div>
+            </a>
+          </li>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+
+          
+          
+          <!-- RSS -->
+          <li class="navigation__item_social">
+            <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+              <div class="footer-social-icon" style="background:url(/images/rss.png);"></div>
+              <span class="label">RSS</span>
+            </a>
+          </li>
+
+          </ul>
+        </nav>
+
+        </div>
+
+        <div class = "footer_div">  
+           <p class="copyright text-muted">
+            Copyright &copy; mrz9527 2022
+            </p>
+        	<div align="right">
+    			<link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+          <!-- 访问统计 -->
+          <span id="busuanzi_container_site_pv">
+            本站总访问量
+            <span id="busuanzi_value_site_pv"></span>次
+          </span>
+
+        </div>
+        <div>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+
+<script type="text/javascript" src="/js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+  </body>
+
+</html>

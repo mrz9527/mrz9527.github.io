@@ -1,0 +1,73 @@
+I"�	
+<ul>
+  <li><a href="#sql语言">sql语言</a>
+    <ul>
+      <li><a href="#ddl">DDL</a></li>
+      <li><a href="#dml">DML</a></li>
+      <li><a href="#dql">DQL</a>
+        <ul>
+          <li><a href="#基本查询">基本查询</a></li>
+          <li><a href="#对结果排序">对结果排序</a></li>
+          <li><a href="#对结果分组">对结果分组</a></li>
+          <li><a href="#对结果分页">对结果分页</a></li>
+        </ul>
+      </li>
+      <li><a href="#dcl">DCL</a>
+        <ul>
+          <li><a href="#用户管理">用户管理</a></li>
+          <li><a href="#权限管理">权限管理</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#函数">函数</a>
+    <ul>
+      <li><a href="#字符串函数">字符串函数</a></li>
+      <li><a href="#数值函数">数值函数</a></li>
+      <li><a href="#日期函数">日期函数</a></li>
+      <li><a href="#流程控制函数">流程控制函数</a></li>
+    </ul>
+  </li>
+  <li><a href="#约束">约束</a>
+    <ul>
+      <li><a href="#普通约束">普通约束</a></li>
+      <li><a href="#外键约束">外键约束</a>
+        <ul>
+          <li><a href="#创建外键约束">创建外键约束</a></li>
+          <li><a href="#删除外键约束">删除外键约束</a></li>
+          <li><a href="#外键删除更新行为">外键删除更新行为</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#多表">多表</a>
+    <ul>
+      <li><a href="#多表关系">多表关系</a></li>
+      <li><a href="#多表查询">多表查询</a></li>
+      <li><a href="#联合查询">联合查询</a></li>
+      <li><a href="#子查询">子查询</a>
+        <ul>
+          <li><a href="#标量子查询">标量子查询</a></li>
+          <li><a href="#列子查询">列子查询</a></li>
+          <li><a href="#行子查询">行子查询</a></li>
+          <li><a href="#表子查询">表子查询</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#事务">事务</a>
+    <ul>
+      <li><a href="#事务操作">事务操作</a></li>
+      <li><a href="#事务特性acid">事务特性ACID</a></li>
+      <li><a href="#并发事务问题">并发事务问题</a></li>
+      <li><a href="#事务隔离级别">事务隔离级别</a></li>
+    </ul>
+  </li>
+  <li><a href="#mysql体系结构">mysql体系结构</a></li>
+  <li><a href="#存储引擎">存储引擎</a>
+    <ul>
+      <li><a href="#基本操作">基本操作</a></li>
+    </ul>
+  </li>
+</ul>
+:ET

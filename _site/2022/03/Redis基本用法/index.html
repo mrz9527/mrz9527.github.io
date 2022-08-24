@@ -1,4 +1,357 @@
-<h1 id="redis介绍">Redis介绍</h1>
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>Redis基本用法</title>
+  <meta name="description" content="Redis介绍">
+  <meta name="author" content="leopardpan">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Redis基本用法">
+  <meta name="twitter:description" content="Redis介绍">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Redis基本用法">
+  <meta property="og:description" content="Redis介绍">
+  
+  <link rel="icon" type="image/png" href="/images/favicon.png" />
+  <link href="/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="https://mrz9527.github.io/2022/03/Redis%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95/">
+  <link rel="alternate" type="application/rss+xml" title="mrz9527" href="https://mrz9527.github.io/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+
+<!-- 站点统计 -->
+  <script 
+  async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+  </script>  
+
+<!-- 百度统计 -->
+  
+  <script>
+      var _hmt = _hmt || [];
+      (function() {
+        var hm = document.createElement("script");
+        hm.src = "//hm.baidu.com/hm.js?7a362b671f24dfc0640fd67032b87184";
+        var s = document.getElementsByTagName("script")[0]; 
+        s.parentNode.insertBefore(hm, s);
+      })();
+  </script>
+  
+
+<!-- google 统计 -->
+  
+
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({
+    google_ad_client: "ca-pub-9005224472374751",
+    enable_page_level_ads: true
+  });
+</script>
+
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">        
+      <div class="nav_container">
+         <nav class="nav-menu-item" style = "float:right">
+            <i class="nav-menu-item">
+              <a href="/#blog" title="" class="blog-button">  博客主页
+              </a>
+            </i>
+            
+                <i class="nav-menu-item">
+
+                  <a href="/archive" title="archive" class="btn-mobile-menu__icon">
+                      所有文章
+                  </a>
+                </i>
+            
+                <i class="nav-menu-item">
+
+                  <a href="/tags" title="tags" class="btn-mobile-menu__icon">
+                      标签
+                  </a>
+                </i>
+            
+          </nav>
+      </div>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+        <!-- 头像效果-start -->
+        <div class="ih-item circle effect right_to_left">            
+            <a href="/#blog" title="前往 mrz9527 的主页" class="blog-button">
+                <div class="img"><img src="/images/avatar.jpg" alt="img"></div>
+                <div class="info">
+                    <div class="info-back">
+                        <h2> 
+                            
+                                mrz9527
+                            
+                        </h2>
+                        <p>
+                           
+                                c++ / 机器学习
+                            
+                        </p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <!-- 头像效果-end -->
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for mrz9527" class="blog-button">mrz9527</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">个人站</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">欢迎来到我的个人站~</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        
+
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="" class="blog-button">博客主页</a></li>
+                
+                  <li class="navigation__item"><a href="/archive" title="archive">所有文章</a></li>
+                
+                  <li class="navigation__item"><a href="/tags" title="tags">标签</a></li>
+                
+              </ul>
+            </nav>
+          </div>          
+        </div>
+
+
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-clear"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <head>
+  <link rel="stylesheet" href="/css/post.css">
+</head>
+
+<article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <h1 class="post-title">Redis基本用法</h1>
+    <div class="post-meta">
+      <img src="/images/calendar.png" width="20px"/> 
+      <time datetime="2022-03-26 00:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2022-03-26</time>  
+
+      <span id="busuanzi_container_page_pv"> | 阅读：<span id="busuanzi_value_page_pv"></span>次</span>
+    </p>
+    </div>
+  </header>
+
+  
+    <h2 class="post-title">目录</h2>
+    <ul>
+  <li><a href="#redis介绍">Redis介绍</a></li>
+  <li><a href="#redis安装">Redis安装</a></li>
+  <li><a href="#redis服务端启动和关闭">Redis服务端启动和关闭</a>
+    <ul>
+      <li><a href="#1-redis服务启动">1) Redis服务启动</a></li>
+      <li><a href="#2-redis服务关闭">2) Redis服务关闭</a></li>
+    </ul>
+  </li>
+  <li><a href="#redis客户端启动和关闭">Redis客户端启动和关闭</a>
+    <ul>
+      <li><a href="#1-本地连接redis服务">1) 本地连接redis服务</a></li>
+      <li><a href="#2-远程连接redis服务">2) 远程连接redis服务</a></li>
+      <li><a href="#3-redis客户端关闭">3) redis客户端关闭</a></li>
+    </ul>
+  </li>
+  <li><a href="#redis客户端帮助手册">Redis客户端帮助手册</a>
+    <ul>
+      <li><a href="#help">help</a></li>
+    </ul>
+  </li>
+  <li><a href="#redis客户端常用命令">Redis客户端常用命令</a>
+    <ul>
+      <li><a href="#1-server组常见命令">1) server组常见命令</a>
+        <ul>
+          <li><a href="#config-get">config get</a></li>
+          <li><a href="#dbsize">dbsize</a></li>
+          <li><a href="#flushdb">flushdb</a></li>
+          <li><a href="#flushall">flushall</a></li>
+          <li><a href="#info">info</a></li>
+          <li><a href="#shutdown">shutdown</a></li>
+        </ul>
+      </li>
+      <li><a href="#2-generic组常见命令">2) generic组常见命令</a>
+        <ul>
+          <li><a href="#del">del</a></li>
+          <li><a href="#exists">exists</a></li>
+          <li><a href="#keys">keys</a></li>
+          <li><a href="#通配符和正则表达式的区别">通配符和正则表达式的区别</a></li>
+          <li><a href="#move">move</a></li>
+          <li><a href="#ttl">ttl</a></li>
+          <li><a href="#expire">expire</a></li>
+          <li><a href="#type">type</a></li>
+          <li><a href="#rename">rename</a></li>
+        </ul>
+      </li>
+      <li><a href="#redis五种数据结构">redis五种数据结构</a></li>
+      <li><a href="#3-string组常见命令">3) string组常见命令</a>
+        <ul>
+          <li><a href="#set">set</a></li>
+          <li><a href="#get">get</a></li>
+          <li><a href="#append">append</a></li>
+          <li><a href="#strlen">strlen</a></li>
+          <li><a href="#incr">incr</a></li>
+          <li><a href="#decr">decr</a></li>
+          <li><a href="#incrby">incrby</a></li>
+          <li><a href="#decrby">decrby</a></li>
+          <li><a href="#getrange">getrange</a></li>
+          <li><a href="#setrange">setrange</a></li>
+          <li><a href="#setex">setex</a></li>
+          <li><a href="#setnx">setnx</a></li>
+          <li><a href="#mset">mset</a></li>
+          <li><a href="#mget">mget</a></li>
+          <li><a href="#msetnx">msetnx</a></li>
+        </ul>
+      </li>
+      <li><a href="#4-list组常见命令">4) list组常见命令</a>
+        <ul>
+          <li><a href="#lpush">lpush</a></li>
+          <li><a href="#lrange">lrange</a></li>
+          <li><a href="#rpush">rpush</a></li>
+          <li><a href="#lpop">lpop</a></li>
+          <li><a href="#rpop">rpop</a></li>
+          <li><a href="#lindex">lindex</a></li>
+          <li><a href="#llen">llen</a></li>
+          <li><a href="#lrem">lrem</a></li>
+        </ul>
+      </li>
+      <li><a href="#5-set组常见命令">5) set组常见命令</a>
+        <ul>
+          <li><a href="#sadd">sadd</a></li>
+          <li><a href="#scard">scard</a></li>
+          <li><a href="#smembers">smembers</a></li>
+          <li><a href="#srem">srem</a></li>
+          <li><a href="#srandmember">srandmember</a></li>
+          <li><a href="#spop">spop</a></li>
+          <li><a href="#sinter">sinter</a></li>
+          <li><a href="#sunion">sunion</a></li>
+          <li><a href="#sdiff">sdiff</a></li>
+        </ul>
+      </li>
+      <li><a href="#hash组常见命令">hash组常见命令</a>
+        <ul>
+          <li><a href="#hset">hset</a></li>
+          <li><a href="#hget">hget</a></li>
+          <li><a href="#hmset">hmset</a></li>
+          <li><a href="#hmget">hmget</a></li>
+          <li><a href="#hgetall">hgetall</a></li>
+          <li><a href="#hdel">hdel</a></li>
+          <li><a href="#hlen">hlen</a></li>
+          <li><a href="#hexists">hexists</a></li>
+          <li><a href="#hkeys">hkeys</a></li>
+          <li><a href="#hvals">hvals</a></li>
+          <li><a href="#hincrby">hincrby</a></li>
+          <li><a href="#hincrbyfloat">hincrbyfloat</a></li>
+          <li><a href="#hsetnx">hsetnx</a></li>
+        </ul>
+      </li>
+      <li><a href="#sorted_set组常见命令">sorted_set组常见命令</a>
+        <ul>
+          <li><a href="#zadd">zadd</a></li>
+          <li><a href="#zcard">zcard</a></li>
+          <li><a href="#zcount">zcount</a></li>
+          <li><a href="#zincrby">zincrby</a></li>
+          <li><a href="#zrange">zrange</a></li>
+          <li><a href="#zrangebyscore">zrangebyscore</a></li>
+          <li><a href="#zrem">zrem</a></li>
+          <li><a href="#zrank">zrank</a></li>
+          <li><a href="#zscore">zscore</a></li>
+          <li><a href="#zrevrank">zrevrank</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#redis配置文件">Redis配置文件</a>
+    <ul>
+      <li><a href="#0-配置的更改">0) 配置的更改</a></li>
+      <li><a href="#1-redis-连接相关配置">1) redis 连接相关配置</a></li>
+      <li><a href="#2-redis日志相关配置">2) redis日志相关配置</a></li>
+      <li><a href="#3redis持久化相关配置">3redis持久化相关配置</a>
+        <ul>
+          <li><a href="#redis持久化">redis持久化</a></li>
+        </ul>
+      </li>
+      <li><a href="#4-其它配置">4) 其它配置</a></li>
+    </ul>
+  </li>
+  <li><a href="#redis事务">Redis事务</a>
+    <ul>
+      <li><a href="#transactions组常见命令">transactions组常见命令</a>
+        <ul>
+          <li><a href="#multi">multi</a></li>
+          <li><a href="#exec">exec</a></li>
+          <li><a href="#原子性案例">原子性案例</a></li>
+          <li><a href="#discard">discard</a></li>
+          <li><a href="#watch">watch</a></li>
+          <li><a href="#unwatch">unwatch</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#redis消息发布与订阅">Redis消息发布与订阅</a>
+    <ul>
+      <li><a href="#pubsub组常见命令">pubsub组常见命令</a>
+        <ul>
+          <li><a href="#subscribe">subscribe</a></li>
+          <li><a href="#publish">publish</a></li>
+          <li><a href="#psubscribe">psubscribe</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#redis主从复制">redis主从复制</a>
+    <ul>
+      <li><a href="#搭建一主二从集群">搭建一主二从集群</a>
+        <ul>
+          <li><a href="#server组常见命令">server组常见命令</a></li>
+          <li><a href="#slaveof">slaveof</a></li>
+        </ul>
+      </li>
+      <li><a href="#redis哨兵服务">redis哨兵服务</a></li>
+    </ul>
+  </li>
+</ul>
+
+  
+
+  <section class="post">
+    <h1 id="redis介绍">Redis介绍</h1>
 
 <p>redis属于nosql数据库，默认有16个数据库，编号从0~15；
 数据使用key-value键值对方式存储在内存中，读写速度非常快，多用于高并发和高性能。数据还能持久化；
@@ -2686,3 +3039,186 @@ repl_backlog_histlen:3692
 
 <span class="c"># 3.重启6379，在哨兵模式下，6379会从属于新的主机6380</span>
 </code></pre></div></div>
+
+  </section>
+
+</article>
+
+<section>
+
+            <div class="content-play">
+              <p><a href="javascript:void(0)" onclick="dashangToggle()" class="dashang" title="打赏，支持一下">打赏一个呗</a></p>
+              <div class="hide_box-play"></div>
+              <div class="shang_box-play">
+                <a class="shang_close-play" href="javascript:void(0)" onclick="dashangToggle()" title="关闭"><img src="/images/payimg/close.jpg" alt="取消" /></a>
+                <div class="shang_tit-play">
+                  <p>感谢您的支持，我会继续努力的!</p>
+                </div>
+                <div class="shang_payimg">
+                    <img src="/images/payimg/alipayimg.jpg" alt="扫码支持" title="扫一扫" />
+                </div>
+              <div class="shang_payimg">    
+                    <img src="/images/payimg/weipayimg.jpg" alt="扫码支持" title="扫一扫" />
+                </div>
+                <div class="pay_explain">扫码打赏，你说多少就多少</div>
+                <div class="shang_payselect">
+                  <div class="pay_item checked" data-id="alipay">
+                    <span class="pay_logo"><img src="/images/payimg/alipay.jpg" alt="支付宝" /></span>
+                  </div>
+                  <div class="pay_item" data-id="weipay">
+                    <span class="pay_logo"><img src="/images/payimg/wechat.jpg" alt="微信" /></span>
+                  </div>
+                </div>
+                <div class="shang_info-play">
+                  <p>打开<span id="shang_pay_txt">支付宝</span>扫一扫，即可进行扫码打赏哦</p>
+                </div>
+              </div>
+            </div>
+            <script type="text/javascript">
+            function dashangToggle(){
+              $(".hide_box-play").fadeToggle();
+              $(".shang_box-play").fadeToggle();
+            }
+            </script>
+
+            <div style="text-align:center;margin:50px 0; font:normal 14px/24px 'MicroSoft YaHei';"></div>
+
+            <style type="text/css">
+              .content-play{width:80%;margin-top: 20px;margin-bottom: 10px;height:40px;}
+              .hide_box-play{z-index:999;filter:alpha(opacity=50);background:#666;opacity: 0.5;-moz-opacity: 0.5;left:0;top:0;height:99%;width:100%;position:fixed;display:none;}
+              .shang_box-play{width:540px;height:540px;padding:10px;background-color:#fff;border-radius:10px;position:fixed;z-index:1000;left:50%;top:50%;margin-left:-280px;margin-top:-280px;border:1px dotted #dedede;display:none;}
+              .shang_box-play img{border:none;border-width:0;}
+              .dashang{display:block;width:100px;margin:5px auto;height:25px;line-height:25px;padding:10px;background-color:#E74851;color:#fff;text-align:center;text-decoration:none;border-radius:10px;font-weight:bold;font-size:16px;transition: all 0.3s;}
+              .dashang:hover{opacity:0.8;padding:15px;font-size:18px;}
+              .shang_close-play{float:right;display:inline-block;
+                margin-right: 10px;margin-top: 20px;
+              }
+              .shang_logo{display:block;text-align:center;margin:20px auto;}
+              .shang_tit-play{width: 100%;height: 75px;text-align: center;line-height: 66px;color: #a3a3a3;font-size: 16px;background: url('/images/payimg/cy-reward-title-bg.jpg');font-family: 'Microsoft YaHei';margin-top: 7px;margin-right:2px;}
+              .shang_tit-play p{color:#a3a3a3;text-align:center;font-size:16px;}
+              .shang_payimg{width:140px;padding:10px;padding-left: 80px; /*border:6px solid #EA5F00;**/margin:0 auto;border-radius:3px;height:140px;display:inline-block;}
+              .shang_payimg img{display:inline-block;margin-right:10px;float:left;text-align:center;width:140px;height:140px; }
+              .pay_explain{text-align:center;margin:10px auto;font-size:12px;color:#545454;}
+              .shang_payselect{text-align:center;margin:0 auto;margin-top:40px;cursor:pointer;height:60px;width:500px;margin-left:110px;}
+              .shang_payselect .pay_item{display:inline-block;margin-right:140px;float:left;}
+              .shang_info-play{clear:both;}
+              .shang_info-play p,.shang_info-play a{color:#C3C3C3;text-align:center;font-size:12px;text-decoration:none;line-height:2em;}
+            </style>
+
+       <ul class="pager">
+        
+        <li class="previous">
+            <a href="/2022/03/coredump%E8%B0%83%E8%AF%95/" data-toggle="tooltip" data-placement="top" title="Coredump调试">上一篇：  <span>Coredump调试</span>
+            </a>
+        </li>
+        
+        
+        <li class="next">
+            <a href="/2022/03/linux%E7%A3%81%E7%9B%98%E5%88%86%E5%8C%BA/" data-toggle="tooltip" data-placement="top" title="Linux磁盘分区">下一篇：  <span>Linux磁盘分区</span>
+            </a>
+        </li>
+        
+    </ul>
+</section>
+
+<section class="post-comments">
+
+  
+    <div id="disqus_thread"></div>
+    <script>
+    
+    var disqus_config = function () {
+        this.page.url = "https://mrz9527.github.io/2022/03/Redis%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95/";
+        this.page.identifier = "/2022/03/Redis%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95/";
+    };
+    var disqus_shortname = 'leopard';
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>要查看<a href="http://disqus.com/?ref_noscript"> Disqus </a>评论，请启用 JavaScript</noscript>
+    
+  
+
+</section>
+
+
+            <section class="footer">
+    <footer>
+        <div class = "footer_div">  
+        <nav class="cover-navigation navigation--social">
+          <ul class="navigation">
+
+          
+          <!-- Github -->
+          <li class="navigation__item_social">
+            <a href="https://github.com/mrz9527" title="@mrz9527 的 Github" target="_blank">
+              <div class="footer-social-icon" style="background:url(/images/github.png);"></div>
+            </a>
+          </li>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+
+          
+          
+          <!-- RSS -->
+          <li class="navigation__item_social">
+            <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+              <div class="footer-social-icon" style="background:url(/images/rss.png);"></div>
+              <span class="label">RSS</span>
+            </a>
+          </li>
+
+          </ul>
+        </nav>
+
+        </div>
+
+        <div class = "footer_div">  
+           <p class="copyright text-muted">
+            Copyright &copy; mrz9527 2022
+            </p>
+        	<div align="right">
+    			<link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+          <!-- 访问统计 -->
+          <span id="busuanzi_container_site_pv">
+            本站总访问量
+            <span id="busuanzi_value_site_pv"></span>次
+          </span>
+
+        </div>
+        <div>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+
+<script type="text/javascript" src="/js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+  </body>
+
+</html>

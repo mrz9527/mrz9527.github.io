@@ -1,48 +1,201 @@
-<h1 id="simpleperf">simpleperf</h1>
+<!DOCTYPE html>
+<html>
 
-<p>simpleperf是ndk包下的一个性能分析工具，专门用于分析ndk。</p>
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>Ndk性能分析工具之simpleperf</title>
+  <meta name="description" content="simpleperf耗时分析">
+  <meta name="author" content="leopardpan">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Ndk性能分析工具之simpleperf">
+  <meta name="twitter:description" content="simpleperf耗时分析">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Ndk性能分析工具之simpleperf">
+  <meta property="og:description" content="simpleperf耗时分析">
+  
+  <link rel="icon" type="image/png" href="/images/favicon.png" />
+  <link href="/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="https://mrz9527.github.io/2022/04/ndk%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E4%B9%8Bsimpleperf/">
+  <link rel="alternate" type="application/rss+xml" title="mrz9527" href="https://mrz9527.github.io/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+
+<!-- 站点统计 -->
+  <script 
+  async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+  </script>  
+
+<!-- 百度统计 -->
+  
+  <script>
+      var _hmt = _hmt || [];
+      (function() {
+        var hm = document.createElement("script");
+        hm.src = "//hm.baidu.com/hm.js?7a362b671f24dfc0640fd67032b87184";
+        var s = document.getElementsByTagName("script")[0]; 
+        s.parentNode.insertBefore(hm, s);
+      })();
+  </script>
+  
+
+<!-- google 统计 -->
+  
+
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({
+    google_ad_client: "ca-pub-9005224472374751",
+    enable_page_level_ads: true
+  });
+</script>
+
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">        
+      <div class="nav_container">
+         <nav class="nav-menu-item" style = "float:right">
+            <i class="nav-menu-item">
+              <a href="/#blog" title="" class="blog-button">  博客主页
+              </a>
+            </i>
+            
+                <i class="nav-menu-item">
+
+                  <a href="/archive" title="archive" class="btn-mobile-menu__icon">
+                      所有文章
+                  </a>
+                </i>
+            
+                <i class="nav-menu-item">
+
+                  <a href="/tags" title="tags" class="btn-mobile-menu__icon">
+                      标签
+                  </a>
+                </i>
+            
+          </nav>
+      </div>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+        <!-- 头像效果-start -->
+        <div class="ih-item circle effect right_to_left">            
+            <a href="/#blog" title="前往 mrz9527 的主页" class="blog-button">
+                <div class="img"><img src="/images/avatar.jpg" alt="img"></div>
+                <div class="info">
+                    <div class="info-back">
+                        <h2> 
+                            
+                                mrz9527
+                            
+                        </h2>
+                        <p>
+                           
+                                c++ / 机器学习
+                            
+                        </p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <!-- 头像效果-end -->
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for mrz9527" class="blog-button">mrz9527</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">个人站</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">欢迎来到我的个人站~</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        
+
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="" class="blog-button">博客主页</a></li>
+                
+                  <li class="navigation__item"><a href="/archive" title="archive">所有文章</a></li>
+                
+                  <li class="navigation__item"><a href="/tags" title="tags">标签</a></li>
+                
+              </ul>
+            </nav>
+          </div>          
+        </div>
+
+
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-clear"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <head>
+  <link rel="stylesheet" href="/css/post.css">
+</head>
+
+<article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <h1 class="post-title">Ndk性能分析工具之simpleperf</h1>
+    <div class="post-meta">
+      <img src="/images/calendar.png" width="20px"/> 
+      <time datetime="2022-04-12 00:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2022-04-12</time>  
+
+      <span id="busuanzi_container_page_pv"> | 阅读：<span id="busuanzi_value_page_pv"></span>次</span>
+    </p>
+    </div>
+  </header>
+
+  
+    <h2 class="post-title">目录</h2>
+    <ul>
+  <li><a href="#simpleperf耗时分析">simpleperf耗时分析</a>
+    <ul>
+      <li><a href="#介绍">介绍</a></li>
+      <li><a href="#输出性能数据">输出性能数据</a></li>
+      <li><a href="#生成报告">生成报告</a></li>
+    </ul>
+  </li>
+</ul>
+
+  
+
+  <section class="post">
+    <h1 id="simpleperf耗时分析">simpleperf耗时分析</h1>
+
+<p>simpleperf是ndk包下的一个性能分析工具，专门用于分析ndk代码。</p>
 
 <p>simpleperf有两种工作方式，一种是可执行文件的方式，一种是脚本的方式。</p>
 
 <p>下载ndk包，里面自带simpleperf。</p>
 
-<p>/Users/xm210408/Library/Android/sdk/ndk/21.1.6352462/simpleperf</p>
-
-<p>准备工作</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>simpleperf输出性能数据和报告的命令，主要是在pc端运行。
-simpleperf用到了adb，需要有adb环境。
-手机连接pc机。
-执行app_profiler.py脚本，按照提示，手动启动手机上相应app，自动输出性能数据
-执行report_html.py脚本，输出报告。
-
-</code></pre></div></div>
-
-<h2 id="输出性能数据">输出性能数据</h2>
-
-<p>记录设备上app运行过程，在本机pc上生成性能数据perf.data。用到的脚本是app_profiler.py。</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python app_profiler.py -p simpleperf.example.cpp -lib /Users/xm210408/programs/extras/simpleperf/demo/SimpleperfExampleCpp/app/build/intermediates/cmake/debug/obj/arm64-v8a/
-
-python app_profiler.py -p com.tencent.olhct2soLibrary -lib /Users/xm210408/program2/olhct_sdk/app/build/intermediates/cmake/debug/obj/arm64-v8a/
-</code></pre></div></div>
-
-<p>-p simpleperf.example.cpp是手机中android项目的进程，-lib libdir是ndk编译的so所在的目录，运行python脚本需要python3的环境。</p>
-
-<h2 id="生成报告">生成报告</h2>
-
-<p>解析性能数据文件perf.data，生成分析报告。</p>
-
-<p>report_html.py在simpleperf目录下。–source_dirs ../demo是源码cpp所在目录。</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python report_html.py --add_source_code --source_dirs ../demo --add_disassembly
-
-python report_html.py --add_source_code --source_dirs /Users/xm210408/program2/olhct_sdk/app/src/main/cpp --add_disassembly -o xxx.html
-</code></pre></div></div>
-
-<h2 id="其他功能">其他功能</h2>
-
-<p>在simpleperf目录下，还有很多其他的脚本可供使用。</p>
+<p>/Users/xm210408/Library/Android/sdk/ndk/21.1.6352462/simpleperf
+在simpleperf目录下，有很多的脚本可供使用</p>
 
 <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">ls</span> | <span class="nb">grep</span> <span class="s2">"</span><span class="se">\.</span><span class="s2">py"</span>
 __init__.py
@@ -62,8 +215,287 @@ simpleperf_report_lib.py
 utils.py
 </code></pre></div></div>
 
-<h2 id="官方资料">官方资料</h2>
+<h2 id="介绍">介绍</h2>
 
-<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://developer.android.com/ndk/guides/simpleperf
+<p>https://developer.android.com/ndk/guides/simpleperf</p>
+
+<h2 id="输出性能数据">输出性能数据</h2>
+
+<p>记录设备上app运行过程，在本机pc上生成性能数据perf.data。用到的脚本是app_profiler.py。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kangzhou-mac:simpleperf xm210408<span class="nv">$ </span>python app_profiler.py <span class="nt">--help</span>
+usage: app_profiler.py <span class="o">[</span><span class="nt">-h</span><span class="o">]</span>
+                       <span class="o">(</span><span class="nt">-p</span> APP | <span class="nt">-np</span> NATIVE_PROGRAM | <span class="nt">-cmd</span> CMD | <span class="nt">--pid</span> PID <span class="o">[</span>PID ...] | <span class="nt">--tid</span> TID <span class="o">[</span>TID ...] | <span class="nt">--system_wide</span><span class="o">)</span>
+                       <span class="o">[</span><span class="nt">--compile_java_code</span><span class="o">]</span> <span class="o">[</span><span class="nt">-a</span> ACTIVITY | <span class="nt">-t</span> TEST]
+                       <span class="o">[</span><span class="nt">-r</span> RECORD_OPTIONS] <span class="o">[</span><span class="nt">-lib</span> NATIVE_LIB_DIR]
+                       <span class="o">[</span><span class="nt">-o</span> PERF_DATA_PATH] <span class="o">[</span><span class="nt">-nb</span><span class="o">]</span> <span class="o">[</span><span class="nt">--ndk_path</span> NDK_PATH]
+                       <span class="o">[</span><span class="nt">--disable_adb_root</span><span class="o">]</span> <span class="o">[</span><span class="nt">--log</span> <span class="o">{</span>debug,info,warning<span class="o">}]</span>
+
+app_profiler.py: Record cpu profiling data of an android app or native program.
+
+    It downloads simpleperf on device, uses it to collect profiling data on the selected app,
+    and pulls profiling data and related binaries on host.
+
+optional arguments:
+  <span class="nt">-h</span>, <span class="nt">--help</span>            show this <span class="nb">help </span>message and <span class="nb">exit
+
+</span>Select profiling target:
+  <span class="nt">-p</span> APP, <span class="nt">--app</span> APP     Profile an Android app, given the package name. Like
+                        <span class="sb">`</span><span class="nt">-p</span> com.example.android.myapp<span class="sb">`</span><span class="nb">.</span>
+  <span class="nt">-np</span> NATIVE_PROGRAM, <span class="nt">--native_program</span> NATIVE_PROGRAM
+                        Profile a native program running on the Android
+                        device. Like <span class="sb">`</span><span class="nt">-np</span> surfaceflinger<span class="sb">`</span><span class="nb">.</span>
+  <span class="nt">-cmd</span> CMD              Profile running a <span class="nb">command </span>on the Android device. Like
+                        <span class="sb">`</span><span class="nt">-cmd</span> <span class="s2">"pm -l"</span><span class="sb">`</span><span class="nb">.</span>
+  <span class="nt">--pid</span> PID <span class="o">[</span>PID ...]   Profile native processes running on device given their
+                        process ids.
+  <span class="nt">--tid</span> TID <span class="o">[</span>TID ...]   Profile native threads running on device given their
+                        thread ids.
+  <span class="nt">--system_wide</span>         Profile system wide.
+
+Extra options <span class="k">for </span>profiling an app:
+  <span class="nt">--compile_java_code</span>   Used with <span class="nt">-p</span><span class="nb">.</span> On Android N and Android O, we need to
+                        compile Java code into native instructions to profile
+                        Java code. Android O also needs wrap.sh <span class="k">in </span>the apk to
+                        use the native instructions.
+  <span class="nt">-a</span> ACTIVITY, <span class="nt">--activity</span> ACTIVITY
+                        Used with <span class="nt">-p</span><span class="nb">.</span> Profile the launch <span class="nb">time </span>of an activity
+                        <span class="k">in </span>an Android app. The app will be started or
+                        restarted to run the activity. Like <span class="sb">`</span><span class="nt">-a</span>
+                        .MainActivity<span class="sb">`</span><span class="nb">.</span>
+  <span class="nt">-t</span> TEST, <span class="nt">--test</span> TEST  Used with <span class="nt">-p</span><span class="nb">.</span> Profile the launch <span class="nb">time </span>of an
+                        instrumentation <span class="nb">test </span><span class="k">in </span>an Android app. The app will
+                        be started or restarted to run the instrumentation
+                        test. Like <span class="sb">`</span><span class="nt">-t</span> test_class_name<span class="sb">`</span><span class="nb">.</span>
+
+Select recording options:
+  <span class="nt">-r</span> RECORD_OPTIONS, <span class="nt">--record_options</span> RECORD_OPTIONS
+                        Set recording options <span class="k">for</span> <span class="sb">`</span>simpleperf record<span class="sb">`</span> command.
+                        Use <span class="sb">`</span>run_simpleperf_on_device.py record <span class="nt">-h</span><span class="sb">`</span> to see all
+                        accepted options. Default is <span class="s2">"-e task-clock:u -f 1000
+                        -g --duration 10"</span><span class="nb">.</span>
+  <span class="nt">-lib</span> NATIVE_LIB_DIR, <span class="nt">--native_lib_dir</span> NATIVE_LIB_DIR
+                        When profiling an Android app containing native
+                        libraries, the native libraries are usually stripped
+                        and lake of symbols and debug information to provide
+                        good profiling result. By using <span class="nt">-lib</span>, you tell
+                        app_profiler.py the path storing unstripped native
+                        libraries, and app_profiler.py will search all shared
+                        libraries with suffix .so <span class="k">in </span>the directory. Then the
+                        native libraries will be downloaded on device and
+                        collected <span class="k">in </span>build_cache.
+  <span class="nt">-o</span> PERF_DATA_PATH, <span class="nt">--perf_data_path</span> PERF_DATA_PATH
+                        The path to store profiling data. Default is
+                        perf.data.
+  <span class="nt">-nb</span>, <span class="nt">--skip_collect_binaries</span>
+                        By default we collect binaries used <span class="k">in </span>profiling data
+                        from device to binary_cache directory. It can be used
+                        to annotate <span class="nb">source </span>code and disassembly. This option
+                        skips it.
+
+Other options:
+  <span class="nt">--ndk_path</span> NDK_PATH   Set the path of a ndk release. app_profiler.py needs
+                        some tools <span class="k">in </span>ndk, like readelf.
+  <span class="nt">--disable_adb_root</span>    Force adb to run <span class="k">in </span>non root mode. By default,
+                        app_profiler.py will try to switch to root mode to be
+                        able to profile released Android apps.
+  <span class="nt">--log</span> <span class="o">{</span>debug,info,warning<span class="o">}</span>
+                        <span class="nb">set </span>log level
 </code></pre></div></div>
 
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python app_profiler.py -p com.tencent.olhct2soLibrary -lib /Users/xm210408/program2/olhct_sdk/app/build/intermediates/cmake/debug/obj/arm64-v8a/
+</code></pre></div></div>
+
+<p>-p simpleperf.example.cpp是手机中android项目的进程，-lib libdir是ndk编译后的so所在的目录，运行python脚本需要python3的环境。</p>
+
+<h2 id="生成报告">生成报告</h2>
+
+<p>解析性能数据文件perf.data，生成分析报告。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python report_html.py --add_source_code --source_dirs /Users/xm210408/program2/olhct_sdk/app/src/main/cpp --add_disassembly -o xxx.html
+</code></pre></div></div>
+
+<p>–source_dirs ../demo是源码cpp所在目录。</p>
+
+  </section>
+
+</article>
+
+<section>
+
+            <div class="content-play">
+              <p><a href="javascript:void(0)" onclick="dashangToggle()" class="dashang" title="打赏，支持一下">打赏一个呗</a></p>
+              <div class="hide_box-play"></div>
+              <div class="shang_box-play">
+                <a class="shang_close-play" href="javascript:void(0)" onclick="dashangToggle()" title="关闭"><img src="/images/payimg/close.jpg" alt="取消" /></a>
+                <div class="shang_tit-play">
+                  <p>感谢您的支持，我会继续努力的!</p>
+                </div>
+                <div class="shang_payimg">
+                    <img src="/images/payimg/alipayimg.jpg" alt="扫码支持" title="扫一扫" />
+                </div>
+              <div class="shang_payimg">    
+                    <img src="/images/payimg/weipayimg.jpg" alt="扫码支持" title="扫一扫" />
+                </div>
+                <div class="pay_explain">扫码打赏，你说多少就多少</div>
+                <div class="shang_payselect">
+                  <div class="pay_item checked" data-id="alipay">
+                    <span class="pay_logo"><img src="/images/payimg/alipay.jpg" alt="支付宝" /></span>
+                  </div>
+                  <div class="pay_item" data-id="weipay">
+                    <span class="pay_logo"><img src="/images/payimg/wechat.jpg" alt="微信" /></span>
+                  </div>
+                </div>
+                <div class="shang_info-play">
+                  <p>打开<span id="shang_pay_txt">支付宝</span>扫一扫，即可进行扫码打赏哦</p>
+                </div>
+              </div>
+            </div>
+            <script type="text/javascript">
+            function dashangToggle(){
+              $(".hide_box-play").fadeToggle();
+              $(".shang_box-play").fadeToggle();
+            }
+            </script>
+
+            <div style="text-align:center;margin:50px 0; font:normal 14px/24px 'MicroSoft YaHei';"></div>
+
+            <style type="text/css">
+              .content-play{width:80%;margin-top: 20px;margin-bottom: 10px;height:40px;}
+              .hide_box-play{z-index:999;filter:alpha(opacity=50);background:#666;opacity: 0.5;-moz-opacity: 0.5;left:0;top:0;height:99%;width:100%;position:fixed;display:none;}
+              .shang_box-play{width:540px;height:540px;padding:10px;background-color:#fff;border-radius:10px;position:fixed;z-index:1000;left:50%;top:50%;margin-left:-280px;margin-top:-280px;border:1px dotted #dedede;display:none;}
+              .shang_box-play img{border:none;border-width:0;}
+              .dashang{display:block;width:100px;margin:5px auto;height:25px;line-height:25px;padding:10px;background-color:#E74851;color:#fff;text-align:center;text-decoration:none;border-radius:10px;font-weight:bold;font-size:16px;transition: all 0.3s;}
+              .dashang:hover{opacity:0.8;padding:15px;font-size:18px;}
+              .shang_close-play{float:right;display:inline-block;
+                margin-right: 10px;margin-top: 20px;
+              }
+              .shang_logo{display:block;text-align:center;margin:20px auto;}
+              .shang_tit-play{width: 100%;height: 75px;text-align: center;line-height: 66px;color: #a3a3a3;font-size: 16px;background: url('/images/payimg/cy-reward-title-bg.jpg');font-family: 'Microsoft YaHei';margin-top: 7px;margin-right:2px;}
+              .shang_tit-play p{color:#a3a3a3;text-align:center;font-size:16px;}
+              .shang_payimg{width:140px;padding:10px;padding-left: 80px; /*border:6px solid #EA5F00;**/margin:0 auto;border-radius:3px;height:140px;display:inline-block;}
+              .shang_payimg img{display:inline-block;margin-right:10px;float:left;text-align:center;width:140px;height:140px; }
+              .pay_explain{text-align:center;margin:10px auto;font-size:12px;color:#545454;}
+              .shang_payselect{text-align:center;margin:0 auto;margin-top:40px;cursor:pointer;height:60px;width:500px;margin-left:110px;}
+              .shang_payselect .pay_item{display:inline-block;margin-right:140px;float:left;}
+              .shang_info-play{clear:both;}
+              .shang_info-play p,.shang_info-play a{color:#C3C3C3;text-align:center;font-size:12px;text-decoration:none;line-height:2em;}
+            </style>
+
+       <ul class="pager">
+        
+        <li class="previous">
+            <a href="/2022/04/elasticsearch%E4%BD%BF%E7%94%A8/" data-toggle="tooltip" data-placement="top" title="Elasticsearch使用">上一篇：  <span>Elasticsearch使用</span>
+            </a>
+        </li>
+        
+        
+        <li class="next">
+            <a href="/2022/04/mysql%E7%94%A8%E6%B3%95/" data-toggle="tooltip" data-placement="top" title="Mysql用法">下一篇：  <span>Mysql用法</span>
+            </a>
+        </li>
+        
+    </ul>
+</section>
+
+<section class="post-comments">
+
+  
+    <div id="disqus_thread"></div>
+    <script>
+    
+    var disqus_config = function () {
+        this.page.url = "https://mrz9527.github.io/2022/04/ndk%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E4%B9%8Bsimpleperf/";
+        this.page.identifier = "/2022/04/ndk%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E4%B9%8Bsimpleperf/";
+    };
+    var disqus_shortname = 'leopard';
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>要查看<a href="http://disqus.com/?ref_noscript"> Disqus </a>评论，请启用 JavaScript</noscript>
+    
+  
+
+</section>
+
+
+            <section class="footer">
+    <footer>
+        <div class = "footer_div">  
+        <nav class="cover-navigation navigation--social">
+          <ul class="navigation">
+
+          
+          <!-- Github -->
+          <li class="navigation__item_social">
+            <a href="https://github.com/mrz9527" title="@mrz9527 的 Github" target="_blank">
+              <div class="footer-social-icon" style="background:url(/images/github.png);"></div>
+            </a>
+          </li>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+
+          
+          
+          <!-- RSS -->
+          <li class="navigation__item_social">
+            <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+              <div class="footer-social-icon" style="background:url(/images/rss.png);"></div>
+              <span class="label">RSS</span>
+            </a>
+          </li>
+
+          </ul>
+        </nav>
+
+        </div>
+
+        <div class = "footer_div">  
+           <p class="copyright text-muted">
+            Copyright &copy; mrz9527 2022
+            </p>
+        	<div align="right">
+    			<link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+          <!-- 访问统计 -->
+          <span id="busuanzi_container_site_pv">
+            本站总访问量
+            <span id="busuanzi_value_site_pv"></span>次
+          </span>
+
+        </div>
+        <div>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+
+<script type="text/javascript" src="/js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+  </body>
+
+</html>

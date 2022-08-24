@@ -1,0 +1,50 @@
+<h3 id="c-崩溃分析">c++ 崩溃分析</h3>
+
+<h3 id="1-coredump捕获crash">1. coredump：捕获crash</h3>
+
+<h4 id="coredump查看和开启">coredump查看和开启</h4>
+
+<p>查看当前系统是否支持coredump</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">ulimit</span> <span class="nt">-c</span>
+0
+</code></pre></div></div>
+
+<p>如果为0，则表示coredump被关闭。</p>
+
+<p>可以通过下面方式开启</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">ulimit</span> <span class="nt">-c</span> unlimited
+</code></pre></div></div>
+
+<h4 id="coredump文件位置">coredump文件位置</h4>
+
+<p>coredump文件默认存储位置与可执行文件在同一目录下，文件名为core。</p>
+
+<p>可以通过/proc/sys/kernel/core_pattern来设置coredump文件生成的位置</p>
+
+<h4 id="coredump原理">coredump原理</h4>
+
+<p>参考:https://www.cnblogs.com/arnoldlu/p/11160510.html</p>
+
+<h3 id="2-gdb调试coredump">2. gdb调试coredump</h3>
+
+<p>gdb ./a.out core</p>
+
+<p>bt</p>
+
+<h3 id="3-gdb-常见命令">3. gdb 常见命令</h3>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">set </span>args
+breakpoint:b 打断点
+<span class="k">continue</span>:c	继续，类似f9
+run	:r	运行程序
+list:l	显示源码，一次显示10行，可以 l rownnumber，打印给定行号的上下行
+next:n 	下一行step over,遇到函数调用，不进入函数内部，跳过函数调用
+step:s	下一行step into,遇到函数调用，进入函数内部
+print:p 打印变量
+<span class="nb">set </span>var <span class="nv">name</span><span class="o">=</span>value	:设置变量的值
+quit:q 	退出gdb环境
+finish:用于跳出当前函数（一般step into之后，会finish跳出所在函数）
+</code></pre></div></div>
+

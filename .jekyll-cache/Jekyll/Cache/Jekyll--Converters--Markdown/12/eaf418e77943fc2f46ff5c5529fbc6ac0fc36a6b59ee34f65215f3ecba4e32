@@ -1,0 +1,448 @@
+I"8<h1 id="vim8vimplus插件安装和配置">vim8+vimplus插件安装和配置</h1>
+
+<p>以ubuntu-server为例</p>
+
+<h1 id="1安装vim82">1.安装vim8.2</h1>
+
+<h2 id="11-查看vim版本">1.1 查看vim版本</h2>
+
+<p>ubuntu-server默认自带vim7.4，可以通过vim -version查看</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>zhoukang@ubuntu:~/download/vim-master<span class="nv">$ </span>vim <span class="nt">-version</span>
+VIM - Vi IMproved 7.4 <span class="o">(</span>2013 Aug 10, compiled Oct 13 2020 16:04:38<span class="o">)</span>
+Garbage after option argument: <span class="s2">"-version"</span>
+More info with: <span class="s2">"vim -h"</span>
+</code></pre></div></div>
+
+<h2 id="12-下载vim8源码并解压">1.2 下载vim8源码并解压</h2>
+
+<p>下载源码后解压，并进入源码目录</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>zhoukang@ubuntu:~/download/vim-master<span class="nv">$ </span>wget https://github.com/vim/vim/archive/master.zip
+zhoukang@ubuntu:~/download/vim-master<span class="nv">$ </span>unzip vim-master.zip
+zhoukang@ubuntu:~/download/vim-master<span class="nv">$ </span><span class="nb">ls
+</span>master.zip  vim-master
+zhoukang@ubuntu:~/download/vim-master<span class="nv">$ </span><span class="nb">cd </span>vim-master
+</code></pre></div></div>
+
+<h2 id="13-运行vim配置">1.3 运行vim配置</h2>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>zhoukang@ubuntu:~/download/vim-master<span class="nv">$ </span><span class="nb">ls
+</span>ci  configure  CONTRIBUTING.md  Filelist  LICENSE  Makefile  nsis  pixmaps  READMEdir  README.md  README.txt  README_VIM9.md  runtime  src  tools  uninstall.txt  vimtutor.bat  vimtutor.com
+</code></pre></div></div>
+
+<p>先查看configure的选项参数</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>zhoukang@ubuntu:~/download/vim-master<span class="nv">$ </span>./configure <span class="nt">--help</span>
+</code></pre></div></div>
+
+<p>参数很多，根据需要自行设置，一般设置–with-features为huge，开启最大特性，设置  –with-python3-config-dir，开启python3的配置。
+  –with-features=TYPE    tiny, small, normal, big or huge (default: huge)
+  –with-python3-config-dir=PATH  Python’s config directory (deprecated)</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>zhoukang@ubuntu:~/download/vim-master<span class="nv">$ </span>./configure <span class="nt">--with-features</span><span class="o">=</span>huge <span class="nt">--with-python3-config-dir</span><span class="o">=</span>/usr/lib/python3.5/config-3.5m-x86_64-linux-gnu
+</code></pre></div></div>
+
+<h2 id="14-编译vim">1.4 编译vim</h2>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>zhoukang@ubuntu:~/download/vim-master<span class="nv">$ </span>make
+</code></pre></div></div>
+
+<h2 id="15-安装vim">1.5 安装vim</h2>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>zhoukang@ubuntu:~/download/vim-master<span class="nv">$ </span><span class="nb">sudo </span>make <span class="nb">install</span>
+</code></pre></div></div>
+
+<p>vim默认安装到/usr/local/bin/目录下</p>
+
+<h2 id="16-添加vim的环境变量">1.6 添加vim的环境变量</h2>
+
+<p>打开/etc/profile配置文件</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>zhoukang@ubuntu:~/download/vim-master<span class="nv">$ </span><span class="nb">sudo </span>vim /etc/profile
+</code></pre></div></div>
+
+<p>在文件的最后一行添加如下内容</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>export PATH=/usr/local/bin:$PATH
+</code></pre></div></div>
+
+<p>使/etc/profile配置文件生效</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>zhoukang@ubuntu:~/download/vim-master<span class="nv">$ </span><span class="nb">source</span> /etc/profile
+</code></pre></div></div>
+
+<h2 id="17-再次验证vim版本">1.7 再次验证vim版本</h2>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>zhoukang@ubuntu:~/download/vim-master<span class="nv">$ </span>vim <span class="nt">-version</span>
+VIM - Vi IMproved 8.2 <span class="o">(</span>2019 Dec 12, compiled Jan  7 2022 17:08:33<span class="o">)</span>
+Garbage after option argument: <span class="s2">"-version"</span>
+More info with: <span class="s2">"vim -h"</span>
+</code></pre></div></div>
+
+<h1 id="2安装vimplus插件">2.安装vimplus插件</h1>
+
+<h2 id="21-下载vimplus源码">2.1 下载vimplus源码</h2>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>zhoukang@ubuntu:~/download/vim-master<span class="nv">$ </span>git clone https://github.com/chxuan/vimplus.git ~/.vimplus
+Cloning into <span class="s1">'vimplus'</span>...
+remote: Enumerating objects: 2350, <span class="k">done</span><span class="nb">.</span>
+remote: Counting objects: 100% <span class="o">(</span>43/43<span class="o">)</span>, <span class="k">done</span><span class="nb">.</span>
+remote: Compressing objects: 100% <span class="o">(</span>22/22<span class="o">)</span>, <span class="k">done</span><span class="nb">.</span>
+remote: Total 2350 <span class="o">(</span>delta 23<span class="o">)</span>, reused 38 <span class="o">(</span>delta 21<span class="o">)</span>, pack-reused 2307
+Receiving objects: 100% <span class="o">(</span>2350/2350<span class="o">)</span>, 12.78 MiB | 2.53 MiB/s, <span class="k">done</span><span class="nb">.</span>
+Resolving deltas: 100% <span class="o">(</span>1452/1452<span class="o">)</span>, <span class="k">done</span><span class="nb">.</span>
+Checking connectivity... <span class="k">done</span><span class="nb">.</span>
+zhoukang@ubuntu:~/download/vim-master<span class="nv">$ </span><span class="nb">cd</span> ~/.vimplus<span class="p">;</span><span class="nb">ls
+</span>autoload  colors  fonts  ftplugin  help.md  install.sh  install_to_user.sh  LICENSE  README.md  screenshots  uninstall.sh  update.sh
+zhoukang@ubuntu:~/.vimplus<span class="nv">$ </span>
+</code></pre></div></div>
+
+<h2 id="22-安装vimplus">2.2 安装vimplus</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>zhoukang@ubuntu:~/.vimplus$ ./install.sh
+</code></pre></div></div>
+
+<h1 id="3-vimplus使用">3. vimplus使用</h1>
+
+<p>1.语法</p>
+
+<p>2.帮助文档</p>
+
+<p>3.乱码</p>
+
+<h1 id="4vim语法">4.vim语法</h1>
+
+<p>语法:a或者ar或者art</p>
+
+<p>a:action</p>
+
+<p>ar:action + range</p>
+
+<p>art:action + range + text</p>
+
+<p>action:动作</p>
+
+<p>range:动作的范围</p>
+
+<p>text:动作的内容</p>
+
+<h2 id="action动作">action动作</h2>
+
+<p>y：复制yank</p>
+
+<p>d：剪切delete</p>
+
+<p>p：粘贴</p>
+
+<p>c：修改</p>
+
+<p>v：选中visual</p>
+
+<p>x:删除字符</p>
+
+<p>…</p>
+
+<h2 id="range范围">Range范围</h2>
+
+<p>2  :  数量</p>
+
+<p>i	: in， 里面</p>
+
+<p>a	:all，里面+边界</p>
+
+<p>t	:till，直到首个，不包括</p>
+
+<p>f	：find，找到首个，包括</p>
+
+<p>0是行首，$是行尾，^是首个非空字符，gg是文件开头，G是文件结尾</p>
+
+<h2 id="text内容">text内容</h2>
+
+<p>{</p>
+
+<p>[</p>
+
+<p>(</p>
+
+<p>,</p>
+
+<p>a-z</p>
+
+<p>w：word</p>
+
+<h2 id="vim-快捷键举例">vim 快捷键举例</h2>
+
+<h3 id="复制剪切粘贴">复制、剪切、粘贴</h3>
+
+<p>在vim中，复制(yank)、剪切(delete)、粘贴(put)，而不是ctrl+c和ctrl+v，因为c被占用了</p>
+
+<p>y：yank复制</p>
+
+<p>​		yy：复制一行</p>
+
+<p>​		yiw:复制一个单词</p>
+
+<p>​		2yy:复制2行</p>
+
+<p>​		<strong>yw</strong>:复制单词后部分</p>
+
+<p>​		<strong>yb</strong>:复制单词前部分</p>
+
+<p>​</p>
+
+<p>d:	delete（这里理解成剪切的意思）</p>
+
+<p>​		dd：剪切一行</p>
+
+<p>​		diw:剪切一个单词(“return”,   光标在单词的任意一个位置，diw都是删除单词return)</p>
+
+<p>​		2dd:剪切2行</p>
+
+<p>​		d0:删除至行首</p>
+
+<p>​		d$:删除至行尾</p>
+
+<p>​		dgg:删除至文件头</p>
+
+<p>​		dG:删除至文件尾</p>
+
+<p>​		<strong>db</strong>：删除单词前部分</p>
+
+<p>​		<strong>dw</strong>: 删除单词后部分</p>
+
+<p>x:	剪切字符</p>
+
+<p>​		x：删除一个字符</p>
+
+<p>​		2x：删除2个字符</p>
+
+<p>​		xx:删除两个字符（xx不支持删除行，因为删除单位是一个字符）</p>
+
+<p>p： 粘贴</p>
+
+<h2 id="修改">修改</h2>
+
+<p>c: 	change 修改</p>
+
+<p>​		cc：修改一行（会先删除，再进入编辑状态）</p>
+
+<p>​		ciw:修改一个单词</p>
+
+<p>​		2cc:修改2行</p>
+
+<p>​</p>
+
+<p>​		<strong>cw</strong>:修改单词后部分</p>
+
+<p>​		<strong>cb</strong>: 修改单词前部分</p>
+
+<p>​</p>
+
+<h2 id="撤销">撤销</h2>
+
+<p>u</p>
+
+<p>ctrl+r  重做最后的操作</p>
+
+<h2 id="复制粘贴系统剪切板">复制粘贴系统剪切板</h2>
+
+<p>“+y</p>
+
+<p>复制</p>
+
+<p>“+d</p>
+
+<p>剪切</p>
+
+<p>“+p</p>
+
+<p>粘贴</p>
+
+<h2 id="全文操作">全文操作</h2>
+
+<p>ggvG</p>
+
+<p>全文选择</p>
+
+<p>ggdG</p>
+
+<p>全文剪切</p>
+
+<p>ggyG</p>
+
+<p>全文复制</p>
+
+<h2 id="移动跳转">移动跳转</h2>
+
+<p>g: 	goto跳转的意思</p>
+
+<p>​		gg:跳转到第一行</p>
+
+<p>​		3gg:跳转到第3行</p>
+
+<p>​		G:跳转到最后一行</p>
+
+<p>移动跳转到某个字符</p>
+
+<p>fb : 快速跳转到下一个b字符所在位置</p>
+
+<p>​		之后按下f，继续跳转到下一个b字符位置</p>
+
+<p>Fb：快速跳转到上一个b字符所在位置</p>
+
+<p>​		之后按下F，继续跳转到上一个b字符位置</p>
+
+<p>按照单词跳转</p>
+
+<p>w:跳转到下一个单词</p>
+
+<p>b：跳转到上一个单词</p>
+
+<h2 id="搜索内容"><strong>搜索内容</strong></h2>
+
+<p>/text：搜索内容为”text”的内容</p>
+
+<p>* 	: 搜索当前光标所在的单词内容</p>
+
+<p>#	: 搜索当前光标所在单词内容，同*作用相同</p>
+
+<h2 id="快速编辑">快速编辑</h2>
+
+<p>i：进入当前位置编辑</p>
+
+<p>a：进入当前位置的后一个字符编辑</p>
+
+<p>A：在行尾进行编辑</p>
+
+<h2 id="插入模式下粘贴外部内容到编辑器中">插入模式下粘贴外部内容到编辑器中</h2>
+
+<p>直接ctrl+v</p>
+
+<p>一般会设置代码自动缩进set autoindent；但是设置之后，如果ctrl+v粘贴外部代码到当前位置时，缩进不混乱，</p>
+
+<p>需要set paste，设置之后，在ctrl+v，然后set nopaste。</p>
+
+<h2 id="命令">命令</h2>
+
+<h3 id="set设置">:set设置</h3>
+
+<p>:set xxx</p>
+
+<h3 id="s替换">:s替换</h3>
+
+<p>:s/p1/p2/g</p>
+
+<p><strong>:s/p1/p2/gc</strong></p>
+
+<p>注意，s是删除一个字符并进入插入模式，:s是命令</p>
+
+<p>:s中s的缩写是substitute（代替者）</p>
+
+<p><strong>gc是全局替换之前询问是否替换，很好用</strong></p>
+
+<h3 id="范围操作">范围操作</h3>
+
+<p>:100,200y</p>
+
+<p>复制第100到200行</p>
+
+<p>:100,200d</p>
+
+<p>剪切100到200行</p>
+
+<h2 id="vim寄存器">vim寄存器</h2>
+
+<h3 id="寄存器种类">寄存器种类</h3>
+
+<p>vim操作的是寄存器，而不是系统剪切板。</p>
+
+<p>在vim的命令模式下输入:reg，可以查看vim寄存器当前的内容</p>
+
+<p>Type是寄存器的类型，按照寄存器类型，分为三种：l是行寄存器，b是块寄存器，c是字符寄存器</p>
+
+<p>Name是寄存器的名字。</p>
+
+<h4 id="无名寄存器"><strong>无名寄存器</strong></h4>
+
+<p>​			“寄存器存放最近一次d/y/c/x/s操作的内容，</p>
+
+<h4 id="数字寄存器"><strong>数字寄存器</strong></h4>
+
+<p>​			0寄存器，是y寄存器，存放最近一次y操作的内容</p>
+
+<p>​			1~9是d/c寄存器，存放最近一次d/c操作的内容，1~9像堆栈，第一次d/c操作，内容放入1寄存器，接着第二次d/c操作，1寄存器					中内容放入2寄存器，1寄存器存放最新的d/c操作的内容</p>
+
+<h4 id="搜索寄存器"><strong>搜索寄存器</strong></h4>
+
+<p>​			/寄存器是搜索寄存器，存放最近一次/和*和#操作的内容</p>
+
+<p>​		<strong>系统剪切板寄存器</strong></p>
+
+<p>​			*寄存器和+寄存器是系统剪切板寄存器，存放最近一次系统剪切的内容</p>
+
+<h4 id="只读寄存器"><strong>只读寄存器</strong></h4>
+
+<p>​			%寄存器是只读寄存器，存放的是当前文件名</p>
+
+<p>​			:寄存器是命令寄存器，存放最近一次操作的命令，比如:set number 或者:reg “，或者:%s/g1/g2/g等命令。</p>
+
+<p>####</p>
+
+<p>​		-寄存器，是x寄存器，存放最近一次x操作的内容</p>
+
+<p>Content是内容</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>:reg
+Type Name Content
+  l  ""       bool    remove;^J
+  l  "0       bool    remove;^J
+  l  "1   public:^J
+  l  "2   class ProtocolHandler;^J
+  l  "3                                                                   ————————————————^J
+  l  "4                                                                       版权声明：^J
+  l  "5   }^J
+  l  "6                                                                       825299^J
+  l  "7   my name is zhoushiyi.ushiyi^Jmy name is zhoushiyi.ushiyi^Jmy name is zhoushiyhh.ushiyi^J
+  l  "8   what's your name?zhous^J
+  l  "9   8^J
+  c  "r   eg^M^M；:reg^Mh"yy:reg^M^[&lt;80&gt;&lt;fd&gt;a"yaw:^[&lt;80&gt;&lt;fd&gt;a^[&lt;80&gt;&lt;fd&gt;au:regh^M:reg^M
+  c  "-   i
+  c  ".
+  c  ":   reg
+  c  "%   text.txt
+  c  "/   buffer
+  c  "=   AutoPairsInsert('}')
+</code></pre></div></div>
+
+<h3 id="寄存器的使用">寄存器的使用</h3>
+
+<h4 id="内容放入寄存器">内容放入寄存器</h4>
+
+<p>有些寄存器是默认寄存器，可以将操作内容，手动放到不同寄存器中，使用方法是</p>
+
+<p>"”yaw</p>
+
+<p>“1yaw</p>
+
+<p>“2yaw</p>
+
+<p>"”caw</p>
+
+<p>“1caw</p>
+
+<p>“1daw</p>
+
+<h4 id="从寄存器中取出">从寄存器中取出</h4>
+
+<p>"”p</p>
+
+<p>“1p</p>
+
+<p>“2p</p>
+
+<p>“+p</p>
+
+<p>“=p</p>
+
+:ET
